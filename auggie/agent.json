@@ -8,48 +8,6 @@
   "license": "proprietary",
   "icon": "./icon.svg",
   "distribution": {
-    "binary": {
-      "darwin-aarch64": {
-        "archive": "https://registry.npmjs.org/@augmentcode/auggie/-/auggie-0.12.0.tgz",
-        "cmd": "node",
-        "args": ["./package/augment.mjs", "--acp"],
-        "env": {
-          "AUGMENT_DISABLE_AUTO_UPDATE": "1"
-        }
-      },
-      "darwin-x86_64": {
-        "archive": "https://registry.npmjs.org/@augmentcode/auggie/-/auggie-0.12.0.tgz",
-        "cmd": "node",
-        "args": ["./package/augment.mjs", "--acp"],
-        "env": {
-          "AUGMENT_DISABLE_AUTO_UPDATE": "1"
-        }
-      },
-      "linux-aarch64": {
-        "archive": "https://registry.npmjs.org/@augmentcode/auggie/-/auggie-0.12.0.tgz",
-        "cmd": "node",
-        "args": ["./package/augment.mjs", "--acp"],
-        "env": {
-          "AUGMENT_DISABLE_AUTO_UPDATE": "1"
-        }
-      },
-      "linux-x86_64": {
-        "archive": "https://registry.npmjs.org/@augmentcode/auggie/-/auggie-0.12.0.tgz",
-        "cmd": "node",
-        "args": ["./package/augment.mjs", "--acp"],
-        "env": {
-          "AUGMENT_DISABLE_AUTO_UPDATE": "1"
-        }
-      },
-      "windows-x86_64": {
-        "archive": "https://registry.npmjs.org/@augmentcode/auggie/-/auggie-0.12.0.tgz",
-        "cmd": "node",
-        "args": ["./package/augment.mjs", "--acp"],
-        "env": {
-          "AUGMENT_DISABLE_AUTO_UPDATE": "1"
-        }
-      }
-    },
     "npx": {
       "package": "@augmentcode/auggie@0.12.0",
       "args": ["--acp"],
