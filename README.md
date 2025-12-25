@@ -1,13 +1,15 @@
 # ACP Agent Registry
 
-A registry of agents implementing the [Agent Client Protocol (ACP)](https://github.com/anthropics/agent-client-protocol).
+> ⚠️ **Work in Progress**: This registry is under active development. Format and contents may change.
+
+A registry of agents implementing the [Agent Client Protocol (ACP)](https://github.com/agentclientprotocol/agent-client-protocol).
 
 > **Note**: This registry only includes agents that support authentication. Agents must implement auth flows to be listed here.
 
 ## Included Agents
 
 | Agent                                                             | Description                                                        |
-|-------------------------------------------------------------------|--------------------------------------------------------------------|
+|-------------------------------------------------------------------|:-------------------------------------------------------------------|
 | [Auggie CLI](https://github.com/augmentcode/auggie-zed-extension) | Augment Code's software agent with industry-leading context engine |
 | [Codex CLI](https://github.com/zed-industries/codex-acp)          | OpenAI's coding assistant                                          |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli)         | Google's official CLI for Gemini                                   |
@@ -21,12 +23,6 @@ Fetch the registry index:
 
 ```
 https://github.com/agentclientprotocol/registry/releases/latest/download/registry.json
-```
-
-Fetch agent icons:
-
-```
-https://github.com/agentclientprotocol/registry/releases/latest/download/<agent-id>.svg
 ```
 
 ## Registry Format
