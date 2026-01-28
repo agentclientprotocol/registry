@@ -1,7 +1,7 @@
 {
   "id": "kimi",
   "name": "Kimi CLI",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Moonshot AI's coding assistant",
   "repository": "https://github.com/MoonshotAI/kimi-cli",
   "authors": [
