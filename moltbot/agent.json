@@ -1,0 +1,19 @@
+{
+  "id": "moltbot",
+  "name": "Moltbot",
+  "version": "2026.1.24",
+  "description": "Personal AI assistant with an ACP bridge",
+  "repository": "https://github.com/moltbot/moltbot",
+  "authors": [
+    "Peter Steinberger"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "clawdbot@2026.1.24",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
