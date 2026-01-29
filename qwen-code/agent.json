@@ -12,7 +12,8 @@
     "npx": {
       "package": "@qwen-code/qwen-code@0.8.1",
       "args": [
-        "--experimental-acp"
+        "--acp",
+        "--experimental-skills"
       ]
     }
   }
