@@ -1,16 +1,16 @@
 {
-  "id": "moltbot",
-  "name": "Moltbot",
-  "version": "2026.1.24",
+  "id": "openclaw",
+  "name": "OpenClaw",
+  "version": "2026.1.29",
   "description": "Personal AI assistant with an ACP bridge",
-  "repository": "https://github.com/moltbot/moltbot",
+  "repository": "https://github.com/openclaw/openclaw",
   "authors": [
     "Peter Steinberger"
   ],
   "license": "MIT",
   "distribution": {
     "npx": {
-      "package": "clawdbot@2026.1.24",
+      "package": "openclaw@2026.1.29",
       "args": [
         "acp"
       ]
