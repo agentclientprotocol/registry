@@ -8,7 +8,7 @@
   "license": "proprietary",
   "distribution": {
     "npx": {
-      "package": "@github/copilot-language-server@1.418.0",
+      "package": "@github/copilot@0.0.400",
       "args": ["--acp"]
     }
   }
