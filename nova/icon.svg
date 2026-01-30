@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+  <defs>
+    <linearGradient id="compassGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6B46C1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer circle with gradient stroke -->
+  <circle cx="12" cy="12" r="9" fill="none" stroke="url(#compassGradient)" stroke-width="1.5"/>
+
+  <!-- Inner decorative circle -->
+  <circle cx="12" cy="12" r="7" fill="none" stroke="#8B5CF6" stroke-width="0.5" opacity="0.5"/>
+
+  <!-- Arrow 1: NE direction (45°) - extends from center to tip at (22,22) -->
+  <!-- Arrow shaft -->
+  <line x1="12" y1="12" x2="21" y2="21" stroke="url(#arrowGradient)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Arrow head - pointy triangle extending to (22,22) -->
+  <polygon points="22,22 19,20.5 20.5,19" fill="url(#arrowGradient)"/>
+
+  <!-- Arrow 2: SW direction (225° / -45° from opposite) - extends from center to tip at (2,2) -->
+  <!-- Arrow shaft -->
+  <line x1="12" y1="12" x2="3" y2="3" stroke="url(#arrowGradient)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Arrow head - pointy triangle extending to (2,2) -->
+  <polygon points="2,2 5,3.5 3.5,5" fill="url(#arrowGradient)"/>
+
+  <!-- Center point -->
+  <circle cx="12" cy="12" r="2" fill="url(#compassGradient)"/>
+  <circle cx="12" cy="12" r="1" fill="#E0E7FF"/>
+</svg>
