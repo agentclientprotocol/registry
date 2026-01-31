@@ -1,5 +1,6 @@
 {
-  "name": "grok-cli",
+  "id": "grok-cli",
+  "name": "Grok-cli",
   "description": "An open-source AI agent that brings the power of xAI's Grok models directly into your terminal and Zed editor.",
   "author": "micro-tech",
   "version": "0.1.2",
