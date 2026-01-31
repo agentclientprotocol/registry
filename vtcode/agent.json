@@ -1,0 +1,23 @@
+{
+  "id": "vtcode",
+  "name": "VT Code",
+  "version": "0.74.2",
+  "description": "Rust-based terminal coding agent with Tree-sitter semantic intelligence and multi-LLM support",
+  "repository": "https://github.com/vinhnx/vtcode",
+  "authors": ["Vinh Nguyen <vinhnguyen2308@gmail.com>"],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/vinhnx/vtcode/releases/download/v0.74.2/vtcode-v0.74.2-aarch64-apple-darwin.tar.gz",
+        "cmd": "./vtcode",
+        "args": ["--acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/vinhnx/vtcode/releases/download/v0.74.2/vtcode-v0.74.2-x86_64-apple-darwin.tar.gz",
+        "cmd": "./vtcode",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
