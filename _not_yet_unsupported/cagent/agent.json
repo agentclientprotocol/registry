@@ -1,7 +1,7 @@
 {
   "id": "cagent",
   "name": "Docker cagent",
-  "version": "1.20.3",
+  "version": "1.20.4",
   "description": "Docker's AI coding agent",
   "repository": "https://github.com/docker/cagent",
   "authors": [
@@ -11,42 +11,42 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/docker/cagent/releases/download/v1.20.3/cagent-darwin-arm64",
+        "archive": "https://github.com/docker/cagent/releases/download/v1.20.4/cagent-darwin-arm64",
         "cmd": "./cagent",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/docker/cagent/releases/download/v1.20.3/cagent-darwin-amd64",
+        "archive": "https://github.com/docker/cagent/releases/download/v1.20.4/cagent-darwin-amd64",
         "cmd": "./cagent",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/docker/cagent/releases/download/v1.20.3/cagent-linux-arm64",
+        "archive": "https://github.com/docker/cagent/releases/download/v1.20.4/cagent-linux-arm64",
         "cmd": "./cagent",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/docker/cagent/releases/download/v1.20.3/cagent-linux-amd64",
+        "archive": "https://github.com/docker/cagent/releases/download/v1.20.4/cagent-linux-amd64",
         "cmd": "./cagent",
         "args": [
           "acp"
         ]
       },
       "windows-aarch64": {
-        "archive": "https://github.com/docker/cagent/releases/download/v1.20.3/cagent-windows-arm64.exe",
+        "archive": "https://github.com/docker/cagent/releases/download/v1.20.4/cagent-windows-arm64.exe",
         "cmd": "./cagent.exe",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/docker/cagent/releases/download/v1.20.3/cagent-windows-amd64.exe",
+        "archive": "https://github.com/docker/cagent/releases/download/v1.20.4/cagent-windows-amd64.exe",
         "cmd": "./cagent.exe",
         "args": [
           "acp"
