@@ -1,0 +1,19 @@
+{
+  "id": "github-copilot-language-server",
+  "name": "GitHub Copilot Language Server",
+  "version": "1.420.0",
+  "description": "GitHub's AI pair programmer",
+  "repository": "https://github.com/github/copilot-language-server-release",
+  "authors": [
+    "Microsoft"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "npx": {
+      "package": "@github/copilot-language-server@1.420.0",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
