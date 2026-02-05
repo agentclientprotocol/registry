@@ -2,7 +2,7 @@
   "id": "junie-acp",
   "name": "June CLI",
   "version": "624.1.0",
-  "description": "JetBrains autonomous coding assistant",
+  "description": "AI Coding Agent by JetBrains",
   "repository": "https://github.com/jetbrains-junie/junie",
   "authors": [
     "JetBrains"
