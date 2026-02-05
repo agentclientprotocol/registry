@@ -1,0 +1,19 @@
+{
+  "id": "junie-acp",
+  "name": "June CLI",
+  "version": "624.1.0",
+  "description": "JetBrains autonomous coding assistant",
+  "repository": "https://github.com/jetbrains-junie/junie",
+  "authors": [
+    "JetBrains"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "npx": {
+      "package": "@jetbrains/junie-cli@624.1.0",
+      "args": [
+        "--acp=true"
+      ]
+    }
+  }
+}
