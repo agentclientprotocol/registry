@@ -1,0 +1,36 @@
+{
+  "id": "grok-cli",
+  "name": "Grok-cli",
+  "description": "An open-source AI agent that brings the power of xAI's Grok models directly into your terminal and Zed editor.",
+  "author": "micro-tech",
+  "version": "0.1.2",
+  "repository": "https://github.com/micro-tech/grok-cli",
+  "license": "License",
+  "icon": "https://www.google.com/search?q=https://raw.githubusercontent.com/micro-tech/grok-cli/main/icon.svg",
+  "type": "custom",
+  "command": "grok",
+  "args": ["--acp"],
+  "env_vars": [
+    {
+      "name": "GROK_API_KEY",
+      "description": "Your xAI API key from console.x.ai",
+      "required": true
+    }
+  ],
+  "targets": {
+    "darwin-aarch64": {
+      "bin": "grok"
+    },
+    "linux-x86_64": {
+      "bin": "grok"
+    },
+    "windows-x86_64": {
+      "bin": "grok.exe"
+    }
+  },
+  "distribution": {
+    "npm": {
+      "package": "grok-cli-acp"
+    }
+  }
+}
