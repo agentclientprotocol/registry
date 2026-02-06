@@ -1,0 +1,19 @@
+{
+  "id": "iflow-cli",
+  "name": "Iflow Cli",
+  "version": "0.5.4",
+  "description": "A powerful AI assistant that runs directly in your terminal",
+  "repository": "https://github.com/iflow-ai/iflow-cli",
+  "authors": [
+    "iFlow AI Team"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "@iflow-ai/iflow-cli@0.5.4",
+      "args": [
+        "--experimental-acp"
+      ]
+    }
+  }
+}
