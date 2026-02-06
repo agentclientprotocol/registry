@@ -1,0 +1,31 @@
+{
+  "id": "kiro",
+  "name": "Kiro",
+  "version": "1.25.0",
+  "description": "The Kiro coding agent",
+  "repository": "https://github.com/kirodotdev/Kiro",
+  "authors": [
+    "amazon"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/1.25.0/Kiro%20CLI.dmg",
+        "cmd": "./kiro-cli acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/1.25.0/Kiro%20CLI.dmg",
+        "cmd": "./kiro-cli acp"
+      },
+      "linux-aarch64": {
+        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/1.25.0/kirocli-aarch64-linux.zip",
+        "cmd": "./kiro-cli acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/1.25.0/kirocli-x86_64-linux.zip",
+        "cmd": "./kiro-cli acp"
+      }
+    }
+  }
+}
