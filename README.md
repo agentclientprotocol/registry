@@ -20,6 +20,7 @@ A registry of agents and extensions implementing the [Agent Client Protocol, ACP
 | Factory Droid                                                               | Factory Droid - AI coding agent powered by Factory AI                             |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli)                   | Google's official CLI for Gemini                                                  |
 | [GitHub Copilot](https://github.com/github/copilot-language-server-release) | GitHub's AI pair programmer                                                       |
+| [Kiro](https://github.com/kirodotdev/Kiro)                                 | The Kiro coding agent                                                             |
 | [Mistral Vibe](https://github.com/mistralai/mistral-vibe)                   | Mistral's open-source coding assistant                                            |
 | [OpenCode](https://github.com/sst/opencode)                                 | The open source coding agent                                                      |
 | [Qwen Code](https://github.com/QwenLM/qwen-code)                            | Alibaba's Qwen coding assistant                                                   |
