@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build aggregated registry.json from individual agent and extension directories."""
+"""Build aggregated registry.json from individual agent directories."""
 
 import json
 import os
@@ -267,11 +267,9 @@ def validate_icon_monochrome(content: str) -> list[str]:
                 reported_colors.add(style_stroke.group(1).strip())
 
     # Check that currentColor is actually used (icons without fill default to black)
-    has_current_color = bool(re.search(r'currentColor', content, re.IGNORECASE))
+    has_current_color = bool(re.search(r"currentColor", content, re.IGNORECASE))
     if not has_current_color:
-        errors.append(
-            'Icon must use currentColor for fills/strokes to support theming'
-        )
+        errors.append("Icon must use currentColor for fills/strokes to support theming")
 
     # Deduplicate errors
     return list(dict.fromkeys(errors))
@@ -426,7 +424,9 @@ def validate_agent(
                         )
 
                     # Check that all OS families have at least one platform
-                    provided_os_families = {p.split("-")[0] for p in binary.keys() if p in VALID_PLATFORMS}
+                    provided_os_families = {
+                        p.split("-")[0] for p in binary.keys() if p in VALID_PLATFORMS
+                    }
                     missing_os_families = REQUIRED_OS_FAMILIES - provided_os_families
                     if missing_os_families:
                         errors.append(
@@ -465,7 +465,7 @@ def process_entry(
     base_url: str,
     seen_ids: dict,
 ) -> tuple[dict | None, list[str]]:
-    """Process a single agent or extension entry. Returns (entry, errors)."""
+    """Process a single registry entry. Returns (entry, errors)."""
     entry_path = entry_dir / entry_file
 
     # Parse JSON with error handling
@@ -475,7 +475,7 @@ def process_entry(
     except json.JSONDecodeError as e:
         return None, [f"{entry_dir.name}/{entry_file} is invalid JSON: {e}"]
 
-    # Validate entry (uses same schema for both agents and extensions)
+    # Validate entry
     validation_errors = validate_agent(entry, entry_dir.name, schema)
     if validation_errors:
         return None, [f"{entry_dir.name}/{entry_file} validation failed:"] + [
@@ -492,7 +492,7 @@ def process_entry(
                 f"  - {e}" for e in version_errors
             ]
 
-    # Check for duplicate IDs (across both agents and extensions)
+    # Check for duplicate IDs
     entry_id = entry["id"]
     if entry_id in seen_ids:
         return None, [
@@ -522,15 +522,14 @@ def process_entry(
 
 
 def build_registry():
-    """Build registry.json from agent and extension directories."""
+    """Build registry.json from agent directories."""
     registry_dir = Path(__file__).parent.parent.parent
     base_url = get_base_url()
     agents = []
-    extensions = []
     seen_ids = {}
     has_errors = False
 
-    # Load schema for validation (used for both agents and extensions)
+    # Load schema for validation
     schema = load_schema(registry_dir)
     if schema and not HAS_JSONSCHEMA:
         print("Warning: jsonschema not installed, skipping schema validation")
@@ -541,56 +540,32 @@ def build_registry():
             continue
 
         agent_json_path = entry_dir / "agent.json"
-        extension_json_path = entry_dir / "extension.json"
 
-        has_agent = agent_json_path.exists()
-        has_extension = extension_json_path.exists()
+        if not agent_json_path.exists():
+            print(f"Warning: {entry_dir.name}/ has no agent.json, skipping")
+            continue
 
-        if has_agent and has_extension:
-            print(f"Error: {entry_dir.name}/ has both agent.json and extension.json")
+        entry, errors = process_entry(
+            entry_dir, "agent.json", "agent", schema, base_url, seen_ids
+        )
+        if errors:
+            for error in errors:
+                print(f"Error: {error}")
             has_errors = True
             continue
-
-        if not has_agent and not has_extension:
-            print(
-                f"Warning: {entry_dir.name}/ has no agent.json or extension.json, skipping"
-            )
-            continue
-
-        if has_agent:
-            entry, errors = process_entry(
-                entry_dir, "agent.json", "agent", schema, base_url, seen_ids
-            )
-            if errors:
-                for error in errors:
-                    print(f"Error: {error}")
-                has_errors = True
-                continue
-            agents.append(entry)
-            print(f"Added agent: {entry['id']} v{entry['version']}")
-        else:
-            entry, errors = process_entry(
-                entry_dir, "extension.json", "extension", schema, base_url, seen_ids
-            )
-            if errors:
-                for error in errors:
-                    print(f"Error: {error}")
-                has_errors = True
-                continue
-            extensions.append(entry)
-            print(f"Added extension: {entry['id']} v{entry['version']}")
+        agents.append(entry)
+        print(f"Added agent: {entry['id']} v{entry['version']}")
 
     if has_errors:
         print("\nBuild failed due to validation errors")
         sys.exit(1)
 
-    if not agents and not extensions:
-        print("\nWarning: No agents or extensions found")
+    if not agents:
+        print("\nWarning: No agents found")
 
     registry = {
         "version": REGISTRY_VERSION,
         "agents": agents,
-        "extensions": extensions,
     }
 
     # Create dist directory
@@ -608,15 +583,14 @@ def build_registry():
     jetbrains_registry = {
         "version": REGISTRY_VERSION,
         "agents": [a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS],
-        "extensions": extensions,
     }
     jetbrains_output_path = dist_dir / "registry-for-jetbrains.json"
     with open(jetbrains_output_path, "w") as f:
         json.dump(jetbrains_registry, f, indent=2)
         f.write("\n")
 
-    # Copy icons to dist (for both agents and extensions)
-    for entry in agents + extensions:
+    # Copy icons to dist
+    for entry in agents:
         entry_id = entry["id"]
         icon_src = registry_dir / entry_id / "icon.svg"
         if icon_src.exists():
@@ -631,9 +605,11 @@ def build_registry():
             schema_dst.write_bytes(schema_src.read_bytes())
 
     jetbrains_agent_count = len(jetbrains_registry["agents"])
-    print(f"\nBuilt dist/ with {len(agents)} agents and {len(extensions)} extensions")
+    print(f"\nBuilt dist/ with {len(agents)} agents")
     print(f"  registry.json: {len(agents)} agents")
-    print(f"  registry-for-jetbrains.json: {jetbrains_agent_count} agents (excluded: {', '.join(JETBRAINS_EXCLUDE_IDS)})")
+    print(
+        f"  registry-for-jetbrains.json: {jetbrains_agent_count} agents (excluded: {', '.join(JETBRAINS_EXCLUDE_IDS)})"
+    )
 
 
 if __name__ == "__main__":
