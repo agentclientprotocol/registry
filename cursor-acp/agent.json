@@ -1,0 +1,33 @@
+{
+  "id": "cursor-acp",
+  "name": "Cursor CLI",
+  "version": "0.1.0",
+  "description": "An ACP-compatible coding agent adapter for Cursor CLI",
+  "repository": "https://github.com/oxiglade/cursor-acp",
+  "authors": ["David Chavez <david@dcvz.io>"],
+  "license": "proprietary",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/oxiglade/cursor-acp/releases/download/v0.1.0/cursor-acp-darwin-aarch64.tar.gz",
+        "cmd": "./cursor-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/oxiglade/cursor-acp/releases/download/v0.1.0/cursor-acp-darwin-x86_64.tar.gz",
+        "cmd": "./cursor-acp"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/oxiglade/cursor-acp/releases/download/v0.1.0/cursor-acp-linux-aarch64.tar.gz",
+        "cmd": "./cursor-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/oxiglade/cursor-acp/releases/download/v0.1.0/cursor-acp-linux-x86_64.tar.gz",
+        "cmd": "./cursor-acp"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/oxiglade/cursor-acp/releases/download/v0.1.0/cursor-acp-windows-x86_64.zip",
+        "cmd": "cursor-acp.exe"
+      }
+    }
+  }
+}
