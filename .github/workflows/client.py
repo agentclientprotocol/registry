@@ -183,9 +183,19 @@ def run_auth_check(
         response = read_jsonrpc(proc, timeout)
 
         if response is None:
+            # Capture stderr for debugging
+            stderr_output = ""
+            try:
+                proc.terminate()
+                _, stderr_output = proc.communicate(timeout=2)
+            except Exception:
+                pass
+            error_msg = f"Timeout after {timeout}s waiting for initialize response"
+            if stderr_output:
+                error_msg += f"\nStderr: {stderr_output[:500]}"
             return AuthCheckResult(
                 success=False,
-                error=f"Timeout after {timeout}s waiting for initialize response",
+                error=error_msg,
             )
 
         if "error" in response:
