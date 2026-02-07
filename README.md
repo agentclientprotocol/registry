@@ -21,6 +21,7 @@ A registry of agents and extensions implementing the [Agent Client Protocol, ACP
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli)                   | Google's official CLI for Gemini                                                  |
 | [GitHub Copilot](https://github.com/github/copilot-language-server-release) | GitHub's AI pair programmer                                                       |
 | [Mistral Vibe](https://github.com/mistralai/mistral-vibe)                   | Mistral's open-source coding assistant                                            |
+| [Nova](https://www.npmjs.com/package/@compass-ai/nova)                      | Compass AI's fully-fledged software engineer                |
 | [OpenCode](https://github.com/sst/opencode)                                 | The open source coding agent                                                      |
 | [Qwen Code](https://github.com/QwenLM/qwen-code)                            | Alibaba's Qwen coding assistant                                                   |
 
