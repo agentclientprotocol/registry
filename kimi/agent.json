@@ -4,39 +4,29 @@
   "version": "1.9.0",
   "description": "Moonshot AI's coding assistant",
   "repository": "https://github.com/MoonshotAI/kimi-cli",
-  "authors": [
-    "Moonshot AI"
-  ],
+  "authors": ["Moonshot AI"],
   "license": "MIT",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9/kimi-1.9-aarch64-apple-darwin.tar.gz",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9.0/kimi-1.9.0-aarch64-apple-darwin.tar.gz",
         "cmd": "./kimi",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9/kimi-1.9-aarch64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9.0/kimi-1.9.0-aarch64-unknown-linux-gnu.tar.gz",
         "cmd": "./kimi",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9/kimi-1.9-x86_64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9.0/kimi-1.9.0-x86_64-unknown-linux-gnu.tar.gz",
         "cmd": "./kimi",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9/kimi-1.9-x86_64-pc-windows-msvc.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.9.0/kimi-1.9.0-x86_64-pc-windows-msvc.zip",
         "cmd": "./kimi.exe",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       }
     }
   }
