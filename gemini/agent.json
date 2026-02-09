@@ -1,7 +1,7 @@
 {
   "id": "gemini",
   "name": "Gemini CLI",
-  "version": "0.27.2",
+  "version": "0.27.3",
   "description": "Google's official CLI for Gemini",
   "repository": "https://github.com/google-gemini/gemini-cli",
   "authors": [
@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "distribution": {
     "npx": {
-      "package": "@google/gemini-cli@0.27.2",
+      "package": "@google/gemini-cli@0.27.3",
       "args": [
         "--experimental-acp"
       ]
