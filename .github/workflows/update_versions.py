@@ -135,6 +135,9 @@ def get_github_latest_release(repo_url: str) -> tuple[str | None, list[str]]:
         tag = data.get("tag_name", "")
         # Strip 'v' prefix if present
         version = tag.lstrip("v") if tag else None
+        # Normalize to semver (x.y -> x.y.0)
+        if version and re.match(r"^\d+\.\d+$", version):
+            version = f"{version}.0"
         assets = [a["name"] for a in data.get("assets", [])]
         return version, assets
 
@@ -320,6 +323,10 @@ def apply_binary_update(agent_path: Path, agent_data: dict, new_version: str) ->
     # Update version field
     agent_data["version"] = new_version
 
+    # For URLs, also handle x.y.0 <-> x.y conversions
+    old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
+    new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
+
     # Update all binary archive URLs
     binary_dist = agent_data["distribution"]["binary"]
     for platform, target in binary_dist.items():
@@ -331,6 +338,11 @@ def apply_binary_update(agent_path: Path, agent_data: dict, new_version: str) ->
             new_url = new_url.replace(f"-{old_version}-", f"-{new_version}-")
             new_url = new_url.replace(f"_{old_version}.", f"_{new_version}.")
             new_url = new_url.replace(f"_{old_version}_", f"_{new_version}_")
+            # Also handle short versions (x.y) in URLs when semver is x.y.0
+            if old_short != old_version:
+                new_url = new_url.replace(f"/{old_short}/", f"/{new_short}/")
+                new_url = new_url.replace(f"-{old_short}.", f"-{new_short}.")
+                new_url = new_url.replace(f"-{old_short}-", f"-{new_short}-")
             target["archive"] = new_url
 
     # Write back
