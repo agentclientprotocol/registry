@@ -1,0 +1,28 @@
+{
+  "id": "xsf-acpkit",
+  "name": "xsf-acpkit",
+  "version": "0.1.0",
+  "description": "ACP agent server that integrates ACP Kit workflows (threads/logs) with Zed (auth via Codex CLI OAuth).",
+  "repository": "https://github.com/haegyung/xsfire",
+  "authors": [
+    "haegyung"
+  ],
+  "license": "proprietary",
+  "icon": "icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/haegyung/xsfire/releases/download/xsf-acpkit-v0.1.0/xsf-acpkit-0.1.0-aarch64-apple-darwin.tar.gz",
+        "cmd": "./xsf-acpkit"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/haegyung/xsfire/releases/download/xsf-acpkit-v0.1.0/xsf-acpkit-0.1.0-x86_64-unknown-linux-gnu.tar.gz",
+        "cmd": "./xsf-acpkit"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/haegyung/xsfire/releases/download/xsf-acpkit-v0.1.0/xsf-acpkit-0.1.0-x86_64-pc-windows-msvc.zip",
+        "cmd": "xsf-acpkit.exe"
+      }
+    }
+  }
+}
