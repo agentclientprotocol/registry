@@ -56,7 +56,9 @@
 
 ### Binary Distribution
 
-For standalone executables. At least one platform is required; providing builds for all operating systems (macOS, Linux, and Windows) is recommended but not mandatory:
+For standalone executables. At least one platform is required; providing builds for all operating systems (macOS, Linux, and Windows) is recommended but not mandatory.
+
+> **Supported archive formats:** `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are not supported.
 
 ```json
 {
@@ -189,6 +191,10 @@ Entries are validated against the [JSON Schema](agent.schema.json).
 - `darwin-aarch64`, `darwin-x86_64`
 - `linux-aarch64`, `linux-x86_64`
 - `windows-aarch64`, `windows-x86_64`
+
+**Archive formats** (for binary):
+- Supported: `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries
+- Rejected: `.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage` (installer formats are not supported)
 
 **Cross-platform coverage** (for binary):
 - Providing builds for all operating systems (darwin, linux, windows) is recommended

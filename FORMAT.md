@@ -51,6 +51,8 @@ Each entry (agent or extension) has the same structure:
 | `npx`    | npm packages                  | `npx <package> [args]` |
 | `uvx`    | PyPI packages via uv          | `uvx <package> [args]` |
 
+**Supported archive formats for binary distribution:** `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are not supported.
+
 ## Icons
 
 Icons should be SVG format with a **preferred size of 16x16**.

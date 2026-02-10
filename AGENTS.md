@@ -42,6 +42,7 @@ Each directory contains either `agent.json` (for agents) or `extension.json` (fo
 - `version`: semantic versioning (e.g., `1.0.0`)
 - `distribution`: at least one of `binary`, `npx`, `uvx`
 - `binary` distribution: builds for all operating systems (darwin, linux, windows) are recommended; missing OS families produce a warning
+- `binary` archives must use supported formats (`.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries); installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are rejected
 - `icon.svg`: must be SVG format, 16x16, monochrome using `currentColor` (enables theming)
 - **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages)
 
@@ -88,7 +89,7 @@ Run build to validate: `uv run --with jsonschema .github/workflows/build_registr
 
 ## Distribution Types
 
-- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). Supporting all operating systems (darwin, linux, windows) is recommended.
+- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). Supported archive formats: `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Supporting all operating systems (darwin, linux, windows) is recommended.
 - `npx`: npm packages (cross-platform by default)
 - `uvx`: PyPI packages (cross-platform by default)
 

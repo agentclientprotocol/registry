@@ -40,6 +40,7 @@ VALID_PLATFORMS = {
     "windows-x86_64",
 }
 REQUIRED_OS_FAMILIES = {"darwin", "linux", "windows"}
+REJECTED_ARCHIVE_EXTENSIONS = (".dmg", ".pkg", ".deb", ".rpm", ".msi", ".appimage")
 
 # Can be overridden via environment variable
 DEFAULT_BASE_URL = "https://cdn.agentclientprotocol.com/registry/v1/latest"
@@ -440,6 +441,15 @@ def validate_agent(
                                 errors.append(
                                     f"Platform {platform} missing 'archive' field"
                                 )
+                            else:
+                                archive_url = target["archive"].lower()
+                                for ext in REJECTED_ARCHIVE_EXTENSIONS:
+                                    if archive_url.endswith(ext):
+                                        errors.append(
+                                            f"Platform {platform} archive uses unsupported format '{ext}'. "
+                                            f"Supported formats: .zip, .tar.gz, .tgz, .tar.bz2, .tbz2, or raw binaries"
+                                        )
+                                        break
                             if "cmd" not in target:
                                 errors.append(
                                     f"Platform {platform} missing 'cmd' field"
