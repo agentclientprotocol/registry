@@ -56,7 +56,9 @@
 
 ### Binary Distribution
 
-For standalone executables. **Binary distributions must support all operating systems** (macOS, Linux, and Windows):
+For standalone executables. At least one platform is required; providing builds for all operating systems (macOS, Linux, and Windows) is recommended but not mandatory.
+
+> **Supported archive formats:** `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are not supported.
 
 ```json
 {
@@ -94,7 +96,7 @@ For standalone executables. **Binary distributions must support all operating sy
 
 Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-x86_64`, `windows-aarch64`, `windows-x86_64`
 
-> **Note**: At minimum, you must provide builds for **darwin** (macOS), **linux**, and **windows**. Providing only one OS (e.g., macOS-only) will fail validation.
+> **Note**: Providing builds for all operating systems is recommended. Missing OS families will produce a warning during validation but will not block the build.
 
 ### npm Package (npx)
 
@@ -190,9 +192,13 @@ Entries are validated against the [JSON Schema](agent.schema.json).
 - `linux-aarch64`, `linux-x86_64`
 - `windows-aarch64`, `windows-x86_64`
 
-**Cross-platform requirement** (for binary):
-- Binary distributions must include builds for **all operating systems**: darwin (macOS), linux, and windows
-- At least one architecture per OS is required (e.g., `darwin-aarch64`, `linux-x86_64`, `windows-x86_64`)
+**Archive formats** (for binary):
+- Supported: `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries
+- Rejected: `.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage` (installer formats are not supported)
+
+**Cross-platform coverage** (for binary):
+- Providing builds for all operating systems (darwin, linux, windows) is recommended
+- Missing OS families will produce a warning but will not fail validation
 
 **Version matching:**
 - Distribution versions must match the entry's `version` field
