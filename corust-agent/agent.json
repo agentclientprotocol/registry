@@ -1,0 +1,25 @@
+{
+  "id": "corust-agent",
+  "name": "Corust Agent",
+  "version": "0.3.1",
+  "description": "Co-building with a seasoned Rust partner.",
+  "repository": "https://github.com/Corust-ai/corust-agent-release",
+  "authors": ["Corust AI <support@corust.ai>"],
+  "license": "GPL-3.0-or-later",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.3.1/agent-darwin-arm64.tar.gz",
+        "cmd": "./corust-agent-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.3.1/agent-linux-x64.tar.gz",
+        "cmd": "./corust-agent-acp"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.3.1/agent-windows-x64.zip",
+        "cmd": "./corust-agent-acp.exe"
+      }
+    }
+  }
+}

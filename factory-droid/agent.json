@@ -1,56 +1,17 @@
 {
   "id": "factory-droid",
   "name": "Factory Droid",
-  "version": "0.56.3",
+  "version": "0.57.10",
   "description": "Factory Droid - AI coding agent powered by Factory AI",
   "authors": ["Factory AI"],
   "license": "proprietary",
   "distribution": {
-    "binary": {
-      "darwin-aarch64": {
-        "archive": "https://downloads.factory.ai/factory-cli/releases/0.56.3/droid-darwin-aarch64.tar.gz",
-        "cmd": "./droid",
-        "args": ["exec", "--output-format", "acp"],
-        "env": {
-          "DROID_DISABLE_AUTO_UPDATE": "true",
-          "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
-        }
-      },
-      "darwin-x86_64": {
-        "archive": "https://downloads.factory.ai/factory-cli/releases/0.56.3/droid-darwin-x86_64.tar.gz",
-        "cmd": "./droid",
-        "args": ["exec", "--output-format", "acp"],
-        "env": {
-          "DROID_DISABLE_AUTO_UPDATE": "true",
-          "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
-        }
-      },
-      "linux-x86_64": {
-        "archive": "https://downloads.factory.ai/factory-cli/releases/0.56.3/droid-linux-x86_64.tar.gz",
-        "cmd": "./droid",
-        "args": ["exec", "--output-format", "acp"],
-        "env": {
-          "DROID_DISABLE_AUTO_UPDATE": "true",
-          "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
-        }
-      },
-      "linux-aarch64": {
-        "archive": "https://downloads.factory.ai/factory-cli/releases/0.56.3/droid-linux-aarch64.tar.gz",
-        "cmd": "./droid",
-        "args": ["exec", "--output-format", "acp"],
-        "env": {
-          "DROID_DISABLE_AUTO_UPDATE": "true",
-          "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
-        }
-      },
-      "windows-x86_64": {
-        "archive": "https://downloads.factory.ai/factory-cli/releases/0.56.3/droid-windows-x86_64.zip",
-        "cmd": "./droid.exe",
-        "args": ["exec", "--output-format", "acp"],
-        "env": {
-          "DROID_DISABLE_AUTO_UPDATE": "true",
-          "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
-        }
+    "npx": {
+      "package": "droid@0.57.10",
+      "args": ["exec", "--output-format", "acp"],
+      "env": {
+        "DROID_DISABLE_AUTO_UPDATE": "true",
+        "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
       }
     }
   }
