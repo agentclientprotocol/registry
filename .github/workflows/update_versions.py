@@ -334,6 +334,7 @@ def apply_binary_update(agent_path: Path, agent_data: dict, new_version: str) ->
             old_url = target["archive"]
             # Replace version in URL path (handles both vX.Y.Z and X.Y.Z patterns)
             new_url = old_url.replace(f"/v{old_version}/", f"/v{new_version}/")
+            new_url = new_url.replace(f"/{old_version}/", f"/{new_version}/")
             new_url = new_url.replace(f"-{old_version}.", f"-{new_version}.")
             new_url = new_url.replace(f"-{old_version}-", f"-{new_version}-")
             new_url = new_url.replace(f"_{old_version}.", f"_{new_version}.")
