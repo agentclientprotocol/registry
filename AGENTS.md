@@ -41,7 +41,7 @@ Each directory contains either `agent.json` (for agents) or `extension.json` (fo
 - `id`: lowercase, hyphens only, must match directory name
 - `version`: semantic versioning (e.g., `1.0.0`)
 - `distribution`: at least one of `binary`, `npx`, `uvx`
-- `binary` distribution: must include builds for all operating systems (darwin, linux, windows)
+- `binary` distribution: builds for all operating systems (darwin, linux, windows) are recommended; missing OS families produce a warning
 - `icon.svg`: must be SVG format, 16x16, monochrome using `currentColor` (enables theming)
 - **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages)
 
@@ -88,7 +88,7 @@ Run build to validate: `uv run --with jsonschema .github/workflows/build_registr
 
 ## Distribution Types
 
-- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). **Must support all operating systems** (darwin, linux, windows).
+- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). Supporting all operating systems (darwin, linux, windows) is recommended.
 - `npx`: npm packages (cross-platform by default)
 - `uvx`: PyPI packages (cross-platform by default)
 
