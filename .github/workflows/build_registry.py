@@ -425,7 +425,9 @@ def validate_agent(
                         )
 
                     # Warn if not all OS families have at least one platform
-                    provided_os_families = {p.split("-")[0] for p in binary.keys() if p in VALID_PLATFORMS}
+                    provided_os_families = {
+                        p.split("-")[0] for p in binary.keys() if p in VALID_PLATFORMS
+                    }
                     missing_os_families = REQUIRED_OS_FAMILIES - provided_os_families
                     if missing_os_families:
                         print(
@@ -571,10 +573,7 @@ def build_registry():
     if not agents:
         print("\nWarning: No agents found")
 
-    registry = {
-        "version": REGISTRY_VERSION,
-        "agents": agents,
-    }
+    registry = {"version": REGISTRY_VERSION, "agents": agents, "extensions": []}
 
     # Create dist directory
     dist_dir = registry_dir / "dist"
