@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "lts/*"
 
       - name: Validate and build
         run: uv run --with jsonschema .github/workflows/build_registry.py
