@@ -3,7 +3,7 @@
   "name": "OpenCode",
   "version": "1.1.60",
   "description": "The open source coding agent",
-  "repository": "https://github.com/sst/opencode",
+  "repository": "https://github.com/anomalyco/opencode",
   "authors": [
     "Anomaly"
   ],
@@ -12,35 +12,35 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/sst/opencode/releases/download/v1.1.60/opencode-darwin-arm64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v1.1.60/opencode-darwin-arm64.zip",
         "cmd": "./opencode",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/sst/opencode/releases/download/v1.1.60/opencode-darwin-x64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v1.1.60/opencode-darwin-x64.zip",
         "cmd": "./opencode",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/sst/opencode/releases/download/v1.1.60/opencode-linux-arm64.tar.gz",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v1.1.60/opencode-linux-arm64.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/sst/opencode/releases/download/v1.1.60/opencode-linux-x64.tar.gz",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v1.1.60/opencode-linux-x64.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/sst/opencode/releases/download/v1.1.60/opencode-windows-x64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v1.1.60/opencode-windows-x64.zip",
         "cmd": "./opencode.exe",
         "args": [
           "acp"
