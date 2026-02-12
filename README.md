@@ -13,7 +13,7 @@ A registry of agents implementing the [Agent Client Protocol, ACP](https://githu
 ## Included Agents
 
 | Agent                                                                       | Description                                                                       |
-|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | [Auggie CLI](https://github.com/augmentcode/auggie-zed-extension)           | Augment Code's powerful software agent, backed by industry-leading context engine |
 | [Claude Code](https://github.com/zed-industries/claude-code-acp)            | ACP adapter for Claude Code                                                       |
 | [Codex CLI](https://github.com/zed-industries/codex-acp)                    | ACP adapter for OpenAI's coding assistant                                         |
@@ -21,7 +21,7 @@ A registry of agents implementing the [Agent Client Protocol, ACP](https://githu
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli)                   | Google's official CLI for Gemini                                                  |
 | [GitHub Copilot](https://github.com/github/copilot-language-server-release) | GitHub's AI pair programmer                                                       |
 | [Mistral Vibe](https://github.com/mistralai/mistral-vibe)                   | Mistral's open-source coding assistant                                            |
-| [OpenCode](https://github.com/sst/opencode)                                 | The open source coding agent                                                      |
+| [OpenCode](https://github.com/anomalyco/opencode)                           | The open source coding agent                                                      |
 | [Qwen Code](https://github.com/QwenLM/qwen-code)                            | Alibaba's Qwen coding assistant                                                   |
 
 ## Usage
