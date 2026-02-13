@@ -1,7 +1,7 @@
 {
   "id": "pi-acp",
   "name": "pi-acp",
-  "version": "v0.0.14",
+  "version": "0.0.14",
   "description": "ACP adapter for pi coding agent",
   "repository": "https://github.com/svkozak/pi-acp",
   "authors": [
