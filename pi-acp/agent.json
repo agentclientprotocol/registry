@@ -1,0 +1,31 @@
+{
+  "id": "pi-acp",
+  "name": "pi-acp",
+  "version": "v0.0.14",
+  "description": "ACP adapter for pi coding agent",
+  "repository": "https://github.com/svkozak/pi-acp",
+  "authors": [
+    "Sergii Kozak"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/svkozak/pi-acp/releases/download/v0.0.14/pi-acp-darwin-arm64.tar.gz",
+        "cmd": "./pi-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/svkozak/pi-acp/releases/download/v0.0.14/pi-acp-darwin-x64.tar.gz",
+        "cmd": "./pi-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/svkozak/pi-acp/releases/download/v0.0.14/pi-acp-linux-x64.tar.gz",
+        "cmd": "./pi-acp"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/svkozak/pi-acp/releases/download/v0.0.14/pi-acp-windows-x64.zip",
+        "cmd": "./pi-acp.exe"
+      }
+    }
+  }
+}
