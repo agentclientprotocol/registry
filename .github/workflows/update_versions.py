@@ -206,14 +206,14 @@ def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
 
                 agent_id = agent_data.get("id", entry_dir.name)
                 if agent_id in quarantine:
-                    print(f"  ⊘ Quarantined {agent_id}: {quarantine[agent_id]}")
+                    print(f"  ⊘ Quarantined {agent_id}: {quarantine[agent_id]}", file=sys.stderr)
                     continue
 
                 agents.append((agent_json, agent_data))
 
     if quarantine:
-        print(f"  ({len(quarantine)} agent(s) quarantined)")
-        print()
+        print(f"  ({len(quarantine)} agent(s) quarantined)", file=sys.stderr)
+        print(file=sys.stderr)
 
     return agents
 
