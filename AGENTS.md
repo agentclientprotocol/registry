@@ -14,25 +14,24 @@ python .github/workflows/build_registry.py
 
 ## Architecture
 
-This is a registry of ACP (Agent Client Protocol) agents and extensions. The structure is:
+This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 
 ```
 <id>/
 ├── agent.json      # Agent metadata and distribution info
-├── extension.json  # OR extension metadata (same schema as agent.json)
 └── icon.svg        # Icon: 16x16 SVG, monochrome with currentColor (optional)
 ```
 
-Each directory contains either `agent.json` (for agents) or `extension.json` (for extensions), but not both. Extensions use the same schema as agents (`agent.schema.json`).
-
 **Build process** (`.github/workflows/build_registry.py`):
-1. Scans directories for `agent.json` or `extension.json` files
+
+1. Scans directories for `agent.json` files
 2. Validates against `agent.schema.json` (JSON Schema)
 3. Validates icons (16x16 SVG, monochrome with `currentColor`)
-4. Aggregates into `dist/registry.json` with separate `agents` and `extensions` arrays
+4. Aggregates into `dist/registry.json`
 5. Copies icons to `dist/<id>.svg`
 
 **CI/CD** (`.github/workflows/build-registry.yml`):
+
 - PRs: Runs validation only
 - Push to main: Validates, then publishes versioned + `latest` GitHub releases
 
@@ -41,7 +40,8 @@ Each directory contains either `agent.json` (for agents) or `extension.json` (fo
 - `id`: lowercase, hyphens only, must match directory name
 - `version`: semantic versioning (e.g., `1.0.0`)
 - `distribution`: at least one of `binary`, `npx`, `uvx`
-- `binary` distribution: must include builds for all operating systems (darwin, linux, windows)
+- `binary` distribution: builds for all operating systems (darwin, linux, windows) are recommended; missing OS families produce a warning
+- `binary` archives must use supported formats (`.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries); installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are rejected
 - `icon.svg`: must be SVG format, 16x16, monochrome using `currentColor` (enables theming)
 - **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages)
 
@@ -52,6 +52,7 @@ Set `SKIP_URL_VALIDATION=1` to bypass URL checks during local development.
 ### Automated Updates
 
 Agent versions are automatically updated via `.github/workflows/update-versions.yml`:
+
 - **Schedule:** Runs hourly (cron: `0 * * * *`)
 - **Scope:** Checks all agents in root and `_not_yet_unsupported/`
 - **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases)
@@ -77,6 +78,7 @@ To update agents manually:
 2. **For GitHub binaries** (`binary` distribution): Check latest release at `https://api.github.com/repos/<owner>/<repo>/releases/latest`
 
 Update `agent.json`:
+
 - Update the `version` field
 - Update version in all distribution URLs (use replace-all for consistency)
 - For npm: update `package` field (e.g., `@google/gemini-cli@0.22.5`)
@@ -88,13 +90,14 @@ Run build to validate: `uv run --with jsonschema .github/workflows/build_registr
 
 ## Distribution Types
 
-- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). **Must support all operating systems** (darwin, linux, windows).
+- `binary`: Platform-specific archives (`darwin-aarch64`, `linux-x86_64`, etc.). Supported archive formats: `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Supporting all operating systems (darwin, linux, windows) is recommended.
 - `npx`: npm packages (cross-platform by default)
 - `uvx`: PyPI packages (cross-platform by default)
 
 ## Icon Requirements
 
 Icons must be:
+
 - **SVG format** (only `.svg` files accepted)
 - **16x16 dimensions** (via width/height attributes or viewBox)
 - **Monochrome using `currentColor`** - all fills and strokes must use `currentColor` or `none`
@@ -102,6 +105,7 @@ Icons must be:
 Using `currentColor` enables icons to adapt to different themes (light/dark mode) automatically.
 
 **Valid example:**
+
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
   <path fill="currentColor" d="M..."/>
@@ -109,6 +113,7 @@ Using `currentColor` enables icons to adapt to different themes (light/dark mode
 ```
 
 **Invalid patterns:**
+
 - Hardcoded colors: `fill="#FF5500"`, `fill="red"`, `stroke="rgb(0,0,0)"`
 - Missing currentColor: `fill` or `stroke` without `currentColor`
 
@@ -117,6 +122,7 @@ Using `currentColor` enables icons to adapt to different themes (light/dark mode
 Agents must support ACP authentication. The CI verifies auth via `.github/workflows/verify_agents.py --auth-check`.
 
 **Requirements:**
+
 - Return `authMethods` array in `initialize` response
 - At least one method must have type `"agent"` or `"terminal"`
 

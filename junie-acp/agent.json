@@ -1,7 +1,7 @@
 {
   "id": "junie-acp",
   "name": "Junie",
-  "version": "704.1.0",
+  "version": "744.2.0",
   "description": "AI Coding Agent by JetBrains",
   "repository": "https://github.com/jetbrains-junie/junie",
   "authors": [
@@ -10,7 +10,7 @@
   "license": "proprietary",
   "distribution": {
     "npx": {
-      "package": "@jetbrains/junie-cli@704.1.0",
+      "package": "@jetbrains/junie-cli@744.2.0",
       "args": [
         "--acp=true"
       ]

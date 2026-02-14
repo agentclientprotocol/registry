@@ -1,7 +1,7 @@
 {
   "id": "goose",
   "name": "Goose",
-  "version": "1.23.2",
+  "version": "1.24.0",
   "description": "Block's open-source AI developer agent",
   "repository": "https://github.com/block/goose",
   "authors": [
@@ -11,35 +11,35 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.23.2/goose-aarch64-apple-darwin.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.24.0/goose-aarch64-apple-darwin.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.23.2/goose-x86_64-apple-darwin.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.24.0/goose-x86_64-apple-darwin.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.23.2/goose-aarch64-unknown-linux-gnu.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.24.0/goose-aarch64-unknown-linux-gnu.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.23.2/goose-x86_64-unknown-linux-gnu.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.24.0/goose-x86_64-unknown-linux-gnu.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.23.2/goose-x86_64-pc-windows-gnu.zip",
+        "archive": "https://github.com/block/goose/releases/download/v1.24.0/goose-x86_64-pc-windows-gnu.zip",
         "cmd": "./goose.exe",
         "args": [
           "acp"
