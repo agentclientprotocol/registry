@@ -1,0 +1,14 @@
+{
+  "id": "claude-acp",
+  "name": "Claude Agent",
+  "version": "0.17.0",
+  "description": "ACP wrapper for Anthropic's Claude",
+  "repository": "https://github.com/zed-industries/claude-agent-acp",
+  "authors": ["Anthropic"],
+  "license": "proprietary",
+  "distribution": {
+    "npx": {
+      "package": "@zed-industries/claude-agent-acp@0.17.0"
+    }
+  }
+}
