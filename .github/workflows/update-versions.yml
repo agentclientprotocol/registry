@@ -162,7 +162,7 @@ jobs:
       - name: Validate registry build
         run: |
           pip install jsonschema
-          SKIP_URL_VALIDATION=1 python .github/workflows/build_registry.py
+          python .github/workflows/build_registry.py
 
       - name: Verify agent auth support
         timeout-minutes: 15

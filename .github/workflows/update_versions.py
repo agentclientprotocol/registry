@@ -324,7 +324,8 @@ def apply_update(update: VersionUpdate) -> bool:
 
         for platform, target in distribution["binary"].items():
             if "archive" in target:
-                url = target["archive"]
+                original_url = target["archive"]
+                url = original_url
                 # Replace version in URL path (handles both vX.Y.Z and X.Y.Z patterns)
                 url = url.replace(f"/v{old_version}/", f"/v{new_version}/")
                 url = url.replace(f"/{old_version}/", f"/{new_version}/")
@@ -333,7 +334,10 @@ def apply_update(update: VersionUpdate) -> bool:
                 url = url.replace(f"_{old_version}.", f"_{new_version}.")
                 url = url.replace(f"_{old_version}_", f"_{new_version}_")
                 # Also handle short versions (x.y) in URLs when semver is x.y.0
-                if old_short != old_version:
+                # Only apply if the full version wasn't found in the URL, to avoid
+                # old_short (e.g. "2.2") matching inside already-replaced new_version
+                # (e.g. "-2.2." in "-2.2.1.zip" -> "-2.2.1.1.zip")
+                if old_short != old_version and url == original_url:
                     url = url.replace(f"/{old_short}/", f"/{new_short}/")
                     url = url.replace(f"-{old_short}.", f"-{new_short}.")
                     url = url.replace(f"-{old_short}-", f"-{new_short}-")
