@@ -28,7 +28,7 @@ jobs:
       updates_json: ${{ steps.check.outputs.updates_json }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -134,7 +134,7 @@ jobs:
     steps:
       - *generate-token
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ steps.generate-token.outputs.token }}
 
@@ -162,7 +162,7 @@ jobs:
       - name: Validate registry build
         run: |
           pip install jsonschema
-          SKIP_URL_VALIDATION=1 python .github/workflows/build_registry.py
+          python .github/workflows/build_registry.py
 
       - name: Verify agent auth support
         timeout-minutes: 15

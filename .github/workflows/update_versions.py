@@ -33,7 +33,7 @@ class VersionUpdate(NamedTuple):
     agent_path: Path
     current_version: str
     latest_version: str
-    distribution_type: str  # 'npx', 'uvx', or 'binary'
+    distribution_type: str  # 'npx', 'uvx', 'binary', or combined like 'binary+npx'
     source_url: str  # URL where version was fetched from
 
 
@@ -159,9 +159,27 @@ def extract_pypi_package_name(package_spec: str) -> str:
     return re.split(r"[<>=!@]", package_spec)[0]
 
 
+def load_quarantine(registry_dir: Path) -> dict[str, str]:
+    """Load quarantine list from registry directory.
+
+    Returns:
+        Dict mapping agent_id to quarantine reason.
+    """
+    quarantine_path = registry_dir / "quarantine.json"
+    if not quarantine_path.exists():
+        return {}
+    try:
+        with open(quarantine_path) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Warning: Could not read {quarantine_path}: {e}", file=sys.stderr)
+        return {}
+
+
 def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
-    """Find all agent.json files in the registry."""
+    """Find all agent.json files in the registry, excluding quarantined ones."""
     agents = []
+    quarantine = load_quarantine(registry_dir)
 
     for scan_dir in AGENT_DIRS:
         base_path = registry_dir / scan_dir if scan_dir != "." else registry_dir
@@ -182,9 +200,20 @@ def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
                 try:
                     with open(agent_json) as f:
                         agent_data = json.load(f)
-                    agents.append((agent_json, agent_data))
                 except (json.JSONDecodeError, OSError) as e:
                     print(f"Warning: Could not read {agent_json}: {e}", file=sys.stderr)
+                    continue
+
+                agent_id = agent_data.get("id", entry_dir.name)
+                if agent_id in quarantine:
+                    print(f"  ⊘ Quarantined {agent_id}: {quarantine[agent_id]}", file=sys.stderr)
+                    continue
+
+                agents.append((agent_json, agent_data))
+
+    if quarantine:
+        print(f"  ({len(quarantine)} agent(s) quarantined)", file=sys.stderr)
+        print(file=sys.stderr)
 
     return agents
 
@@ -192,173 +221,75 @@ def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
 def check_agent_version(
     agent_path: Path, agent_data: dict
 ) -> tuple[VersionUpdate | None, UpdateError | None]:
-    """Check if an agent has a newer version available."""
+    """Check if an agent has a newer version available.
+
+    Checks ALL distribution sources and fails if they report different versions.
+    """
     agent_id = agent_data.get("id", "unknown")
     current_version = agent_data.get("version", "0.0.0")
     distribution = agent_data.get("distribution", {})
     repository = agent_data.get("repository", "")
 
-    # Determine distribution type and check for updates
+    # Collect latest versions from all distribution sources
+    source_versions: dict[str, tuple[str, str]] = {}  # type -> (version, source_url)
+
     if "npx" in distribution:
         package_spec = distribution["npx"].get("package", "")
         package_name = extract_npm_package_name(package_spec)
-
         if not package_name:
             return None, UpdateError(agent_id, "Could not extract npm package name")
-
-        latest_version = get_npm_latest_version(package_name)
-        if not latest_version:
+        latest = get_npm_latest_version(package_name)
+        if not latest:
             return None, UpdateError(agent_id, f"Could not fetch npm version for {package_name}")
+        source_versions["npx"] = (latest, f"https://registry.npmjs.org/{package_name}")
 
-        if latest_version != current_version:
-            return VersionUpdate(
-                agent_id=agent_id,
-                agent_path=agent_path,
-                current_version=current_version,
-                latest_version=latest_version,
-                distribution_type="npx",
-                source_url=f"https://registry.npmjs.org/{package_name}",
-            ), None
-
-    elif "uvx" in distribution:
+    if "uvx" in distribution:
         package_spec = distribution["uvx"].get("package", "")
         package_name = extract_pypi_package_name(package_spec)
-
         if not package_name:
             return None, UpdateError(agent_id, "Could not extract PyPI package name")
-
-        latest_version = get_pypi_latest_version(package_name)
-        if not latest_version:
+        latest = get_pypi_latest_version(package_name)
+        if not latest:
             return None, UpdateError(agent_id, f"Could not fetch PyPI version for {package_name}")
+        source_versions["uvx"] = (latest, f"https://pypi.org/pypi/{package_name}/json")
 
-        if latest_version != current_version:
-            return VersionUpdate(
-                agent_id=agent_id,
-                agent_path=agent_path,
-                current_version=current_version,
-                latest_version=latest_version,
-                distribution_type="uvx",
-                source_url=f"https://pypi.org/pypi/{package_name}/json",
-            ), None
+    if "binary" in distribution:
+        if repository:
+            latest, _assets = get_github_latest_release(repository)
+            if not latest:
+                return None, UpdateError(agent_id, f"Could not fetch GitHub release for {repository}")
+            source_versions["binary"] = (latest, repository)
 
-    elif "binary" in distribution:
-        if not repository:
-            # No repository URL means we can't check for updates automatically
-            return None, None
-
-        latest_version, assets = get_github_latest_release(repository)
-        if not latest_version:
-            return None, UpdateError(agent_id, f"Could not fetch GitHub release for {repository}")
-
-        if latest_version != current_version:
-            return VersionUpdate(
-                agent_id=agent_id,
-                agent_path=agent_path,
-                current_version=current_version,
-                latest_version=latest_version,
-                distribution_type="binary",
-                source_url=repository,
-            ), None
-
-    else:
+    if not source_versions:
+        if distribution:
+            return None, None  # Has distributions but none are checkable (e.g. binary without repo)
         return None, UpdateError(agent_id, "Unknown distribution type")
 
-    return None, None  # No update needed
+    # Fail if sources disagree on the latest version
+    unique_versions = {v for v, _ in source_versions.values()}
+    if len(unique_versions) > 1:
+        details = ", ".join(f"{t}={v}" for t, (v, _) in sorted(source_versions.items()))
+        return None, UpdateError(agent_id, f"Version mismatch across distributions: {details}")
 
+    latest_version = unique_versions.pop()
+    if latest_version == current_version:
+        return None, None  # Up to date
 
-def apply_npx_update(agent_path: Path, agent_data: dict, new_version: str) -> bool:
-    """Apply version update for npx distribution."""
-    old_version = agent_data["version"]
-    package_spec = agent_data["distribution"]["npx"]["package"]
-    package_name = extract_npm_package_name(package_spec)
+    dist_types = "+".join(sorted(source_versions.keys()))
+    primary_source_url = next(iter(source_versions.values()))[1]
 
-    # Update version field
-    agent_data["version"] = new_version
-
-    # Update package spec
-    new_package_spec = f"{package_name}@{new_version}"
-    agent_data["distribution"]["npx"]["package"] = new_package_spec
-
-    # Write back
-    try:
-        with open(agent_path, "w") as f:
-            json.dump(agent_data, f, indent=2)
-            f.write("\n")
-        return True
-    except OSError as e:
-        print(f"Error writing {agent_path}: {e}", file=sys.stderr)
-        return False
-
-
-def apply_uvx_update(agent_path: Path, agent_data: dict, new_version: str) -> bool:
-    """Apply version update for uvx distribution."""
-    old_version = agent_data["version"]
-    package_spec = agent_data["distribution"]["uvx"]["package"]
-
-    # Update version field
-    agent_data["version"] = new_version
-
-    # Update package spec (handles ==, >=, @, etc.)
-    new_package_spec = re.sub(r"([=@]+)[\d.]+", rf"\g<1>{new_version}", package_spec)
-    agent_data["distribution"]["uvx"]["package"] = new_package_spec
-
-    # Write back
-    try:
-        with open(agent_path, "w") as f:
-            json.dump(agent_data, f, indent=2)
-            f.write("\n")
-        return True
-    except OSError as e:
-        print(f"Error writing {agent_path}: {e}", file=sys.stderr)
-        return False
-
-
-def apply_binary_update(agent_path: Path, agent_data: dict, new_version: str) -> bool:
-    """Apply version update for binary distribution.
-
-    This replaces version strings in all archive URLs.
-    """
-    old_version = agent_data["version"]
-
-    # Update version field
-    agent_data["version"] = new_version
-
-    # For URLs, also handle x.y.0 <-> x.y conversions
-    old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
-    new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
-
-    # Update all binary archive URLs
-    binary_dist = agent_data["distribution"]["binary"]
-    for platform, target in binary_dist.items():
-        if "archive" in target:
-            old_url = target["archive"]
-            # Replace version in URL path (handles both vX.Y.Z and X.Y.Z patterns)
-            new_url = old_url.replace(f"/v{old_version}/", f"/v{new_version}/")
-            new_url = new_url.replace(f"/{old_version}/", f"/{new_version}/")
-            new_url = new_url.replace(f"-{old_version}.", f"-{new_version}.")
-            new_url = new_url.replace(f"-{old_version}-", f"-{new_version}-")
-            new_url = new_url.replace(f"_{old_version}.", f"_{new_version}.")
-            new_url = new_url.replace(f"_{old_version}_", f"_{new_version}_")
-            # Also handle short versions (x.y) in URLs when semver is x.y.0
-            if old_short != old_version:
-                new_url = new_url.replace(f"/{old_short}/", f"/{new_short}/")
-                new_url = new_url.replace(f"-{old_short}.", f"-{new_short}.")
-                new_url = new_url.replace(f"-{old_short}-", f"-{new_short}-")
-            target["archive"] = new_url
-
-    # Write back
-    try:
-        with open(agent_path, "w") as f:
-            json.dump(agent_data, f, indent=2)
-            f.write("\n")
-        return True
-    except OSError as e:
-        print(f"Error writing {agent_path}: {e}", file=sys.stderr)
-        return False
+    return VersionUpdate(
+        agent_id=agent_id,
+        agent_path=agent_path,
+        current_version=current_version,
+        latest_version=latest_version,
+        distribution_type=dist_types,
+        source_url=primary_source_url,
+    ), None
 
 
 def apply_update(update: VersionUpdate) -> bool:
-    """Apply a version update to an agent."""
+    """Apply a version update to an agent, updating all distribution types."""
     try:
         with open(update.agent_path) as f:
             agent_data = json.load(f)
@@ -366,14 +297,61 @@ def apply_update(update: VersionUpdate) -> bool:
         print(f"Error reading {update.agent_path}: {e}", file=sys.stderr)
         return False
 
-    if update.distribution_type == "npx":
-        return apply_npx_update(update.agent_path, agent_data, update.latest_version)
-    elif update.distribution_type == "uvx":
-        return apply_uvx_update(update.agent_path, agent_data, update.latest_version)
-    elif update.distribution_type == "binary":
-        return apply_binary_update(update.agent_path, agent_data, update.latest_version)
+    old_version = agent_data["version"]
+    new_version = update.latest_version
+    distribution = agent_data.get("distribution", {})
 
-    return False
+    # Update version field
+    agent_data["version"] = new_version
+
+    # Update npx package spec if present
+    if "npx" in distribution:
+        package_spec = distribution["npx"].get("package", "")
+        package_name = extract_npm_package_name(package_spec)
+        distribution["npx"]["package"] = f"{package_name}@{new_version}"
+
+    # Update uvx package spec if present
+    if "uvx" in distribution:
+        package_spec = distribution["uvx"].get("package", "")
+        new_package_spec = re.sub(r"([=@]+)[\d.]+", rf"\g<1>{new_version}", package_spec)
+        distribution["uvx"]["package"] = new_package_spec
+
+    # Update binary archive URLs if present
+    if "binary" in distribution:
+        # For URLs, also handle x.y.0 <-> x.y conversions
+        old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
+        new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
+
+        for platform, target in distribution["binary"].items():
+            if "archive" in target:
+                original_url = target["archive"]
+                url = original_url
+                # Replace version in URL path (handles both vX.Y.Z and X.Y.Z patterns)
+                url = url.replace(f"/v{old_version}/", f"/v{new_version}/")
+                url = url.replace(f"/{old_version}/", f"/{new_version}/")
+                url = url.replace(f"-{old_version}.", f"-{new_version}.")
+                url = url.replace(f"-{old_version}-", f"-{new_version}-")
+                url = url.replace(f"_{old_version}.", f"_{new_version}.")
+                url = url.replace(f"_{old_version}_", f"_{new_version}_")
+                # Also handle short versions (x.y) in URLs when semver is x.y.0
+                # Only apply if the full version wasn't found in the URL, to avoid
+                # old_short (e.g. "2.2") matching inside already-replaced new_version
+                # (e.g. "-2.2." in "-2.2.1.zip" -> "-2.2.1.1.zip")
+                if old_short != old_version and url == original_url:
+                    url = url.replace(f"/{old_short}/", f"/{new_short}/")
+                    url = url.replace(f"-{old_short}.", f"-{new_short}.")
+                    url = url.replace(f"-{old_short}-", f"-{new_short}-")
+                target["archive"] = url
+
+    # Write back
+    try:
+        with open(update.agent_path, "w") as f:
+            json.dump(agent_data, f, indent=2)
+            f.write("\n")
+        return True
+    except OSError as e:
+        print(f"Error writing {update.agent_path}: {e}", file=sys.stderr)
+        return False
 
 
 def main():

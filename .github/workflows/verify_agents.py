@@ -550,10 +550,28 @@ def verify_agent(
     return results
 
 
+def load_quarantine(registry_dir: Path) -> dict[str, str]:
+    """Load quarantine list from registry directory.
+
+    Returns:
+        Dict mapping agent_id to quarantine reason.
+    """
+    quarantine_path = registry_dir / "quarantine.json"
+    if not quarantine_path.exists():
+        return {}
+    try:
+        with open(quarantine_path) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Warning: Could not read {quarantine_path}: {e}")
+        return {}
+
+
 def load_registry(registry_dir: Path) -> list[dict]:
-    """Load all agents from registry directory."""
+    """Load all agents from registry directory, excluding quarantined ones."""
     agents = []
     skip_dirs = {".claude", ".git", ".github", ".idea", "__pycache__", "dist", "_not_yet_unsupported"}
+    quarantine = load_quarantine(registry_dir)
 
     for agent_dir in sorted(registry_dir.iterdir()):
         if not agent_dir.is_dir() or agent_dir.name in skip_dirs:
@@ -565,9 +583,21 @@ def load_registry(registry_dir: Path) -> list[dict]:
 
         try:
             with open(agent_json) as f:
-                agents.append(json.load(f))
+                agent = json.load(f)
         except json.JSONDecodeError as e:
             print(f"Warning: Invalid JSON in {agent_json}: {e}")
+            continue
+
+        agent_id = agent.get("id", agent_dir.name)
+        if agent_id in quarantine:
+            print(f"  ⊘ Quarantined {agent_id}: {quarantine[agent_id]}")
+            continue
+
+        agents.append(agent)
+
+    if quarantine:
+        print(f"  ({len(quarantine)} agent(s) quarantined)")
+        print()
 
     return agents
 
@@ -579,7 +609,7 @@ def main():
         epilog="""
 Examples:
   %(prog)s                          # Verify all agents (basic launch test)
-  %(prog)s -a claude-code,gemini    # Verify specific agents (comma-separated)
+  %(prog)s -a claude,gemini         # Verify specific agents (comma-separated)
   %(prog)s -t npx                   # Verify only npx distributions
   %(prog)s --clean                  # Clean sandboxes before running
   %(prog)s --clean-all              # Remove all sandboxes and exit
@@ -640,12 +670,13 @@ Examples:
     print()
 
     # Filter if specific agents requested (comma-separated)
+    quarantine = load_quarantine(registry_dir)
     if args.agent:
         requested_ids = [a.strip() for a in args.agent.split(",")]
         all_agent_ids = [a["id"] for a in agents]
 
-        # Check for invalid agent IDs
-        invalid = [aid for aid in requested_ids if aid not in all_agent_ids]
+        # Check for invalid agent IDs (quarantined agents are valid but skipped)
+        invalid = [aid for aid in requested_ids if aid not in all_agent_ids and aid not in quarantine]
         if invalid:
             print(f"Unknown agent(s): {', '.join(invalid)}")
             print(f"Available: {', '.join(all_agent_ids)}")

@@ -1,0 +1,20 @@
+{
+  "id": "cline",
+  "name": "Cline",
+  "version": "2.4.2",
+  "description": "Autonomous coding agent CLI - capable of creating/editing files, running commands, using the browser, and more",
+  "repository": "https://github.com/cline/cline",
+  "authors": [
+    "Cline Bot Inc."
+  ],
+  "license": "Apache-2.0",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "cline@2.4.2",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}

@@ -112,7 +112,14 @@ def read_jsonrpc(proc: subprocess.Popen, timeout: float) -> dict | None:
     if not line:
         return None
 
-    return json.loads(line)
+    try:
+        return json.loads(line)
+    except json.JSONDecodeError:
+        raise ValueError(
+            f"ACP spec violation: agent wrote non-JSON to stdout: {line.rstrip()!r}\n"
+            f"Per the ACP spec, agents MUST NOT write anything to stdout that is not a valid ACP message. "
+            f"Diagnostic output should go to stderr."
+        )
 
 
 def run_auth_check(

@@ -267,8 +267,20 @@ def validate_icon_monochrome(content: str) -> list[str]:
                 )
                 reported_colors.add(style_stroke.group(1).strip())
 
-    # Check that currentColor is actually used (icons without fill default to black)
-    has_current_color = bool(re.search(r"currentColor", content, re.IGNORECASE))
+    # Check that currentColor is actually used in fill/stroke (icons without fill default to black)
+    has_current_color = any(
+        v.strip().lower() == "currentcolor"
+        for v in fill_matches + stroke_matches
+    )
+    if not has_current_color:
+        # Also check style attributes for fill/stroke with currentColor
+        for style_value in style_matches:
+            style_fill = re.search(r"\bfill\s*:\s*([^;]+)", style_value, re.IGNORECASE)
+            style_stroke = re.search(r"\bstroke\s*:\s*([^;]+)", style_value, re.IGNORECASE)
+            if (style_fill and style_fill.group(1).strip().lower() == "currentcolor") or \
+               (style_stroke and style_stroke.group(1).strip().lower() == "currentcolor"):
+                has_current_color = True
+                break
     if not has_current_color:
         errors.append("Icon must use currentColor for fills/strokes to support theming")
 
@@ -585,8 +597,8 @@ def build_registry():
         json.dump(registry, f, indent=2)
         f.write("\n")
 
-    # Write registry-for-jetbrains.json (without codex and claude-code)
-    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "claude-code-acp", "junie-acp"}
+    # Write registry-for-jetbrains.json (without codex and claude)
+    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "claude-acp", "junie-acp"}
     jetbrains_registry = {
         "version": REGISTRY_VERSION,
         "agents": [a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS],
