@@ -148,6 +148,9 @@ jobs:
         with:
           node-version: "lts/*"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
       - name: Apply version updates
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
