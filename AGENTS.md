@@ -19,7 +19,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 ```
 <id>/
 ├── agent.json      # Agent metadata and distribution info
-└── icon.svg        # Icon: 16x16 SVG, monochrome with currentColor (optional)
+└── icon.svg        # Icon: 16x16 SVG, monochrome with currentColor (required)
 ```
 
 **Build process** (`.github/workflows/build_registry.py`):

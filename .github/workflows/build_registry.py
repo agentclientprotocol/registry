@@ -530,15 +530,16 @@ def process_entry(
                 f"  - {e}" for e in url_errors
             ]
 
-    # Validate and set icon URL if icon exists
+    # Validate icon (required)
     icon_path = entry_dir / "icon.svg"
-    if icon_path.exists():
-        icon_errors = validate_icon(icon_path)
-        if icon_errors:
-            return None, [f"{entry_dir.name}/icon.svg validation failed:"] + [
-                f"  - {e}" for e in icon_errors
-            ]
-        entry["icon"] = f"{base_url}/{entry_id}.svg"
+    if not icon_path.exists():
+        return None, [f"{entry_dir.name}/icon.svg is missing (icon is required)"]
+    icon_errors = validate_icon(icon_path)
+    if icon_errors:
+        return None, [f"{entry_dir.name}/icon.svg validation failed:"] + [
+            f"  - {e}" for e in icon_errors
+        ]
+    entry["icon"] = f"{base_url}/{entry_id}.svg"
 
     return entry, []
 
