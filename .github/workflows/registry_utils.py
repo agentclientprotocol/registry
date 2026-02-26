@@ -12,7 +12,6 @@ SKIP_DIRS = {
     ".idea",
     "__pycache__",
     "dist",
-    "_not_yet_unsupported",
     ".sandbox",
     ".sparkle-space",
     ".ruff_cache",

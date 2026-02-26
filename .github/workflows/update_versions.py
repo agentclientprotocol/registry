@@ -55,7 +55,6 @@ class UpdateError(NamedTuple):
 # Directories to scan for agents
 AGENT_DIRS = [
     ".",  # Root directory (active agents)
-    "_not_yet_unsupported",  # Unsupported agents
 ]
 
 
