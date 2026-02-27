@@ -11,7 +11,6 @@ import subprocess
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 
 @dataclass
@@ -114,12 +113,13 @@ def read_jsonrpc(proc: subprocess.Popen, timeout: float) -> dict | None:
 
     try:
         return json.loads(line)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
         raise ValueError(
             f"ACP spec violation: agent wrote non-JSON to stdout: {line.rstrip()!r}\n"
-            f"Per the ACP spec, agents MUST NOT write anything to stdout that is not a valid ACP message. "
+            f"Per the ACP spec, agents MUST NOT write anything to stdout "
+            f"that is not a valid ACP message. "
             f"Diagnostic output should go to stderr."
-        )
+        ) from e
 
 
 def run_auth_check(
@@ -170,21 +170,25 @@ def run_auth_check(
         )
 
         # Send initialize request with capabilities
-        send_jsonrpc(proc, "initialize", {
-            "protocolVersion": 1,
-            "clientInfo": {"name": "ACP Registry Validator", "version": "1.0.0"},
-            "clientCapabilities": {
-                "terminal": True,
-                "fs": {
-                    "readTextFile": True,
-                    "writeTextFile": True,
-                },
-                "_meta": {
-                    "terminal_output": True,
-                    "terminal-auth": True,
+        send_jsonrpc(
+            proc,
+            "initialize",
+            {
+                "protocolVersion": 1,
+                "clientInfo": {"name": "ACP Registry Validator", "version": "1.0.0"},
+                "clientCapabilities": {
+                    "terminal": True,
+                    "fs": {
+                        "readTextFile": True,
+                        "writeTextFile": True,
+                    },
+                    "_meta": {
+                        "terminal_output": True,
+                        "terminal-auth": True,
+                    },
                 },
             },
-        })
+        )
 
         # Read response
         response = read_jsonrpc(proc, timeout)

@@ -1,7 +1,7 @@
 {
   "id": "qwen-code",
   "name": "Qwen Code",
-  "version": "0.10.5",
+  "version": "0.10.6",
   "description": "Alibaba's Qwen coding assistant",
   "repository": "https://github.com/QwenLM/qwen-code",
   "authors": [
@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "distribution": {
     "npx": {
-      "package": "@qwen-code/qwen-code@0.10.5",
+      "package": "@qwen-code/qwen-code@0.10.6",
       "args": [
         "--acp",
         "--experimental-skills"

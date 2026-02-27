@@ -19,7 +19,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 ```
 <id>/
 ├── agent.json      # Agent metadata and distribution info
-└── icon.svg        # Icon: 16x16 SVG, monochrome with currentColor (optional)
+└── icon.svg        # Icon: 16x16 SVG, monochrome with currentColor (required)
 ```
 
 **Build process** (`.github/workflows/build_registry.py`):
@@ -54,7 +54,7 @@ Set `SKIP_URL_VALIDATION=1` to bypass URL checks during local development.
 Agent versions are automatically updated via `.github/workflows/update-versions.yml`:
 
 - **Schedule:** Runs hourly (cron: `0 * * * *`)
-- **Scope:** Checks all agents in root and `_not_yet_unsupported/`
+- **Scope:** Checks all agents in the root directory
 - **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases)
 
 ```bash
@@ -85,8 +85,6 @@ Update `agent.json`:
 - For binaries: update archive URLs with new version/tag
 
 Run build to validate: `uv run --with jsonschema .github/workflows/build_registry.py`
-
-**Note:** Agents in `_not_yet_unsupported/` should remain there - do not move them to the main registry. They can still have their versions updated in place.
 
 ## Distribution Types
 

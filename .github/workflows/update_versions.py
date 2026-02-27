@@ -26,9 +26,17 @@ import urllib.request
 from pathlib import Path
 from typing import NamedTuple
 
+from registry_utils import (
+    SKIP_DIRS,
+    extract_npm_package_name,
+    extract_pypi_package_name,
+    load_quarantine,
+)
+
 
 class VersionUpdate(NamedTuple):
     """Represents a version update for an agent."""
+
     agent_id: str
     agent_path: Path
     current_version: str
@@ -39,6 +47,7 @@ class VersionUpdate(NamedTuple):
 
 class UpdateError(NamedTuple):
     """Represents an error during version checking."""
+
     agent_id: str
     error: str
 
@@ -46,20 +55,7 @@ class UpdateError(NamedTuple):
 # Directories to scan for agents
 AGENT_DIRS = [
     ".",  # Root directory (active agents)
-    "_not_yet_unsupported",  # Unsupported agents
 ]
-
-SKIP_DIRS = {
-    ".claude",
-    ".git",
-    ".github",
-    ".idea",
-    "__pycache__",
-    "dist",
-    ".sandbox",
-    ".sparkle-space",
-    ".ruff_cache",
-}
 
 
 def get_github_token() -> str | None:
@@ -144,38 +140,6 @@ def get_github_latest_release(repo_url: str) -> tuple[str | None, list[str]]:
     return None, []
 
 
-def extract_npm_package_name(package_spec: str) -> str:
-    """Extract npm package name from spec like @scope/name@version."""
-    if package_spec.startswith("@"):
-        at_positions = [i for i, c in enumerate(package_spec) if c == "@"]
-        if len(at_positions) > 1:
-            return package_spec[: at_positions[1]]
-        return package_spec
-    return package_spec.split("@")[0]
-
-
-def extract_pypi_package_name(package_spec: str) -> str:
-    """Extract PyPI package name from spec like package==version."""
-    return re.split(r"[<>=!@]", package_spec)[0]
-
-
-def load_quarantine(registry_dir: Path) -> dict[str, str]:
-    """Load quarantine list from registry directory.
-
-    Returns:
-        Dict mapping agent_id to quarantine reason.
-    """
-    quarantine_path = registry_dir / "quarantine.json"
-    if not quarantine_path.exists():
-        return {}
-    try:
-        with open(quarantine_path) as f:
-            return json.load(f)
-    except (json.JSONDecodeError, OSError) as e:
-        print(f"Warning: Could not read {quarantine_path}: {e}", file=sys.stderr)
-        return {}
-
-
 def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
     """Find all agent.json files in the registry, excluding quarantined ones."""
     agents = []
@@ -253,12 +217,14 @@ def check_agent_version(
             return None, UpdateError(agent_id, f"Could not fetch PyPI version for {package_name}")
         source_versions["uvx"] = (latest, f"https://pypi.org/pypi/{package_name}/json")
 
-    if "binary" in distribution:
-        if repository:
-            latest, _assets = get_github_latest_release(repository)
-            if not latest:
-                return None, UpdateError(agent_id, f"Could not fetch GitHub release for {repository}")
-            source_versions["binary"] = (latest, repository)
+    if "binary" in distribution and repository:
+        latest, _assets = get_github_latest_release(repository)
+        if not latest:
+            return None, UpdateError(
+                agent_id,
+                f"Could not fetch GitHub release for {repository}",
+            )
+        source_versions["binary"] = (latest, repository)
 
     if not source_versions:
         if distribution:
@@ -322,7 +288,7 @@ def apply_update(update: VersionUpdate) -> bool:
         old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
         new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
 
-        for platform, target in distribution["binary"].items():
+        for _platform, target in distribution["binary"].items():
             if "archive" in target:
                 original_url = target["archive"]
                 url = original_url
@@ -436,13 +402,18 @@ def main():
     else:
         print()
         print("=" * 60)
-        print(f"Summary: {len(updates)} updates, {len(errors)} errors, {len(up_to_date)} up-to-date")
+        print(
+            f"Summary: {len(updates)} updates, {len(errors)} errors, {len(up_to_date)} up-to-date"
+        )
 
         if updates:
             print()
             print("Updates available:")
             for u in updates:
-                print(f"  - {u.agent_id}: {u.current_version} -> {u.latest_version} ({u.distribution_type})")
+                print(
+                    f"  - {u.agent_id}: {u.current_version} -> "
+                    f"{u.latest_version} ({u.distribution_type})"
+                )
 
         if errors:
             print()
