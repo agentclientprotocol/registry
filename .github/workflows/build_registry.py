@@ -53,20 +53,30 @@ SKIP_URL_VALIDATION = os.environ.get("SKIP_URL_VALIDATION", "").lower() in (
 )
 
 
-def url_exists(url: str, method: str = "HEAD") -> bool:
-    """Check if a URL exists using HEAD or GET request."""
-    try:
-        req = urllib.request.Request(url, method=method)
-        req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
-        with urllib.request.urlopen(req, timeout=15) as response:
-            return response.status in (200, 301, 302)
-    except urllib.error.HTTPError as e:
-        # Some servers don't support HEAD, try GET
-        if method == "HEAD" and e.code in (403, 405):
-            return url_exists(url, method="GET")
-        return False
-    except (urllib.error.URLError, TimeoutError, OSError):
-        return False
+def url_exists(url: str, method: str = "HEAD", retries: int = 3) -> bool:
+    """Check if a URL exists using HEAD or GET request with retries."""
+    import time
+
+    for attempt in range(retries):
+        try:
+            req = urllib.request.Request(url, method=method)
+            req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
+            with urllib.request.urlopen(req, timeout=15) as response:
+                return response.status in (200, 301, 302)
+        except urllib.error.HTTPError as e:
+            # Some servers don't support HEAD, try GET
+            if method == "HEAD" and e.code in (403, 405):
+                return url_exists(url, method="GET", retries=retries - attempt)
+            if attempt < retries - 1 and e.code in (429, 500, 502, 503, 504):
+                time.sleep(2**attempt)
+                continue
+            return False
+        except (urllib.error.URLError, TimeoutError, OSError):
+            if attempt < retries - 1:
+                time.sleep(2**attempt)
+                continue
+            return False
+    return False
 
 
 def extract_version_from_url(url: str) -> str | None:
