@@ -1,0 +1,10 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.12
+    hooks:
+      - id: ruff
+        args: [--config, .github/workflows/pyproject.toml]
+        files: ^\.github/workflows/.*\.py$
+      - id: ruff-format
+        args: [--config, .github/workflows/pyproject.toml]
+        files: ^\.github/workflows/.*\.py$
