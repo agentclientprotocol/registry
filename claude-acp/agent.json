@@ -1,16 +1,40 @@
 {
   "id": "claude-acp",
   "name": "Claude Agent",
-  "version": "0.18.0",
+  "version": "0.19.1",
   "description": "ACP wrapper for Anthropic's Claude",
   "repository": "https://github.com/zed-industries/claude-agent-acp",
-  "authors": [
-    "Anthropic"
-  ],
+  "authors": ["Anthropic"],
   "license": "proprietary",
   "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/zed-industries/claude-agent-acp/releases/download/v0.19.1/claude-agent-acp-darwin-arm64.zip",
+        "cmd": "./claude-agent-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/zed-industries/claude-agent-acp/releases/download/v0.19.1/claude-agent-acp-darwin-x64.zip",
+        "cmd": "./claude-agent-acp"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/zed-industries/claude-agent-acp/releases/download/v0.19.1/claude-agent-acp-linux-arm64.tar.gz",
+        "cmd": "./claude-agent-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/zed-industries/claude-agent-acp/releases/download/v0.19.1/claude-agent-acp-linux-x64.tar.gz",
+        "cmd": "./claude-agent-acp"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/zed-industries/claude-agent-acp/releases/download/v0.19.1/claude-agent-acp-windows-arm64.zip",
+        "cmd": "./claude-agent-acp.exe"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/zed-industries/claude-agent-acp/releases/download/v0.19.1/claude-agent-acp-windows-x64.zip",
+        "cmd": "./claude-agent-acp.exe"
+      }
+    },
     "npx": {
-      "package": "@zed-industries/claude-agent-acp@0.18.0"
+      "package": "@zed-industries/claude-agent-acp@0.19.1"
     }
   }
 }
