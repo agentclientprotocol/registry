@@ -1,8 +1,8 @@
 {
-  "id": "amp",
+  "id": "amp-acp",
   "name": "Amp",
   "version": "0.7.0",
-  "description": "Amp - the frontier coding agent",
+  "description": "ACP wrapper for Amp - the frontier coding agent",
   "repository": "https://github.com/tao12345666333/amp-acp",
   "authors": ["tao12345666333"],
   "license": "Apache-2.0",
