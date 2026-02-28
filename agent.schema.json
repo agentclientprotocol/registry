@@ -44,7 +44,7 @@
     },
     "icon": {
       "type": "string",
-      "description": "Path to icon file (relative or absolute URL)"
+      "description": "Icon URL (set automatically by the build from the required icon.svg file)"
     },
     "distribution": {
       "type": "object",
