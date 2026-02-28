@@ -47,9 +47,7 @@ class TestValidateIconMonochrome:
 
     def test_hardcoded_hex_fill(self):
         root = self._root(
-            '<svg xmlns="http://www.w3.org/2000/svg">'
-            '<path fill="#FF0000" d="M0 0h16v16H0z"/>'
-            "</svg>"
+            '<svg xmlns="http://www.w3.org/2000/svg"><path fill="#FF0000" d="M0 0h16v16H0z"/></svg>'
         )
         errors = validate_icon_monochrome(root)
         assert any("hardcoded fill" in e for e in errors)
@@ -74,11 +72,7 @@ class TestValidateIconMonochrome:
         assert any("hardcoded stroke" in e for e in errors)
 
     def test_no_fill_or_stroke_at_all(self):
-        root = self._root(
-            '<svg xmlns="http://www.w3.org/2000/svg">'
-            '<path d="M0 0h16v16H0z"/>'
-            "</svg>"
-        )
+        root = self._root('<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h16v16H0z"/></svg>')
         errors = validate_icon_monochrome(root)
         assert errors == ["Icon must use currentColor for fills/strokes to support theming"]
 
