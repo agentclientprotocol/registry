@@ -139,6 +139,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Download artifacts
         uses: actions/download-artifact@v7
@@ -157,15 +159,35 @@ jobs:
           # GitHub App private key secret name
           private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
 
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Find the previous release tag
+          PREV_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || true)
+
+          if [ -n "$PREV_TAG" ]; then
+            # Collect commit messages since the last release
+            NOTES=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --no-merges)
+          else
+            NOTES="- Initial release"
+          fi
+
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+
       - name: Publish release
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          RELEASE_NOTES: ${{ steps.notes.outputs.notes }}
         run: |
           VERSION="v$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)"
 
           gh release create "$VERSION" \
             --title "Registry $VERSION" \
-            --notes "Auto-generated registry build" \
+            --notes "$RELEASE_NOTES" \
             dist/registry.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
