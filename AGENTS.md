@@ -8,6 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build registry (validates all agents and outputs to dist/)
 uv run --with jsonschema .github/workflows/build_registry.py
 
+# Dry run (validate without writing to dist/)
+uv run --with jsonschema .github/workflows/build_registry.py --dry-run
+
 # Build without schema validation (if jsonschema not available)
 python .github/workflows/build_registry.py
 ```

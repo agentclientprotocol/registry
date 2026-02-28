@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Build aggregated registry.json from individual agent directories."""
 
+import argparse
 import json
 import os
 import re
 import sys
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from registry_utils import (
@@ -182,58 +184,69 @@ def validate_distribution_urls(distribution: dict) -> list[str]:
     return errors
 
 
-def validate_icon_monochrome(content: str) -> list[str]:
-    """Validate that icon uses currentColor and no hardcoded colors."""
+def validate_icon_monochrome(root: ET.Element) -> list[str]:
+    """Validate that icon uses currentColor and no hardcoded colors.
+
+    Uses xml.etree.ElementTree to walk all elements, checking fill/stroke
+    attributes, inline styles, and <style> blocks — more robust than regex.
+    """
     errors = []
-    reported_colors = set()
+    has_current_color = False
 
-    # Check fill attributes - must be currentColor or none
-    fill_matches = re.findall(r'\bfill\s*=\s*["\']([^"\']+)["\']', content, re.IGNORECASE)
-    for fill_value in fill_matches:
-        normalized = fill_value.strip().lower()
-        if normalized not in ALLOWED_FILL_STROKE_VALUES:
-            errors.append(f'Icon has hardcoded fill="{fill_value}" (use currentColor or none)')
-            reported_colors.add(fill_value.strip())
-
-    # Check stroke attributes - must be currentColor or none
-    stroke_matches = re.findall(r'\bstroke\s*=\s*["\']([^"\']+)["\']', content, re.IGNORECASE)
-    for stroke_value in stroke_matches:
-        normalized = stroke_value.strip().lower()
-        if normalized not in ALLOWED_FILL_STROKE_VALUES:
-            errors.append(f'Icon has hardcoded stroke="{stroke_value}" (use currentColor or none)')
-            reported_colors.add(stroke_value.strip())
-
-    # Check for hardcoded colors in style attributes
-    style_matches = re.findall(r'\bstyle\s*=\s*["\']([^"\']+)["\']', content, re.IGNORECASE)
-    for style_value in style_matches:
-        # Check for fill/stroke with hardcoded colors in style
-        style_fill = re.search(r"\bfill\s*:\s*([^;]+)", style_value, re.IGNORECASE)
-        if style_fill:
-            fill_val = style_fill.group(1).strip().lower()
-            if fill_val not in ALLOWED_FILL_STROKE_VALUES:
-                errors.append(f"Icon has hardcoded style fill: {style_fill.group(1).strip()}")
-                reported_colors.add(style_fill.group(1).strip())
-        style_stroke = re.search(r"\bstroke\s*:\s*([^;]+)", style_value, re.IGNORECASE)
-        if style_stroke:
-            stroke_val = style_stroke.group(1).strip().lower()
-            if stroke_val not in ALLOWED_FILL_STROKE_VALUES:
-                errors.append(f"Icon has hardcoded style stroke: {style_stroke.group(1).strip()}")
-                reported_colors.add(style_stroke.group(1).strip())
-
-    # Check that currentColor is actually used in fill/stroke (icons without fill default to black)
-    has_current_color = any(
-        v.strip().lower() == "currentcolor" for v in fill_matches + stroke_matches
-    )
-    if not has_current_color:
-        # Also check style attributes for fill/stroke with currentColor
-        for style_value in style_matches:
-            style_fill = re.search(r"\bfill\s*:\s*([^;]+)", style_value, re.IGNORECASE)
-            style_stroke = re.search(r"\bstroke\s*:\s*([^;]+)", style_value, re.IGNORECASE)
-            if (style_fill and style_fill.group(1).strip().lower() == "currentcolor") or (
-                style_stroke and style_stroke.group(1).strip().lower() == "currentcolor"
-            ):
+    for elem in root.iter():
+        # Check fill attribute
+        fill = elem.get("fill")
+        if fill is not None:
+            normalized = fill.strip().lower()
+            if normalized == "currentcolor":
                 has_current_color = True
-                break
+            elif normalized not in ALLOWED_FILL_STROKE_VALUES:
+                errors.append(f'Icon has hardcoded fill="{fill}" (use currentColor or none)')
+
+        # Check stroke attribute
+        stroke = elem.get("stroke")
+        if stroke is not None:
+            normalized = stroke.strip().lower()
+            if normalized == "currentcolor":
+                has_current_color = True
+            elif normalized not in ALLOWED_FILL_STROKE_VALUES:
+                errors.append(f'Icon has hardcoded stroke="{stroke}" (use currentColor or none)')
+
+        # Check inline style attribute for fill/stroke
+        style = elem.get("style")
+        if style:
+            for prop in style.split(";"):
+                if ":" not in prop:
+                    continue
+                name, value = prop.split(":", 1)
+                name = name.strip().lower()
+                value_raw = value.strip()
+                value_lower = value_raw.lower()
+                if name == "fill":
+                    if value_lower == "currentcolor":
+                        has_current_color = True
+                    elif value_lower not in ALLOWED_FILL_STROKE_VALUES:
+                        errors.append(f"Icon has hardcoded style fill: {value_raw}")
+                elif name == "stroke":
+                    if value_lower == "currentcolor":
+                        has_current_color = True
+                    elif value_lower not in ALLOWED_FILL_STROKE_VALUES:
+                        errors.append(f"Icon has hardcoded style stroke: {value_raw}")
+
+        # Check <style> elements for CSS rules with fill/stroke
+        tag = elem.tag.split("}")[-1] if "}" in elem.tag else elem.tag
+        if tag == "style" and elem.text:
+            for pattern, attr_name in (
+                (r"\bfill\s*:\s*([^;}\s]+)", "fill"),
+                (r"\bstroke\s*:\s*([^;}\s]+)", "stroke"),
+            ):
+                for val in re.findall(pattern, elem.text, re.IGNORECASE):
+                    val_lower = val.strip().lower()
+                    if val_lower == "currentcolor":
+                        has_current_color = True
+                    elif val_lower not in ALLOWED_FILL_STROKE_VALUES:
+                        errors.append(f"Icon has hardcoded CSS {attr_name}: {val.strip()}")
+
     if not has_current_color:
         errors.append("Icon must use currentColor for fills/strokes to support theming")
 
@@ -242,7 +255,7 @@ def validate_icon_monochrome(content: str) -> list[str]:
 
 
 def validate_icon(icon_path: Path) -> list[str]:
-    """Validate icon.svg and return list of warnings/errors."""
+    """Validate icon.svg using an XML parser for robust SVG analysis."""
     errors = []
 
     try:
@@ -251,22 +264,46 @@ def validate_icon(icon_path: Path) -> list[str]:
         errors.append(f"Cannot read icon: {e}")
         return errors
 
-    # Extract width and height from SVG
-    width_match = re.search(r'<svg[^>]*\swidth=["\'](\d+)', content)
-    height_match = re.search(r'<svg[^>]*\sheight=["\'](\d+)', content)
+    # Parse SVG as XML
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError as e:
+        errors.append(f"Icon is not valid SVG/XML: {e}")
+        return errors
 
-    # Try viewBox if width/height not found
-    if not width_match or not height_match:
-        viewbox_match = re.search(r'viewBox=["\'][\d.]+\s+[\d.]+\s+([\d.]+)\s+([\d.]+)', content)
-        if viewbox_match:
-            vb_width = float(viewbox_match.group(1))
-            vb_height = float(viewbox_match.group(2))
-        else:
-            errors.append("Icon missing width/height attributes and viewBox")
-            return errors
-    else:
-        vb_width = float(width_match.group(1))
-        vb_height = float(height_match.group(1))
+    # Verify root element is <svg> (handle optional namespace)
+    root_tag = root.tag.split("}")[-1] if "}" in root.tag else root.tag
+    if root_tag != "svg":
+        errors.append(f"Icon root element must be <svg>, got <{root_tag}>")
+        return errors
+
+    # Extract dimensions from SVG root attributes
+    width_str = root.get("width")
+    height_str = root.get("height")
+    viewbox = root.get("viewBox")
+
+    vb_width = None
+    vb_height = None
+
+    if width_str and height_str:
+        try:
+            vb_width = float(re.sub(r"[a-z%]+$", "", width_str.strip(), flags=re.IGNORECASE))
+            vb_height = float(re.sub(r"[a-z%]+$", "", height_str.strip(), flags=re.IGNORECASE))
+        except ValueError:
+            pass
+
+    if (vb_width is None or vb_height is None) and viewbox:
+        parts = viewbox.split()
+        if len(parts) == 4:
+            try:
+                vb_width = float(parts[2])
+                vb_height = float(parts[3])
+            except ValueError:
+                pass
+
+    if vb_width is None or vb_height is None:
+        errors.append("Icon missing width/height attributes and viewBox")
+        return errors
 
     # Check size
     if vb_width != vb_height:
@@ -277,7 +314,7 @@ def validate_icon(icon_path: Path) -> list[str]:
         errors.append(f"Icon should be {size}x{size} (got {int(vb_width)}x{int(vb_height)})")
 
     # Validate monochrome (currentColor) usage
-    monochrome_errors = validate_icon_monochrome(content)
+    monochrome_errors = validate_icon_monochrome(root)
     errors.extend(monochrome_errors)
 
     return errors
@@ -475,8 +512,12 @@ def process_entry(
     return entry, []
 
 
-def build_registry():
-    """Build registry.json from agent directories."""
+def build_registry(dry_run: bool = False):
+    """Build registry.json from agent directories.
+
+    Args:
+        dry_run: If True, validate and report what would be built without writing to dist/.
+    """
     registry_dir = Path(__file__).parent.parent.parent
     base_url = get_base_url()
     agents = []
@@ -515,6 +556,19 @@ def build_registry():
     if not agents:
         print("\nWarning: No agents found")
 
+    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "claude-acp", "junie"}
+    jetbrains_agent_count = len([a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS])
+
+    if dry_run:
+        print(f"\nDry run: validated {len(agents)} agents successfully")
+        print(f"  registry.json would contain {len(agents)} agents")
+        excluded = ", ".join(JETBRAINS_EXCLUDE_IDS)
+        print(
+            f"  registry-for-jetbrains.json would contain "
+            f"{jetbrains_agent_count} agents (excluded: {excluded})"
+        )
+        return
+
     registry = {"version": REGISTRY_VERSION, "agents": agents, "extensions": []}
 
     # Create dist directory
@@ -528,7 +582,6 @@ def build_registry():
         f.write("\n")
 
     # Write registry-for-jetbrains.json (without codex and claude)
-    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "claude-acp", "junie"}
     jetbrains_registry = {
         "version": REGISTRY_VERSION,
         "agents": [a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS],
@@ -553,7 +606,6 @@ def build_registry():
             schema_dst = dist_dir / schema_file
             schema_dst.write_bytes(schema_src.read_bytes())
 
-    jetbrains_agent_count = len(jetbrains_registry["agents"])
     print(f"\nBuilt dist/ with {len(agents)} agents")
     print(f"  registry.json: {len(agents)} agents")
     excluded = ", ".join(JETBRAINS_EXCLUDE_IDS)
@@ -561,4 +613,11 @@ def build_registry():
 
 
 if __name__ == "__main__":
-    build_registry()
+    parser = argparse.ArgumentParser(description="Build aggregated registry.json")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate all agents without writing to dist/",
+    )
+    args = parser.parse_args()
+    build_registry(dry_run=args.dry_run)

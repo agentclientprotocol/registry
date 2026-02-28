@@ -29,7 +29,7 @@
    }
    ```
 
-4. **Add an icon** (optional but recommended)
+4. **Add an icon** (required)
 
    Place an SVG icon at `<agent-id>/icon.svg`.
 
@@ -224,7 +224,7 @@ All distribution URLs must be accessible:
 
 ### Icon Validation
 
-If an `icon.svg` is provided:
+Every agent must include an `icon.svg`:
 
 - Must be exactly **16x16** pixels (via `width`/`height` attributes or `viewBox`)
 - Must be **square** (width equals height)
