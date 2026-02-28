@@ -181,6 +181,7 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          RELEASE_NOTES: ${{ steps.notes.outputs.notes }}
         run: |
           VERSION="v$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)"
 
@@ -191,5 +192,3 @@ jobs:
             dist/agent.schema.json \
             dist/registry.schema.json \
             dist/*.svg
-        env:
-          RELEASE_NOTES: ${{ steps.notes.outputs.notes }}
