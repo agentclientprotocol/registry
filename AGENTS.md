@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents when working with code in this repository.
 
 ## Build Commands
 
@@ -8,8 +8,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build registry (validates all agents and outputs to dist/)
 uv run --with jsonschema .github/workflows/build_registry.py
 
+# Dry run (validate without writing to dist/)
+uv run --with jsonschema .github/workflows/build_registry.py --dry-run
+
 # Build without schema validation (if jsonschema not available)
 python .github/workflows/build_registry.py
+```
+
+## Testing & Linting
+
+```bash
+# Run tests
+cd .github/workflows && uv run --with pytest pytest tests/ -v
+
+# Lint check
+cd .github/workflows && uv run --with ruff ruff check .
+
+# Format check
+cd .github/workflows && uv run --with ruff ruff format --check .
+
+# Auto-fix formatting
+cd .github/workflows && uv run --with ruff ruff format .
 ```
 
 ## Architecture
