@@ -44,7 +44,7 @@
     },
     "icon": {
       "type": "string",
-      "description": "Path to icon file (relative or absolute URL)"
+      "description": "Icon URL (set automatically by the build from the required icon.svg file)"
     },
     "distribution": {
       "type": "object",
@@ -88,7 +88,7 @@
         "archive": {
           "type": "string",
           "format": "uri",
-          "description": "URL to download archive"
+          "description": "URL to download archive (.zip, .tar.gz, .tgz, .tar.bz2, .tbz2, or raw binary). Installer formats (.dmg, .pkg, .deb, .rpm) are not supported."
         },
         "cmd": {
           "type": "string",

@@ -4,34 +4,60 @@ on:
   push:
     branches: [main]
     paths:
-      - '*/agent.json'
-      - '*/icon.svg'
-      - '.github/workflows/**'
-      - '*.schema.json'
+      - "*/agent.json"
+      - "*/icon.svg"
+      - ".github/workflows/**"
+      - "*.schema.json"
   pull_request:
     branches: [main]
     paths:
-      - '*/agent.json'
-      - '*/icon.svg'
-      - '.github/workflows/**'
-      - '*.schema.json'
+      - "*/agent.json"
+      - "*/icon.svg"
+      - ".github/workflows/**"
+      - "*.schema.json"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  build:
-    name: Build & Validate
+  lint-and-test:
+    name: Lint & Test
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
+
+      - name: Ruff check
+        working-directory: .github/workflows
+        run: uv run --with ruff ruff check .
+
+      - name: Ruff format check
+        working-directory: .github/workflows
+        run: uv run --with ruff ruff format --check .
+
+      - name: Run tests
+        working-directory: .github/workflows
+        run: uv run --with pytest pytest tests/ -v
+
+  build:
+    name: Build & Validate
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: "lts/*"
 
       - name: Validate and build
         run: uv run --with jsonschema .github/workflows/build_registry.py
@@ -45,7 +71,7 @@ jobs:
 
       - name: Upload artifacts
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: registry
           path: dist/
@@ -59,10 +85,10 @@ jobs:
       S3_PREFIX: registry/v1
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: registry
           path: dist/
@@ -112,23 +138,56 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: registry
           path: dist/
 
+      # Generating a GitHub token, so that PRs and tags created by
+      # the action can trigger actions workflows.
+      - name: Generate GitHub token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
+        id: generate-token
+        with:
+          # GitHub App ID secret name
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          # GitHub App private key secret name
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Find the previous release tag
+          PREV_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || true)
+
+          if [ -n "$PREV_TAG" ]; then
+            # Collect commit messages since the last release
+            NOTES=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --no-merges)
+          else
+            NOTES="- Initial release"
+          fi
+
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+
       - name: Publish release
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          RELEASE_NOTES: ${{ steps.notes.outputs.notes }}
         run: |
           VERSION="v$(date +%Y.%m.%d)-$(git rev-parse --short HEAD)"
 
           gh release create "$VERSION" \
             --title "Registry $VERSION" \
-            --notes "Auto-generated registry build" \
+            --notes "$RELEASE_NOTES" \
             dist/registry.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
