@@ -1,16 +1,15 @@
 # Registry Format
 
-The registry contains both agents and extensions:
+The registry contains agents:
 
 ```json
 {
   "version": "1.0.0",
-  "agents": [...],
-  "extensions": [...]
+  "agents": [...]
 }
 ```
 
-Each entry (agent or extension) has the same structure:
+Each agent has the following structure:
 
 ```json
 {
@@ -46,10 +45,12 @@ Each entry (agent or extension) has the same structure:
 ## Distribution Types
 
 | Type     | Description                   | Command                |
-|----------|-------------------------------|------------------------|
+| -------- | ----------------------------- | ---------------------- |
 | `binary` | Platform-specific executables | Download, extract, run |
 | `npx`    | npm packages                  | `npx <package> [args]` |
 | `uvx`    | PyPI packages via uv          | `uvx <package> [args]` |
+
+**Supported archive formats for binary distribution:** `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are not supported.
 
 ## Icons
 

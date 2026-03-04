@@ -1,0 +1,17 @@
+{
+  "id": "minion-code",
+  "name": "Minion Code",
+  "version": "0.1.39",
+  "description": "An enhanced AI code assistant built on the Minion framework with rich development tools",
+  "repository": "https://github.com/femto/minion-code",
+  "authors": [
+    "femto"
+  ],
+  "license": "AGPL-3.0",
+  "distribution": {
+    "uvx": {
+      "package": "minion-code@0.1.39",
+      "args": ["acp"]
+    }
+  }
+}
