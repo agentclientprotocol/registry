@@ -1,8 +1,8 @@
 {
-  "id": "cursor-acp",
+  "id": "cursor",
   "name": "Cursor",
   "version": "0.1.0",
-  "description": "ACP for Cursor's coding agent",
+  "description": "Cursor's coding agent",
   "authors": [
     "Cursor"
   ],
@@ -11,42 +11,42 @@
     "binary": {
       "darwin-aarch64": {
         "archive": "https://anysphere-binaries.s3.amazonaws.com/lab/2026.03.04-c28b141/darwin/arm64/agent-cli-package.tar.gz",
-        "cmd": "./cursor-agent",
+        "cmd": "./dist-package/cursor-agent",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
         "archive": "https://anysphere-binaries.s3.amazonaws.com/lab/2026.03.04-c28b141/darwin/x64/agent-cli-package.tar.gz",
-        "cmd": "./cursor-agent",
+        "cmd": "./dist-package/cursor-agent",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
         "archive": "https://anysphere-binaries.s3.amazonaws.com/lab/2026.03.04-c28b141/linux/arm64/agent-cli-package.tar.gz",
-        "cmd": "./cursor-agent",
+        "cmd": "./dist-package/cursor-agent",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
         "archive": "https://anysphere-binaries.s3.amazonaws.com/lab/2026.03.04-c28b141/linux/x64/agent-cli-package.tar.gz",
-        "cmd": "./cursor-agent",
+        "cmd": "./dist-package/cursor-agent",
         "args": [
           "acp"
         ]
       },
       "windows-aarch64": {
         "archive": "https://anysphere-binaries.s3.amazonaws.com/lab/2026.03.04-c28b141/windows/arm64/agent-cli-package.zip",
-        "cmd": "./cursor-agent.cmd",
+        "cmd": "./dist-package\\cursor-agent.cmd",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
         "archive": "https://anysphere-binaries.s3.amazonaws.com/lab/2026.03.04-c28b141/windows/x64/agent-cli-package.zip",
-        "cmd": "./cursor-agent.cmd",
+        "cmd": "./dist-package\\cursor-agent.cmd",
         "args": [
           "acp"
         ]
