@@ -90,6 +90,11 @@ def make_request(url: str, headers: dict | None = None) -> dict | str | None:
         return None
 
 
+def is_prerelease(version: str) -> bool:
+    """Check if a version string is a pre-release (e.g., 1.0.0-beta.3)."""
+    return bool(re.match(r"^\d+\.\d+\.\d+-.+", version))
+
+
 def get_npm_latest_version(package_name: str) -> str | None:
     """Get latest version of an npm package."""
     # Handle scoped packages: @scope/name -> %40scope%2Fname
@@ -205,6 +210,8 @@ def check_agent_version(
         latest = get_npm_latest_version(package_name)
         if not latest:
             return None, UpdateError(agent_id, f"Could not fetch npm version for {package_name}")
+        if is_prerelease(latest):
+            return None, None  # Skip pre-release versions
         source_versions["npx"] = (latest, f"https://registry.npmjs.org/{package_name}")
 
     if "uvx" in distribution:
@@ -215,6 +222,8 @@ def check_agent_version(
         latest = get_pypi_latest_version(package_name)
         if not latest:
             return None, UpdateError(agent_id, f"Could not fetch PyPI version for {package_name}")
+        if is_prerelease(latest):
+            return None, None  # Skip pre-release versions
         source_versions["uvx"] = (latest, f"https://pypi.org/pypi/{package_name}/json")
 
     if "binary" in distribution and repository:
@@ -224,6 +233,8 @@ def check_agent_version(
                 agent_id,
                 f"Could not fetch GitHub release for {repository}",
             )
+        if is_prerelease(latest):
+            return None, None  # Skip pre-release versions
         source_versions["binary"] = (latest, repository)
 
     if not source_versions:
