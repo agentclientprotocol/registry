@@ -18,9 +18,12 @@ import zipfile
 from pathlib import Path
 from typing import NamedTuple
 
+from registry_utils import SKIP_DIRS, load_quarantine
+
 # Import auth client (only needed when --auth-check is used)
 try:
-    from client import AuthCheckResult, run_auth_check
+    from client import run_auth_check
+
     HAS_AUTH_CLIENT = True
 except ImportError:
     HAS_AUTH_CLIENT = False
@@ -38,7 +41,7 @@ PLATFORM_MAP = {
 DEFAULT_TIMEOUT = 10  # seconds
 STARTUP_GRACE = 2  # seconds to wait before checking if process is alive
 DEFAULT_SANDBOX_DIR = ".sandbox"
-DEFAULT_AUTH_TIMEOUT = 60  # seconds for ACP handshake (includes npx download time)
+DEFAULT_AUTH_TIMEOUT = 120  # seconds for ACP handshake (includes npx download time)
 
 
 class Result(NamedTuple):
@@ -72,7 +75,7 @@ def download_file(url: str, dest: Path) -> bool:
                 total = int(total)
                 print(f"      Downloading {total / 1024 / 1024:.1f} MB...", end="", flush=True)
             else:
-                print(f"      Downloading...", end="", flush=True)
+                print("      Downloading...", end="", flush=True)
             data = response.read()
             dest.write_bytes(data)
             print(f" done ({len(data) / 1024 / 1024:.1f} MB)")
@@ -169,12 +172,12 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
 
     # Extract (skip if already extracted)
     if not extract_dir.exists():
-        print(f"    → Extracting archive...")
+        print("    → Extracting archive...")
         extract_dir.mkdir()
         if not extract_archive(archive_path, extract_dir):
             return Result(agent_id, "binary", False, "Extraction failed")
     else:
-        print(f"    → Using cached extraction")
+        print("    → Using cached extraction")
 
     # Find executable
     if cmd.startswith("./"):
@@ -184,7 +187,13 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
     if cmd in ("node", "python", "python3", "java", "ruby"):
         system_cmd = shutil.which(cmd)
         if not system_cmd:
-            return Result(agent_id, "binary", False, f"System command not found: {cmd}", skipped=True)
+            return Result(
+                agent_id,
+                "binary",
+                False,
+                f"System command not found: {cmd}",
+                skipped=True,
+            )
         # For system commands, the working directory should be the extract_dir
         exe_path = Path(system_cmd)
         # Args should reference files in extract_dir
@@ -237,12 +246,24 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
         # Check if it's a "needs input" error (still means binary works)
         if "input" in combined or "prompt" in combined or "stdin" in combined:
             return Result(agent_id, "binary", True, "Binary works (needs input)")
-        # Check for environment issues (keyring, permissions, config files, etc.) - binary works but env fails
+        # Check for environment issues (keyring, permissions, etc.)
+        # Binary works but env fails
         env_issues = [
-            "keyring", "keychain", "credential", "permission denied", "access denied",
-            "configuration file not found", "config file not found", "providers.json",
-            "cannot find package", "module_not_found", "cannot find module",
-            "accepts 1 arg", "required argument", "missing argument", "agent-file",
+            "keyring",
+            "keychain",
+            "credential",
+            "permission denied",
+            "access denied",
+            "configuration file not found",
+            "config file not found",
+            "providers.json",
+            "cannot find package",
+            "module_not_found",
+            "cannot find module",
+            "accepts 1 arg",
+            "required argument",
+            "missing argument",
+            "agent-file",
         ]
         if any(issue in combined for issue in env_issues):
             return Result(agent_id, "binary", True, "Binary works (env setup needed)")
@@ -311,7 +332,8 @@ def verify_uvx(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Resul
             return Result(agent_id, "uvx", True, "Package works (needs input)")
         # Filter out download progress noise from stderr
         error_lines = [
-            line for line in stderr.split("\n")
+            line
+            for line in stderr.split("\n")
             if line.strip() and not line.strip().startswith(("Downloading", "Installed", " "))
         ]
         msg = "\n".join(error_lines[:5]) if error_lines else f"Exit code: {exit_code}"
@@ -345,7 +367,7 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
 
     # Extract (skip if already extracted)
     if not extract_dir.exists():
-        print(f"    → Extracting archive...")
+        print("    → Extracting archive...")
         extract_dir.mkdir()
         if not extract_archive(archive_path, extract_dir):
             return False, "Extraction failed"
@@ -353,7 +375,9 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
     return True, "Binary prepared"
 
 
-def build_agent_command(agent: dict, dist_type: str, sandbox: Path) -> tuple[list[str], Path, dict[str, str]]:
+def build_agent_command(
+    agent: dict, dist_type: str, sandbox: Path
+) -> tuple[list[str], Path, dict[str, str]]:
     """Build command, working directory, and env for an agent distribution.
 
     Returns:
@@ -410,6 +434,19 @@ def build_agent_command(agent: dict, dist_type: str, sandbox: Path) -> tuple[lis
     return cmd, cwd, env
 
 
+def _print_auth_diagnostics(result) -> None:
+    """Print diagnostic details from a failed AuthCheckResult."""
+    if result.duration_seconds is not None:
+        print(f"      Duration: {result.duration_seconds:.1f}s")
+    if result.process_exit_code is not None:
+        print(f"      Process exit code: {result.process_exit_code}")
+    if result.stderr_tail:
+        lines = result.stderr_tail.rstrip().split("\n")
+        # Show last 20 lines max
+        for line in lines[-20:]:
+            print(f"      stderr: {line}")
+
+
 def verify_auth(
     agent: dict,
     dist_type: str,
@@ -432,8 +469,7 @@ def verify_auth(
     agent_id = agent["id"]
 
     if not HAS_AUTH_CLIENT:
-        return Result(agent_id, dist_type, False,
-                      "Auth client not available", skipped=True)
+        return Result(agent_id, dist_type, False, "Auth client not available", skipped=True)
 
     # For binary distributions, ensure download and extraction first
     if dist_type == "binary":
@@ -445,8 +481,9 @@ def verify_auth(
     cmd, cwd, agent_env = build_agent_command(agent, dist_type, sandbox)
 
     if not cmd:
-        return Result(agent_id, dist_type, False,
-                      f"Cannot build command for {dist_type}", skipped=True)
+        return Result(
+            agent_id, dist_type, False, f"Cannot build command for {dist_type}", skipped=True
+        )
 
     # Create isolated environment with sandbox HOME
     auth_sandbox = sandbox / "auth-home"
@@ -463,12 +500,22 @@ def verify_auth(
     result = run_auth_check(cmd, cwd, env, auth_timeout)
 
     if result.success:
-        methods_info = ", ".join(
-            f"{m.id}({m.type})" for m in result.auth_methods if m.type
-        )
+        methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
         return Result(agent_id, dist_type, True, f"Auth OK: {methods_info}")
-    else:
-        return Result(agent_id, dist_type, False, result.error or "Auth check failed")
+
+    # Print diagnostics for failed attempt
+    _print_auth_diagnostics(result)
+
+    # Retry once for transient failures
+    print("    Retrying...")
+    result = run_auth_check(cmd, cwd, env, auth_timeout)
+
+    if result.success:
+        methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
+        return Result(agent_id, dist_type, True, f"Auth OK (retry): {methods_info}")
+
+    _print_auth_diagnostics(result)
+    return Result(agent_id, dist_type, False, result.error or "Auth check failed")
 
 
 def verify_agent(
@@ -514,10 +561,10 @@ def verify_agent(
             if dtype == "binary":
                 extracted = sandbox / "extracted"
                 if extracted.exists():
-                    print(f"    Cleaning extracted files (keeping downloads)...")
+                    print("    Cleaning extracted files (keeping downloads)...")
                     shutil.rmtree(extracted, ignore_errors=True)
             else:
-                print(f"    Cleaning sandbox...")
+                print("    Cleaning sandbox...")
                 shutil.rmtree(sandbox, ignore_errors=True)
 
         sandbox.mkdir(parents=True, exist_ok=True)
@@ -532,7 +579,13 @@ def verify_agent(
         elif dtype == "uvx":
             result = verify_uvx(agent, sandbox, timeout, verbose)
         else:
-            result = Result(agent_id, dtype, False, f"Unknown distribution type: {dtype}", skipped=True)
+            result = Result(
+                agent_id,
+                dtype,
+                False,
+                f"Unknown distribution type: {dtype}",
+                skipped=True,
+            )
 
         results.append(result)
 
@@ -551,12 +604,12 @@ def verify_agent(
 
 
 def load_registry(registry_dir: Path) -> list[dict]:
-    """Load all agents from registry directory."""
+    """Load all agents from registry directory, excluding quarantined ones."""
     agents = []
-    skip_dirs = {".claude", ".git", ".github", ".idea", "__pycache__", "dist", "_not_yet_unsupported"}
+    quarantine = load_quarantine(registry_dir)
 
     for agent_dir in sorted(registry_dir.iterdir()):
-        if not agent_dir.is_dir() or agent_dir.name in skip_dirs:
+        if not agent_dir.is_dir() or agent_dir.name in SKIP_DIRS:
             continue
 
         agent_json = agent_dir / "agent.json"
@@ -565,9 +618,21 @@ def load_registry(registry_dir: Path) -> list[dict]:
 
         try:
             with open(agent_json) as f:
-                agents.append(json.load(f))
+                agent = json.load(f)
         except json.JSONDecodeError as e:
             print(f"Warning: Invalid JSON in {agent_json}: {e}")
+            continue
+
+        agent_id = agent.get("id", agent_dir.name)
+        if agent_id in quarantine:
+            print(f"  ⊘ Quarantined {agent_id}: {quarantine[agent_id]}")
+            continue
+
+        agents.append(agent)
+
+    if quarantine:
+        print(f"  ({len(quarantine)} agent(s) quarantined)")
+        print()
 
     return agents
 
@@ -579,7 +644,7 @@ def main():
         epilog="""
 Examples:
   %(prog)s                          # Verify all agents (basic launch test)
-  %(prog)s -a claude-code,gemini    # Verify specific agents (comma-separated)
+  %(prog)s -a claude-acp,gemini     # Verify specific agents (comma-separated)
   %(prog)s -t npx                   # Verify only npx distributions
   %(prog)s --clean                  # Clean sandboxes before running
   %(prog)s --clean-all              # Remove all sandboxes and exit
@@ -587,22 +652,40 @@ Examples:
 """,
     )
     parser.add_argument("--agent", "-a", help="Verify specific agent IDs (comma-separated)")
-    parser.add_argument("--type", "-t", choices=["binary", "npx", "uvx"],
-                        help="Verify specific distribution type only")
-    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
-                        help=f"Process timeout in seconds (default: {DEFAULT_TIMEOUT})")
-    parser.add_argument("--sandbox-dir", "-s", default=DEFAULT_SANDBOX_DIR,
-                        help=f"Sandbox directory (default: {DEFAULT_SANDBOX_DIR})")
-    parser.add_argument("--clean", "-c", action="store_true",
-                        help="Clean agent sandbox before running")
-    parser.add_argument("--clean-all", action="store_true",
-                        help="Remove all sandboxes and exit")
-    parser.add_argument("--verbose", "-v", action="store_true",
-                        help="Verbose output")
-    parser.add_argument("--auth-check", action="store_true",
-                        help="Verify ACP auth support instead of basic launch test (requires agent-client-protocol)")
-    parser.add_argument("--auth-timeout", type=float, default=DEFAULT_AUTH_TIMEOUT,
-                        help=f"ACP handshake timeout in seconds (default: {DEFAULT_AUTH_TIMEOUT})")
+    parser.add_argument(
+        "--type",
+        "-t",
+        choices=["binary", "npx", "uvx"],
+        help="Verify specific distribution type only",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=DEFAULT_TIMEOUT,
+        help=f"Process timeout in seconds (default: {DEFAULT_TIMEOUT})",
+    )
+    parser.add_argument(
+        "--sandbox-dir",
+        "-s",
+        default=DEFAULT_SANDBOX_DIR,
+        help=f"Sandbox directory (default: {DEFAULT_SANDBOX_DIR})",
+    )
+    parser.add_argument(
+        "--clean", "-c", action="store_true", help="Clean agent sandbox before running"
+    )
+    parser.add_argument("--clean-all", action="store_true", help="Remove all sandboxes and exit")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+    parser.add_argument(
+        "--auth-check",
+        action="store_true",
+        help="Verify ACP auth support instead of basic launch test",
+    )
+    parser.add_argument(
+        "--auth-timeout",
+        type=float,
+        default=DEFAULT_AUTH_TIMEOUT,
+        help=f"ACP handshake timeout in seconds (default: {DEFAULT_AUTH_TIMEOUT})",
+    )
     args = parser.parse_args()
 
     # Always show what's happening
@@ -640,12 +723,15 @@ Examples:
     print()
 
     # Filter if specific agents requested (comma-separated)
+    quarantine = load_quarantine(registry_dir)
     if args.agent:
         requested_ids = [a.strip() for a in args.agent.split(",")]
         all_agent_ids = [a["id"] for a in agents]
 
-        # Check for invalid agent IDs
-        invalid = [aid for aid in requested_ids if aid not in all_agent_ids]
+        # Check for invalid agent IDs (quarantined agents are valid but skipped)
+        invalid = [
+            aid for aid in requested_ids if aid not in all_agent_ids and aid not in quarantine
+        ]
         if invalid:
             print(f"Unknown agent(s): {', '.join(invalid)}")
             print(f"Available: {', '.join(all_agent_ids)}")

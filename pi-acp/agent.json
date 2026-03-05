@@ -1,0 +1,16 @@
+{
+  "id": "pi-acp",
+  "name": "pi ACP",
+  "version": "0.0.21",
+  "description": "ACP adapter for pi coding agent",
+  "repository": "https://github.com/svkozak/pi-acp",
+  "authors": [
+    "Sergii Kozak <svkozak@gmail.com>"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "pi-acp@0.0.21"
+    }
+  }
+}
