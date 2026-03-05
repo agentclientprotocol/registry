@@ -1,6 +1,6 @@
 {
-  "id": "codebuddy",
-  "name": "Codebuddy",
+  "id": "codebuddy-code",
+  "name": "Codebuddy Code",
   "version": "2.54.0",
   "description": "Tencent Cloud's official intelligent coding tool",
   "repository": "https://www.codebuddy.cn/cli/",
