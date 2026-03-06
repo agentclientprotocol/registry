@@ -3,6 +3,8 @@
 import urllib.error
 from unittest.mock import patch
 
+import pytest
+
 from update_versions import make_request
 
 
@@ -62,11 +64,8 @@ class TestMakeRequestServerErrors:
             hdrs={},
             fp=None,
         )
-        try:
+        with pytest.raises(urllib.error.HTTPError, match="403"):
             make_request("https://example.com/api")
-            assert False, "Expected HTTPError to be raised"
-        except urllib.error.HTTPError as e:
-            assert e.code == 403
 
     @patch("update_versions.urllib.request.urlopen")
     def test_429_raises(self, mock_urlopen):
@@ -77,8 +76,5 @@ class TestMakeRequestServerErrors:
             hdrs={},
             fp=None,
         )
-        try:
+        with pytest.raises(urllib.error.HTTPError, match="429"):
             make_request("https://example.com/api")
-            assert False, "Expected HTTPError to be raised"
-        except urllib.error.HTTPError as e:
-            assert e.code == 429
