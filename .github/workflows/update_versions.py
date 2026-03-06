@@ -228,7 +228,7 @@ def check_agent_version(
             return None, None  # Skip pre-release versions
         source_versions["uvx"] = (latest, f"https://pypi.org/pypi/{package_name}/json")
 
-    if "binary" in distribution and repository:
+    if "binary" in distribution and repository and "github.com" in repository:
         latest, _assets = get_github_latest_release(repository)
         if not latest:
             return None, UpdateError(

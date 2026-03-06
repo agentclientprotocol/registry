@@ -74,7 +74,7 @@ Agent versions are automatically updated via `.github/workflows/update-versions.
 
 - **Schedule:** Runs hourly (cron: `0 * * * *`)
 - **Scope:** Checks all agents in the root directory
-- **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases)
+- **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases only — non-GitHub `repository` URLs are skipped)
 
 ```bash
 # Dry run - check for available updates
@@ -94,7 +94,7 @@ The workflow can also be triggered manually via GitHub Actions with options to a
 To update agents manually:
 
 1. **For npm packages** (`npx` distribution): Check latest version at `https://registry.npmjs.org/<package>/latest`
-2. **For GitHub binaries** (`binary` distribution): Check latest release at `https://api.github.com/repos/<owner>/<repo>/releases/latest`
+2. **For GitHub binaries** (`binary` distribution): Check latest release at `https://api.github.com/repos/<owner>/<repo>/releases/latest`. Note: automated version checking only works for agents with a GitHub `repository` URL. Proprietary agents with non-GitHub or missing `repository` URLs must be updated manually.
 
 Update `agent.json`:
 
