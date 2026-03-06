@@ -85,6 +85,8 @@ def make_request(url: str, headers: dict | None = None) -> dict | str | None:
     except urllib.error.HTTPError as e:
         if e.code == 404:
             return None
+        if e.code >= 500:
+            return None
         raise
     except (urllib.error.URLError, TimeoutError, OSError):
         return None
