@@ -266,7 +266,9 @@ def validate_icon(icon_path: Path) -> list[str]:
 
     # Reject HTML/XML comments (they break MDX/JSX when icons are embedded in docs)
     if "<!--" in content:
-        errors.append("Icon contains HTML comments (<!-- ... -->) which break MDX embedding; remove them")
+        errors.append(
+            "Icon contains HTML comments which break MDX embedding; remove them"
+        )
 
     # Parse SVG as XML
     try:
