@@ -219,3 +219,15 @@ class TestValidateIcon:
                 "</svg>",
             )
             assert validate_icon(p) == []
+
+    def test_html_comments_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = self._write_icon(
+                Path(d),
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">'
+                "<!-- a comment -->"
+                '<path fill="currentColor" d="M0 0z"/>'
+                "</svg>",
+            )
+            errors = validate_icon(p)
+            assert any("HTML comments" in e for e in errors)
