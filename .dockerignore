@@ -1,9 +1,0 @@
-.git
-.github/workflows/.pytest_cache
-.github/workflows/.ruff_cache
-.matrix-sandbox
-.sandbox
-dist
-.protocol-matrix
-.docker-state
-__pycache__

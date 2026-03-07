@@ -37,19 +37,19 @@ Run the registry tooling in Docker to keep downloads, caches, and auth-related s
 
 ```bash
 # Validate schema/build output in a container
-scripts/run-registry-docker.sh uv run --with jsonschema .github/workflows/build_registry.py
+.github/workflows/scripts/run-registry-docker.sh uv run --with jsonschema .github/workflows/build_registry.py
 
 # Verify registered agents in a container
-scripts/run-registry-docker.sh python3 .github/workflows/verify_agents.py --auth-check
+.github/workflows/scripts/run-registry-docker.sh python3 .github/workflows/verify_agents.py --auth-check
 
 # Generate the protocol feature matrix in a container
-scripts/run-protocol-matrix.sh
+.github/workflows/scripts/run-protocol-matrix.sh
 
 # Generate a capabilities-only matrix table in a container
-scripts/run-protocol-matrix.sh --table-mode capabilities
+.github/workflows/scripts/run-protocol-matrix.sh --table-mode capabilities
 
 # Reuse unchanged agent versions from the previous snapshot
-scripts/run-protocol-matrix.sh --table-mode capabilities --changed-only
+.github/workflows/scripts/run-protocol-matrix.sh --table-mode capabilities --changed-only
 ```
 
 The container keeps state under `.docker-state/` in the repo and disables Python keyring backends to avoid host keychain prompts during local verification.

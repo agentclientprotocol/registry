@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARGS=(
   python3
   .github/workflows/protocol_matrix.py
@@ -15,4 +16,4 @@ if [[ -n "${ACP_PROTOCOL_MATRIX_SKIP_AGENTS:-}" ]]; then
   ARGS+=(--skip-agent "$ACP_PROTOCOL_MATRIX_SKIP_AGENTS")
 fi
 
-exec "$ROOT/scripts/run-registry-docker.sh" "${ARGS[@]}" "$@"
+exec "$SCRIPT_DIR/run-registry-docker.sh" "${ARGS[@]}" "$@"

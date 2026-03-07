@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 IMAGE="${ACP_REGISTRY_IMAGE:-acp-registry-tools}"
-DOCKERFILE="${ACP_REGISTRY_DOCKERFILE:-$ROOT/docker/registry-tools.Dockerfile}"
+WORKFLOWS_DIR="$ROOT/.github/workflows"
+DOCKERFILE="${ACP_REGISTRY_DOCKERFILE:-$WORKFLOWS_DIR/docker/registry-tools.Dockerfile}"
+DOCKER_CONTEXT="${ACP_REGISTRY_DOCKER_CONTEXT:-$WORKFLOWS_DIR}"
 BUILD_IMAGE="${ACP_REGISTRY_BUILD_IMAGE:-1}"
 STATE_DIR_REL="${ACP_REGISTRY_STATE_DIR:-.docker-state}"
 STATE_DIR_HOST="$ROOT/$STATE_DIR_REL"
@@ -26,7 +28,7 @@ mkdir -p \
   "$STATE_DIR_HOST/xdg-cache"
 
 if [[ "$BUILD_IMAGE" == "1" ]]; then
-  docker build -f "$DOCKERFILE" -t "$IMAGE" "$ROOT"
+  docker build -f "$DOCKERFILE" -t "$IMAGE" "$DOCKER_CONTEXT"
 fi
 
 exec docker run --rm \
