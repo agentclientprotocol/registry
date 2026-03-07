@@ -33,7 +33,7 @@ cd .github/workflows && uv run --with ruff ruff format .
 
 ## Docker Validation
 
-Run the registry tooling in Docker to keep downloads, caches, and auth-related state isolated from your host machine:
+GitHub Actions runs the nightly protocol matrix natively on the runner (`uv` + Node.js installed in the workflow), but local verification can still use Docker to keep downloads, caches, and auth-related state isolated from your host machine:
 
 ```bash
 # Validate schema/build output in a container
