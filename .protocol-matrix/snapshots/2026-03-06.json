@@ -1,0 +1,1582 @@
+{
+  "date": "2026-03-06",
+  "generatedAt": "2026-03-06T23:34:38+00:00",
+  "summary": {
+    "agentsProbed": 27,
+    "initializeSuccess": 0,
+    "sessionNewAuthRequired": 0,
+    "features": {
+      "session/list": {
+        "supported": 0,
+        "authRequired": 0,
+        "methodNotFound": 0,
+        "other": 27
+      },
+      "session/fork": {
+        "supported": 0,
+        "authRequired": 0,
+        "methodNotFound": 0,
+        "other": 27
+      },
+      "session/resume": {
+        "supported": 0,
+        "authRequired": 0,
+        "methodNotFound": 0,
+        "other": 27
+      },
+      "session/stop": {
+        "supported": 0,
+        "authRequired": 0,
+        "methodNotFound": 0,
+        "other": 27
+      },
+      "session/set_model": {
+        "supported": 0,
+        "authRequired": 0,
+        "methodNotFound": 0,
+        "other": 27
+      }
+    }
+  },
+  "agents": [
+    {
+      "id": "amp-acp",
+      "name": "Amp",
+      "registryVersion": "0.7.0",
+      "repository": "https://github.com/tao12345666333/amp-acp",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "auggie",
+      "name": "Auggie CLI",
+      "registryVersion": "0.18.1",
+      "repository": "https://github.com/augmentcode/auggie-zed-extension",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/auggie --yes"
+    },
+    {
+      "id": "autohand",
+      "name": "Autohand Code",
+      "registryVersion": "0.2.1",
+      "repository": "https://github.com/autohandai/autohand-acp",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/autohand --yes"
+    },
+    {
+      "id": "claude-acp",
+      "name": "Claude Agent",
+      "registryVersion": "0.20.2",
+      "repository": "https://github.com/zed-industries/claude-agent-acp",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/claude-acp --yes"
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "registryVersion": "2.6.0",
+      "repository": "https://github.com/cline/cline",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/cline --yes"
+    },
+    {
+      "id": "codebuddy-code",
+      "name": "Codebuddy Code",
+      "registryVersion": "2.55.1",
+      "repository": "https://www.codebuddy.cn/cli/",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/codebuddy-code --yes"
+    },
+    {
+      "id": "codex-acp",
+      "name": "Codex CLI",
+      "registryVersion": "0.9.5",
+      "repository": "https://github.com/zed-industries/codex-acp",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/codex-acp --yes"
+    },
+    {
+      "id": "corust-agent",
+      "name": "Corust Agent",
+      "registryVersion": "0.3.7",
+      "repository": "https://github.com/Corust-ai/corust-agent-release",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "crow-cli",
+      "name": "crow-cli",
+      "registryVersion": "0.1.12",
+      "repository": "https://github.com/crow-cli/crow-cli",
+      "distribution": "uvx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": "error: Failed to fetch: `https://pypi.org/simple/crow-cli/` Caused by: Could not connect, are you offline? Caused by: Request failed after 3 retries Caused by: error sending request for url (https://pypi.org/simple/crow-cli/) Caused by: client error (Connect) Caused by: dns error: failed to lookup address information: nodename nor servname provided, or not known Caused by: failed to lookup address information: nodename nor servname provided, or not known",
+      "commandPreview": "uvx --cache-dir /Users/ignatov/src/acp/registry/.matrix-sandbox/uvx/crow-cli/uv-cache crow-cli"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "registryVersion": "0.1.0",
+      "repository": "https://cursor.com/docs/cli/acp",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "dimcode",
+      "name": "DimCode",
+      "registryVersion": "0.0.13",
+      "repository": null,
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/dimcode --yes"
+    },
+    {
+      "id": "factory-droid",
+      "name": "Factory Droid",
+      "registryVersion": "0.69.0",
+      "repository": null,
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/factory-droid --yes"
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini CLI",
+      "registryVersion": "0.32.1",
+      "repository": "https://github.com/google-gemini/gemini-cli",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/gemini --yes"
+    },
+    {
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
+      "registryVersion": "1.448.0",
+      "repository": "https://github.com/github/copilot-language-server-release",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/github-copilot --yes"
+    },
+    {
+      "id": "github-copilot-cli",
+      "name": "GitHub Copilot",
+      "registryVersion": "0.0.422",
+      "repository": "https://github.com/github/copilot-cli",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/github-copilot-cli --yes"
+    },
+    {
+      "id": "goose",
+      "name": "goose",
+      "registryVersion": "1.27.1",
+      "repository": "https://github.com/block/goose",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "junie",
+      "name": "Junie",
+      "registryVersion": "888.117.0",
+      "repository": "https://github.com/JetBrains/junie",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/junie --yes"
+    },
+    {
+      "id": "kilo",
+      "name": "Kilo",
+      "registryVersion": "7.0.39",
+      "repository": "https://github.com/Kilo-Org/kilocode",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/kilo --yes"
+    },
+    {
+      "id": "kimi",
+      "name": "Kimi CLI",
+      "registryVersion": "1.17.0",
+      "repository": "https://github.com/MoonshotAI/kimi-cli",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "minion-code",
+      "name": "Minion Code",
+      "registryVersion": "0.1.39",
+      "repository": "https://github.com/femto/minion-code",
+      "distribution": "uvx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": "error: Failed to fetch: `https://pypi.org/simple/minion-code/` Caused by: Could not connect, are you offline? Caused by: Request failed after 3 retries Caused by: error sending request for url (https://pypi.org/simple/minion-code/) Caused by: client error (Connect) Caused by: dns error: failed to lookup address information: nodename nor servname provided, or not known Caused by: failed to lookup address information: nodename nor servname provided, or not known",
+      "commandPreview": "uvx --cache-dir /Users/ignatov/src/acp/registry/.matrix-sandbox/uvx/minion-code/uv-cache minion-code@0.1.39"
+    },
+    {
+      "id": "mistral-vibe",
+      "name": "Mistral Vibe",
+      "registryVersion": "2.3.0",
+      "repository": "https://github.com/mistralai/mistral-vibe",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "nova",
+      "name": "Nova",
+      "registryVersion": "1.0.66",
+      "repository": "https://github.com/Compass-Agentic-Platform/nova",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/nova --yes"
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "registryVersion": "1.2.20",
+      "repository": "https://github.com/anomalyco/opencode",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    },
+    {
+      "id": "pi-acp",
+      "name": "pi ACP",
+      "registryVersion": "0.0.21",
+      "repository": "https://github.com/svkozak/pi-acp",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/pi-acp --yes"
+    },
+    {
+      "id": "qoder",
+      "name": "Qoder CLI",
+      "registryVersion": "0.1.29",
+      "repository": null,
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/qoder --yes"
+    },
+    {
+      "id": "qwen-code",
+      "name": "Qwen Code",
+      "registryVersion": "0.11.1",
+      "repository": "https://github.com/QwenLM/qwen-code",
+      "distribution": "npx",
+      "initialize": {
+        "status": "no_response",
+        "code": null,
+        "message": "timeout after 20.0s"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": "npx --prefix /Users/ignatov/src/acp/registry/.matrix-sandbox/npx/qwen-code --yes"
+    },
+    {
+      "id": "stakpak",
+      "name": "Stakpak",
+      "registryVersion": "0.3.66",
+      "repository": "https://github.com/stakpak/agent",
+      "distribution": "binary",
+      "initialize": {
+        "status": "process_error",
+        "code": null,
+        "message": "Download failed"
+      },
+      "protocolVersion": null,
+      "agentInfoVersion": null,
+      "authMethods": [],
+      "capabilities": {
+        "loadSession": false,
+        "sessionList": false,
+        "sessionFork": false,
+        "sessionResume": false,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "not_probed",
+        "code": null,
+        "message": null
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/resume": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/stop": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        },
+        "session/set_model": {
+          "status": "not_probed",
+          "code": null,
+          "message": null
+        }
+      },
+      "stderrTail": null,
+      "commandPreview": null
+    }
+  ]
+}

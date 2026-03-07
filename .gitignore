@@ -3,6 +3,8 @@ dist/
 
 # Verification sandboxes
 .sandbox/
+.matrix-sandbox/
+.docker-state/
 
 # Python
 __pycache__/
