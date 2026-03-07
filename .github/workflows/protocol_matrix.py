@@ -997,10 +997,7 @@ def parse_args() -> argparse.Namespace:
         "--table-mode",
         choices=TABLE_MODE_CHOICES,
         default=DEFAULT_TABLE_MODE,
-        help=(
-            "Markdown main table mode "
-            f"(default: {DEFAULT_TABLE_MODE})"
-        ),
+        help=(f"Markdown main table mode (default: {DEFAULT_TABLE_MODE})"),
     )
     parser.add_argument(
         "--changed-only",
