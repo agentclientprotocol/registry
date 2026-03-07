@@ -50,12 +50,24 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
 
-      - name: Build registry tools image
-        run: docker build -f .github/workflows/docker/registry-tools.Dockerfile -t acp-registry-tools .github/workflows
+      - name: Install uv
+        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
 
-      - name: Generate matrix in container
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Generate matrix
         env:
-          ACP_REGISTRY_BUILD_IMAGE: "0"
+          CI: "1"
+          TERM: dumb
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+          PYTHON_KEYRING_DISABLED: "1"
+          UV_CACHE_DIR: ${{ runner.temp }}/uv-cache
+          NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
         run: |
           AGENTS_INPUT=""
           SKIP_INPUT="crow-cli"
@@ -69,7 +81,11 @@ jobs:
             CHANGED_ONLY="${{ inputs.changed_only }}"
           fi
 
+          mkdir -p "$UV_CACHE_DIR" "$NPM_CONFIG_CACHE" "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME"
+
           ARGS=(
+            --sandbox-dir .matrix-sandbox
+            --output-dir .protocol-matrix
             --init-timeout 45
             --rpc-timeout 5
             --table-mode "$TABLE_MODE"
@@ -84,10 +100,10 @@ jobs:
           fi
 
           if [ -n "$SKIP_INPUT" ]; then
-            export ACP_PROTOCOL_MATRIX_SKIP_AGENTS="$SKIP_INPUT"
+            ARGS+=(--skip-agent "$SKIP_INPUT")
           fi
 
-          .github/workflows/scripts/run-protocol-matrix.sh "${ARGS[@]}"
+          python3 .github/workflows/protocol_matrix.py "${ARGS[@]}"
 
       - name: Summarize matrix run
         id: summary
