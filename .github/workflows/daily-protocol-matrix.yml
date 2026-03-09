@@ -1,0 +1,164 @@
+name: Nightly Protocol Matrix
+
+on:
+  schedule:
+    # Run nightly at 05:00 UTC
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+    inputs:
+      agents:
+        description: "Comma-separated agent IDs (optional)"
+        required: false
+        default: ""
+        type: string
+      skip_agents:
+        description: "Comma-separated agent IDs to skip (optional)"
+        required: false
+        default: ""
+        type: string
+      table_mode:
+        description: "Main markdown table mode"
+        required: false
+        default: capabilities
+        type: choice
+        options:
+          - capabilities
+          - full
+      changed_only:
+        description: "Probe only changed agent versions"
+        required: false
+        default: false
+        type: boolean
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Generate GitHub token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
+        id: generate-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Generate matrix
+        env:
+          CI: "1"
+          TERM: dumb
+          PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
+          PYTHON_KEYRING_DISABLED: "1"
+          UV_CACHE_DIR: ${{ runner.temp }}/uv-cache
+          NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+        run: |
+          AGENTS_INPUT=""
+          SKIP_INPUT=""
+          TABLE_MODE="capabilities"
+          CHANGED_ONLY="false"
+
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            AGENTS_INPUT="${{ inputs.agents }}"
+            SKIP_INPUT="${{ inputs.skip_agents }}"
+            TABLE_MODE="${{ inputs.table_mode }}"
+            CHANGED_ONLY="${{ inputs.changed_only }}"
+          fi
+
+          mkdir -p "$UV_CACHE_DIR" "$NPM_CONFIG_CACHE" "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME"
+
+          ARGS=(
+            --sandbox-dir .matrix-sandbox
+            --output-dir .protocol-matrix
+            --init-timeout 120
+            --rpc-timeout 5
+            --table-mode "$TABLE_MODE"
+          )
+
+          if [ "$CHANGED_ONLY" = "true" ]; then
+            ARGS+=(--changed-only)
+          fi
+
+          if [ -n "$AGENTS_INPUT" ]; then
+            ARGS+=(--agent "$AGENTS_INPUT")
+          fi
+
+          if [ -n "$SKIP_INPUT" ]; then
+            ARGS+=(--skip-agent "$SKIP_INPUT")
+          fi
+
+          python3 .github/workflows/protocol_matrix.py "${ARGS[@]}"
+
+      - name: Summarize matrix run
+        id: summary
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          data = json.loads(Path('.protocol-matrix/latest.json').read_text())
+          summary = data.get('summary', {})
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print(f"report_date={data.get('date', '')}", file=output)
+              print(
+                  f"agents_probed_this_run={summary.get('agentsProbedThisRun', 0)}",
+                  file=output,
+              )
+              print(f"agents_reused={summary.get('agentsReused', 0)}", file=output)
+              print(
+                  f"initialize_success={summary.get('initializeSuccess', 0)}",
+                  file=output,
+              )
+              print(
+                  f"session_new_auth_required={summary.get('sessionNewAuthRequired', 0)}",
+                  file=output,
+              )
+          PY
+
+      - name: Commit matrix update
+        id: commit
+        run: |
+          git config user.name "acp-release[bot]"
+          git config user.email "2373403+acp-release[bot]@users.noreply.github.com"
+
+          git add .protocol-matrix/
+
+          if git diff --cached --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "docs: update protocol matrix for ${{ steps.summary.outputs.report_date }}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Write workflow summary
+        run: |
+          {
+            echo "## Protocol matrix"
+            echo
+            echo "- Date: `${{ steps.summary.outputs.report_date }}`"
+            echo "- Agents probed this run: `${{ steps.summary.outputs.agents_probed_this_run }}`"
+            echo "- Reused unchanged versions: `${{ steps.summary.outputs.agents_reused }}`"
+            echo "- Initialize success: `${{ steps.summary.outputs.initialize_success }}`"
+            echo "- `session/new` auth-required: `${{ steps.summary.outputs.session_new_auth_required }}`"
+            echo "- Committed update: `${{ steps.commit.outputs.committed }}`"
+          } >> "$GITHUB_STEP_SUMMARY"

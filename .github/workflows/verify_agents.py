@@ -18,7 +18,7 @@ import zipfile
 from pathlib import Path
 from typing import NamedTuple
 
-from registry_utils import SKIP_DIRS, load_quarantine
+from registry_utils import extract_npm_package_name, load_quarantine, should_skip_dir
 
 # Import auth client (only needed when --auth-check is used)
 try:
@@ -42,6 +42,11 @@ DEFAULT_TIMEOUT = 10  # seconds
 STARTUP_GRACE = 2  # seconds to wait before checking if process is alive
 DEFAULT_SANDBOX_DIR = ".sandbox"
 DEFAULT_AUTH_TIMEOUT = 120  # seconds for ACP handshake (includes npx download time)
+SYSTEM_COMMANDS = {"node", "python", "python3", "java", "ruby"}
+NPX_INSTALL_RETRY_PATTERNS = (
+    "shim not found",
+    "please reinstall: npm install",
+)
 
 
 class Result(NamedTuple):
@@ -143,6 +148,141 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
         return -1, "", f"Execution error: {e}"
 
 
+def normalize_command_path(cmd: str) -> str:
+    """Normalize command paths like ./tool to tool for lookup."""
+    return cmd[2:] if cmd.startswith("./") else cmd
+
+
+def ensure_executable(path: Path) -> None:
+    """Ensure a file has executable permissions on non-Windows platforms."""
+    if platform.system() == "Windows" or not path.exists() or not path.is_file():
+        return
+
+    current_mode = path.stat().st_mode
+    if current_mode & 0o111:
+        return
+
+    path.chmod(current_mode | 0o755)
+
+
+def resolve_binary_executable(extract_dir: Path, cmd: str) -> Path | None:
+    """Resolve the executable path for a prepared binary distribution."""
+    target_cmd = normalize_command_path(cmd)
+
+    if target_cmd in SYSTEM_COMMANDS:
+        system_cmd = shutil.which(target_cmd)
+        return Path(system_cmd) if system_cmd else None
+
+    for path in extract_dir.rglob(target_cmd):
+        return path
+
+    files_in_extract = list(extract_dir.iterdir()) if extract_dir.exists() else []
+    if len(files_in_extract) == 1 and files_in_extract[0].is_file():
+        raw_file = files_in_extract[0]
+        expected_path = extract_dir / target_cmd
+        if raw_file != expected_path and not expected_path.exists():
+            raw_file.rename(expected_path)
+        return expected_path
+
+    return extract_dir / target_cmd
+
+
+def should_retry_npx_auth_with_install(error: str | None, stderr_tail: str | None) -> bool:
+    """Detect npm packages that require a real install before auth probing."""
+    combined = "\n".join(part for part in (error, stderr_tail) if part).lower()
+    return any(pattern in combined for pattern in NPX_INSTALL_RETRY_PATTERNS)
+
+
+def npm_package_bin_name(package_spec: str, sandbox: Path) -> str:
+    """Determine the executable name exposed by an installed npm package."""
+    package_name = extract_npm_package_name(package_spec)
+    default_bin = package_name.rsplit("/", maxsplit=1)[-1]
+    package_json = sandbox / "node_modules" / package_name / "package.json"
+
+    if not package_json.exists():
+        return default_bin
+
+    try:
+        package_data = json.loads(package_json.read_text())
+    except (json.JSONDecodeError, OSError):
+        return default_bin
+
+    bin_field = package_data.get("bin")
+    if isinstance(bin_field, str):
+        return default_bin
+    if isinstance(bin_field, dict):
+        if default_bin in bin_field:
+            return default_bin
+        if len(bin_field) == 1:
+            return next(iter(bin_field))
+        if bin_field:
+            return sorted(bin_field)[0]
+
+    return default_bin
+
+
+def prepare_npx_package(
+    package_spec: str,
+    sandbox: Path,
+    env: dict[str, str],
+    timeout: float,
+) -> str | None:
+    """Install an npm package into the sandbox so postinstall hooks can run."""
+    full_env = os.environ.copy()
+    full_env.update(env)
+
+    try:
+        result = subprocess.run(
+            [
+                "npm",
+                "install",
+                "--no-audit",
+                "--no-fund",
+                "--prefix",
+                str(sandbox),
+                package_spec,
+            ],
+            cwd=sandbox,
+            env=full_env,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return f"npm install timed out after {timeout}s"
+    except Exception as exc:  # noqa: BLE001
+        return f"npm install failed: {type(exc).__name__}: {exc}"
+
+    if result.returncode == 0:
+        return None
+
+    combined = "\n".join(
+        line for line in (result.stderr + "\n" + result.stdout).splitlines() if line.strip()
+    )
+    return combined[:400] or f"npm install exited with code {result.returncode}"
+
+
+def build_installed_npx_command(
+    package_spec: str,
+    args: list[str],
+    sandbox: Path,
+    auth_home: Path,
+) -> list[str] | None:
+    """Resolve the best command for an npm package installed into the sandbox."""
+    bin_name = npm_package_bin_name(package_spec, sandbox)
+    candidates = [
+        auth_home / ".local" / "bin" / bin_name,
+        sandbox / "node_modules" / ".bin" / bin_name,
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            ensure_executable(candidate)
+            return [str(candidate)] + args
+
+    return None
+
+
 def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Result:
     """Verify binary distribution."""
     agent_id = agent["id"]
@@ -179,55 +319,22 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
     else:
         print("    → Using cached extraction")
 
-    # Find executable
-    if cmd.startswith("./"):
-        cmd = cmd[2:]
-
-    # Check if cmd is a system command (node, python, etc.)
-    if cmd in ("node", "python", "python3", "java", "ruby"):
-        system_cmd = shutil.which(cmd)
-        if not system_cmd:
+    exe_path = resolve_binary_executable(extract_dir, cmd)
+    if exe_path is None:
+        return Result(agent_id, "binary", False, f"Executable not found: {cmd}")
+    if not exe_path.exists():
+        normalized_cmd = normalize_command_path(cmd)
+        if normalized_cmd in SYSTEM_COMMANDS:
             return Result(
                 agent_id,
                 "binary",
                 False,
-                f"System command not found: {cmd}",
+                f"System command not found: {normalized_cmd}",
                 skipped=True,
             )
-        # For system commands, the working directory should be the extract_dir
-        exe_path = Path(system_cmd)
-        # Args should reference files in extract_dir
-    else:
-        # Look for the executable (might be in subdirectory)
-        exe_path = None
+        return Result(agent_id, "binary", False, f"Executable not found: {normalized_cmd}")
 
-        # First try exact match
-        for path in extract_dir.rglob(cmd):
-            exe_path = path
-            break
-
-        # If not found, try raw binary (file downloaded without archive)
-        if not exe_path:
-            # Check if there's only one file in extract_dir (raw binary case)
-            files_in_extract = list(extract_dir.iterdir())
-            if len(files_in_extract) == 1 and files_in_extract[0].is_file():
-                # Rename the raw binary to expected name
-                raw_file = files_in_extract[0]
-                expected_path = extract_dir / cmd
-                if not expected_path.exists():
-                    raw_file.rename(expected_path)
-                exe_path = expected_path
-
-        if not exe_path:
-            # Try direct path
-            exe_path = extract_dir / cmd
-
-        if not exe_path.exists():
-            return Result(agent_id, "binary", False, f"Executable not found: {cmd}")
-
-    # Make executable on Unix
-    if platform.system() != "Windows":
-        exe_path.chmod(exe_path.stat().st_mode | 0o755)
+    ensure_executable(exe_path)
 
     # Run
     print(f"    → Running: {exe_path.name} {' '.join(args)}")
@@ -372,6 +479,12 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
         if not extract_archive(archive_path, extract_dir):
             return False, "Extraction failed"
 
+    exe_path = resolve_binary_executable(extract_dir, target.get("cmd", ""))
+    if exe_path is None or not exe_path.exists():
+        return False, f"Executable not found: {normalize_command_path(target.get('cmd', ''))}"
+
+    ensure_executable(exe_path)
+
     return True, "Binary prepared"
 
 
@@ -410,22 +523,13 @@ def build_agent_command(
         env = target.get("env", {})
         extract_dir = sandbox / "extracted"
 
-        # Find the executable
         target_cmd = target.get("cmd", "")
-        if target_cmd.startswith("./"):
-            target_cmd = target_cmd[2:]
-
-        if target_cmd in ("node", "python", "python3", "java", "ruby"):
-            exe_path = Path(shutil.which(target_cmd) or target_cmd)
+        exe_path = resolve_binary_executable(extract_dir, target_cmd)
+        if exe_path is None or not exe_path.exists():
+            cmd = []
         else:
-            exe_path = None
-            for path in extract_dir.rglob(target_cmd):
-                exe_path = path
-                break
-            if not exe_path:
-                exe_path = extract_dir / target_cmd
-
-        cmd = [str(exe_path)] + args
+            ensure_executable(exe_path)
+            cmd = [str(exe_path)] + args
         cwd = extract_dir
     else:
         cmd = []
@@ -477,6 +581,17 @@ def verify_auth(
         if not success:
             return Result(agent_id, dist_type, False, message, skipped=True)
 
+    # Create isolated environment with sandbox HOME
+    auth_sandbox = sandbox / "auth-home"
+    auth_sandbox.mkdir(exist_ok=True)
+    env = {
+        "HOME": str(auth_sandbox),
+    }
+    auth_path_entries = [
+        str(auth_sandbox / ".local" / "bin"),
+        str(sandbox / "node_modules" / ".bin"),
+    ]
+
     # Build command for this distribution
     cmd, cwd, agent_env = build_agent_command(agent, dist_type, sandbox)
 
@@ -485,13 +600,8 @@ def verify_auth(
             agent_id, dist_type, False, f"Cannot build command for {dist_type}", skipped=True
         )
 
-    # Create isolated environment with sandbox HOME
-    auth_sandbox = sandbox / "auth-home"
-    auth_sandbox.mkdir(exist_ok=True)
-    env = {
-        "HOME": str(auth_sandbox),
-        **agent_env,
-    }
+    env.update(agent_env)
+    env["PATH"] = os.pathsep.join(auth_path_entries + [env.get("PATH", os.environ.get("PATH", ""))])
 
     if verbose:
         print(f"    → Auth check: {' '.join(cmd[:3])}...")
@@ -505,6 +615,33 @@ def verify_auth(
 
     # Print diagnostics for failed attempt
     _print_auth_diagnostics(result)
+
+    if dist_type == "npx" and should_retry_npx_auth_with_install(result.error, result.stderr_tail):
+        npx_dist = agent["distribution"].get("npx", {})
+        package = npx_dist.get("package", "")
+        args = npx_dist.get("args", [])
+
+        print("    Installing package into sandbox and retrying...")
+        install_error = prepare_npx_package(package, sandbox, env, auth_timeout)
+        if install_error is not None:
+            return Result(agent_id, dist_type, False, install_error)
+
+        installed_cmd = build_installed_npx_command(package, args, sandbox, auth_sandbox)
+        if installed_cmd is None:
+            return Result(
+                agent_id,
+                dist_type,
+                False,
+                f"Installed package did not expose a runnable binary: {package}",
+            )
+
+        result = run_auth_check(installed_cmd, sandbox, env, auth_timeout)
+        if result.success:
+            methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
+            return Result(agent_id, dist_type, True, f"Auth OK (installed): {methods_info}")
+
+        _print_auth_diagnostics(result)
+        return Result(agent_id, dist_type, False, result.error or "Auth check failed")
 
     # Retry once for transient failures
     print("    Retrying...")
@@ -609,7 +746,7 @@ def load_registry(registry_dir: Path) -> list[dict]:
     quarantine = load_quarantine(registry_dir)
 
     for agent_dir in sorted(registry_dir.iterdir()):
-        if not agent_dir.is_dir() or agent_dir.name in SKIP_DIRS:
+        if not agent_dir.is_dir() or should_skip_dir(agent_dir.name):
             continue
 
         agent_json = agent_dir / "agent.json"
