@@ -2,8 +2,8 @@ name: Nightly Protocol Matrix
 
 on:
   schedule:
-    # Run nightly at 05:00 UTC
-    - cron: "0 5 * * *"
+    # Run nightly after the hourly version update workflow.
+    - cron: "15 5 * * *"
   workflow_dispatch:
     inputs:
       agents:
@@ -34,6 +34,9 @@ permissions:
 
 jobs:
   generate:
+    concurrency:
+      group: registry-main-write
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
