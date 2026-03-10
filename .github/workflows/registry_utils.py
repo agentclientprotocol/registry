@@ -18,6 +18,11 @@ SKIP_DIRS = {
 }
 
 
+def should_skip_dir(name: str) -> bool:
+    """Return whether a top-level directory should be skipped during registry scans."""
+    return name in SKIP_DIRS or name.startswith(".")
+
+
 def extract_npm_package_name(package_spec: str) -> str:
     """Extract npm package name from spec like @scope/name@version."""
     if package_spec.startswith("@"):

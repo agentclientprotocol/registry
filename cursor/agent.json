@@ -3,6 +3,7 @@
   "name": "Cursor",
   "version": "0.1.0",
   "description": "Cursor's coding agent",
+  "repository": "https://cursor.com/docs/cli/acp",
   "authors": [
     "Cursor"
   ],

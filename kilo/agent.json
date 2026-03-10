@@ -1,7 +1,7 @@
 {
   "id": "kilo",
   "name": "Kilo",
-  "version": "7.0.39",
+  "version": "7.0.40",
   "description": "The open source coding agent",
   "repository": "https://github.com/Kilo-Org/kilocode",
   "authors": [
@@ -12,35 +12,35 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.39/kilo-darwin-arm64.zip",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.40/kilo-darwin-arm64.zip",
         "cmd": "./kilo",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.39/kilo-darwin-x64.zip",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.40/kilo-darwin-x64.zip",
         "cmd": "./kilo",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.39/kilo-linux-arm64.tar.gz",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.40/kilo-linux-arm64.tar.gz",
         "cmd": "./kilo",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.39/kilo-linux-x64.tar.gz",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.40/kilo-linux-x64.tar.gz",
         "cmd": "./kilo",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.39/kilo-windows-x64.zip",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.40/kilo-windows-x64.zip",
         "cmd": "./kilo.exe",
         "args": [
           "acp"
@@ -48,7 +48,7 @@
       }
     },
     "npx": {
-      "package": "@kilocode/cli@7.0.39",
+      "package": "@kilocode/cli@7.0.40",
       "args": [
         "acp"
       ]
