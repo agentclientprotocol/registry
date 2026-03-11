@@ -128,6 +128,9 @@ jobs:
   apply-updates:
     needs: check-versions
     if: needs.check-versions.outputs.has_updates == 'true' && (github.event_name == 'schedule' || inputs.apply == true || inputs.apply == 'true')
+    concurrency:
+      group: registry-main-write
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     permissions:
       contents: write

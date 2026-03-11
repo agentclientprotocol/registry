@@ -34,8 +34,11 @@ from typing import Any
 
 from verify_agents import build_agent_command, load_registry, prepare_binary
 
-DEFAULT_INIT_TIMEOUT = 45.0
+DEFAULT_INIT_TIMEOUT = 120.0
 DEFAULT_RPC_TIMEOUT = 5.0
+DEFAULT_EXIT_GRACE = 0.25
+EXIT_GRACE_POLL_INTERVAL = 0.05
+EXIT_GRACE_REAP_SLACK = 0.05
 DEFAULT_SANDBOX_DIR = ".matrix-sandbox"
 DEFAULT_OUTPUT_DIR = ".protocol-matrix"
 DEFAULT_TABLE_MODE = "full"
@@ -330,23 +333,79 @@ def send_jsonrpc_request(
     proc.stdin.flush()
 
 
+def process_exit_outcome(
+    exit_code: int,
+    method: str,
+) -> tuple[ProbeOutcome, dict[str, Any] | None]:
+    """Build a normalized process-exit outcome for a pending request."""
+    return (
+        ProbeOutcome(
+            status="process_error",
+            message=f"process exited with code {exit_code} before responding to {method}",
+        ),
+        None,
+    )
+
+
+def reconcile_timed_out_request(
+    proc: subprocess.Popen,
+    request_id: int,
+    method: str,
+    exit_grace: float,
+) -> tuple[ProbeOutcome, dict[str, Any] | None] | None:
+    """Reconcile a timed-out request with a near-immediate exit or late response."""
+    if exit_grace <= 0:
+        return None
+
+    deadline = time.monotonic() + exit_grace
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+
+        message = read_jsonrpc_line(proc, min(remaining, EXIT_GRACE_POLL_INTERVAL))
+        if message is None:
+            exit_code = proc.poll()
+            if exit_code is not None:
+                return process_exit_outcome(exit_code, method)
+            continue
+
+        if "_decode_error" in message:
+            return (
+                ProbeOutcome(status="decode_error", message=message["_decode_error"]),
+                None,
+            )
+
+        if message.get("id") == request_id and ("result" in message or "error" in message):
+            return classify_rpc_response(message), message
+
+    exit_code = proc.poll()
+    if exit_code is not None:
+        return process_exit_outcome(exit_code, method)
+
+    if EXIT_GRACE_REAP_SLACK > 0:
+        try:
+            exit_code = proc.wait(timeout=EXIT_GRACE_REAP_SLACK)
+        except subprocess.TimeoutExpired:
+            exit_code = None
+        if exit_code is not None:
+            return process_exit_outcome(exit_code, method)
+
+    return None
+
+
 def request_with_timeout(
     proc: subprocess.Popen,
     request_id: int,
     method: str,
     params: dict[str, Any],
     timeout: float,
+    exit_grace: float = DEFAULT_EXIT_GRACE,
 ) -> tuple[ProbeOutcome, dict[str, Any] | None]:
     """Send request and wait for the response with matching id."""
     exit_code = proc.poll()
     if exit_code is not None:
-        return (
-            ProbeOutcome(
-                status="process_error",
-                message=f"process exited with code {exit_code} before {method}",
-            ),
-            None,
-        )
+        return process_exit_outcome(exit_code, method)
 
     try:
         send_jsonrpc_request(proc, request_id, method, params)
@@ -372,15 +431,7 @@ def request_with_timeout(
         if message is None:
             exit_code = proc.poll()
             if exit_code is not None:
-                return (
-                    ProbeOutcome(
-                        status="process_error",
-                        message=(
-                            f"process exited with code {exit_code} before responding to {method}"
-                        ),
-                    ),
-                    None,
-                )
+                return process_exit_outcome(exit_code, method)
             break
 
         if "_decode_error" in message:
@@ -391,6 +442,10 @@ def request_with_timeout(
 
         if message.get("id") == request_id and ("result" in message or "error" in message):
             return classify_rpc_response(message), message
+
+    reconciled = reconcile_timed_out_request(proc, request_id, method, exit_grace)
+    if reconciled is not None:
+        return reconciled
 
     return (
         ProbeOutcome(status="no_response", message=f"timeout after {timeout:.1f}s"),
@@ -737,11 +792,22 @@ def ensure_binary_executable(cmd: list[str], dist_type: str) -> ProbeOutcome | N
         return None
 
     exe_path = Path(cmd[0])
-    if not exe_path.exists() or os.access(exe_path, os.X_OK):
+    if not exe_path.exists():
         return None
 
     try:
-        exe_path.chmod(exe_path.stat().st_mode | 0o755)
+        current_mode = exe_path.stat().st_mode
+    except OSError as exc:
+        return ProbeOutcome(
+            status="process_error",
+            message=short_message(f"Failed to inspect executable {exe_path}: {exc}"),
+        )
+
+    if current_mode & 0o111:
+        return None
+
+    try:
+        exe_path.chmod(current_mode | 0o755)
     except OSError as exc:
         return ProbeOutcome(
             status="process_error",

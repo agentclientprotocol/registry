@@ -258,6 +258,57 @@ def test_request_with_timeout_reports_exited_process():
     assert message is None
 
 
+def test_request_with_timeout_reclassifies_timeout_when_process_exits_during_grace():
+    proc = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            ("import sys,time; sys.stdin.readline(); time.sleep(0.03); sys.exit(9)"),
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    outcome, message = request_with_timeout(proc, 1, "initialize", {}, 0.005, exit_grace=0.5)
+
+    assert outcome.status == "process_error"
+    assert "code 9" in (outcome.message or "")
+    assert message is None
+
+
+def test_request_with_timeout_keeps_no_response_when_process_stays_alive():
+    proc = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            ("import sys,time; sys.stdin.readline(); time.sleep(1)"),
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    try:
+        outcome, message = request_with_timeout(
+            proc,
+            1,
+            "initialize",
+            {},
+            0.02,
+            exit_grace=0.05,
+        )
+    finally:
+        proc.terminate()
+        proc.wait(timeout=2)
+
+    assert outcome.status == "no_response"
+    assert "timeout after 0.0s" in (outcome.message or "")
+    assert message is None
+
+
 def test_feature_cell_formats_advertised_and_probe():
     cell = feature_cell(True, ProbeOutcome(status="invalid_params"))
     assert cell == "Y/yes"

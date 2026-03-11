@@ -18,7 +18,10 @@ python .github/workflows/build_registry.py
 ## Testing & Linting
 
 ```bash
-# Run tests
+# Run workflow tests in the Dockerized local environment (recommended)
+.github/workflows/scripts/run-workflows-tests.sh
+
+# Run workflow tests natively on the host (CI-style debugging only)
 cd .github/workflows && uv run --with pytest pytest tests/ -v
 
 # Lint check
@@ -36,6 +39,9 @@ cd .github/workflows && uv run --with ruff ruff format .
 GitHub Actions runs the nightly protocol matrix natively on the runner (`uv` + Node.js installed in the workflow), but local verification can still use Docker to keep downloads, caches, and auth-related state isolated from your host machine:
 
 ```bash
+# Run workflow tests in the Dockerized local environment
+.github/workflows/scripts/run-workflows-tests.sh
+
 # Validate schema/build output in a container
 .github/workflows/scripts/run-registry-docker.sh uv run --with jsonschema .github/workflows/build_registry.py
 
@@ -52,7 +58,9 @@ GitHub Actions runs the nightly protocol matrix natively on the runner (`uv` + N
 .github/workflows/scripts/run-protocol-matrix.sh --table-mode capabilities --changed-only
 ```
 
-The container keeps state under `.docker-state/` in the repo and disables Python keyring backends to avoid host keychain prompts during local verification.
+`run-protocol-matrix.sh` mirrors the scheduled GitHub Actions defaults: it uses `--table-mode capabilities` and creates ephemeral isolated Docker state plus a fresh protocol sandbox by default so agents cannot reuse local login/keychain state or stale install artifacts across runs. Set `ACP_PROTOCOL_MATRIX_KEEP_STATE=1` if you intentionally want to keep the container state and `.matrix-sandbox` for debugging.
+
+The generic Docker wrapper keeps state under `.docker-state/` in the repo, defaults to `linux/amd64` to match `ubuntu-latest`, injects a passwd entry for the current UID inside the container, and disables Python keyring backends to avoid host keychain prompts during local verification. It reuses an existing local Docker image when the requested platform and image inputs still match, and rebuilds automatically when they do not; set `ACP_REGISTRY_BUILD_IMAGE=1` to force a rebuild. Treat the Docker wrappers as the canonical local path; use host-native `uv run ...` commands only when you intentionally want to debug outside the container. Set `ACP_REGISTRY_DOCKER_PLATFORM=` to opt out of the default platform override when you explicitly want native-architecture debugging.
 Set `ACP_PROTOCOL_MATRIX_SKIP_AGENTS=crow-cli` to skip specific agents during matrix generation.
 
 ## Architecture

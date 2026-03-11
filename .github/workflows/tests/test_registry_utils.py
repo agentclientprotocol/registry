@@ -10,6 +10,7 @@ from registry_utils import (
     extract_pypi_package_name,
     load_quarantine,
     normalize_version,
+    should_skip_dir,
 )
 
 
@@ -95,3 +96,14 @@ class TestLoadQuarantine:
             p = Path(d) / "quarantine.json"
             p.write_text("not json")
             assert load_quarantine(Path(d)) == {}
+
+
+class TestShouldSkipDir:
+    def test_skips_hidden_runtime_dirs(self):
+        assert should_skip_dir(".sandbox")
+        assert should_skip_dir(".matrix-sandbox-debug")
+        assert should_skip_dir(".protocol-matrix-goose-check")
+        assert should_skip_dir(".tmp-junie-run")
+
+    def test_keeps_agent_dirs(self):
+        assert not should_skip_dir("codex-acp")

@@ -2,6 +2,7 @@
 """Build aggregated registry.json from individual agent directories."""
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -12,11 +13,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from registry_utils import (
-    SKIP_DIRS,
     extract_npm_package_name,
     extract_npm_package_version,
     extract_pypi_package_name,
     normalize_version,
+    should_skip_dir,
 )
 
 try:
@@ -535,7 +536,7 @@ def build_registry(dry_run: bool = False):
         print("  Install with: pip install jsonschema")
 
     for entry_dir in sorted(registry_dir.iterdir()):
-        if not entry_dir.is_dir() or entry_dir.name in SKIP_DIRS:
+        if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
             continue
 
         agent_json_path = entry_dir / "agent.json"
@@ -562,11 +563,21 @@ def build_registry(dry_run: bool = False):
 
     # Agents excluded from registry.json (default registry)
     DEFAULT_EXCLUDE_IDS = {"github-copilot"}
-    # Agents excluded from registry-for-jetbrains.json
-    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "claude-acp", "junie", "github-copilot-cli"}
-
     default_agents = [a for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
-    jetbrains_agents = [a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS]
+
+    # Agents excluded from registry-for-jetbrains.json
+    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "junie", "github-copilot-cli"}
+
+    def patch_agent_for_jetbrains(agent):
+        if agent["id"] == "claude-acp":
+            assert "npx" in agent["distribution"], "claude-acp must have npx distribution"
+            agent = copy.deepcopy(agent)
+            agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
+        return agent
+
+    jetbrains_agents = [
+        patch_agent_for_jetbrains(a) for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS
+    ]
 
     if dry_run:
         print(f"\nDry run: validated {len(agents)} agents successfully")

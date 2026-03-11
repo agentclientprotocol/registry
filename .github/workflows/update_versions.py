@@ -27,10 +27,10 @@ from pathlib import Path
 from typing import NamedTuple
 
 from registry_utils import (
-    SKIP_DIRS,
     extract_npm_package_name,
     extract_pypi_package_name,
     load_quarantine,
+    should_skip_dir,
 )
 
 
@@ -161,9 +161,7 @@ def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
         for entry_dir in sorted(base_path.iterdir()):
             if not entry_dir.is_dir():
                 continue
-            if entry_dir.name in SKIP_DIRS:
-                continue
-            if entry_dir.name.startswith("."):
+            if should_skip_dir(entry_dir.name):
                 continue
 
             agent_json = entry_dir / "agent.json"
