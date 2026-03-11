@@ -4,9 +4,9 @@
   "version": "0.1.6",
   "description": "An open-source AI agent that brings the power of xAI's Grok models directly into your terminal and Zed editor.",
   "repository": "https://github.com/micro-tech/grok-cli",
-  "authors": ["john mcconnell"],
-  "license": "License",
-  "icon": "https://raw.githubusercontent.com/micro-tech/grok-cli/master/icon.svg",
+  "authors": ["John McConnell"],
+  "license": "Custom-NC-Attribution",
+  "icon": "icon.svg",
   "distribution": {
     "binary": {
       "darwin-x86_64": {
