@@ -1,3 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <path fill="currentColor" d="M8 1L1 15h2.5l1.2-2.8h6.6L12.5 15H15L8 1zm0 3.4L10.7 11H5.3L8 4.4z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+  <polygon points="8,0.8 14.4,4.4 14.4,11.6 8,15.2 1.6,11.6 1.6,4.4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/>
+  <line x1="4.2" y1="6.2" x2="11.8" y2="6.2" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+  <line x1="4.8" y1="8" x2="11.2" y2="8" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.85"/>
+  <line x1="4.2" y1="9.8" x2="11.8" y2="9.8" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
 </svg>
