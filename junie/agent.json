@@ -1,19 +1,50 @@
 {
   "id": "junie",
   "name": "Junie",
-  "version": "849.19.0",
+  "version": "888.180.0",
   "description": "AI Coding Agent by JetBrains",
-  "repository": "https://github.com/jetbrains-junie/junie",
+  "repository": "https://github.com/JetBrains/junie",
   "authors": [
     "JetBrains"
   ],
   "license": "proprietary",
   "distribution": {
-    "npx": {
-      "package": "@jetbrains/junie-cli@849.19.0",
-      "args": [
-        "--acp=true"
-      ]
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/JetBrains/junie/releases/download/888.180/junie-release-888.180-macos-aarch64.zip",
+        "cmd": "./Applications/junie.app/Contents/MacOS/junie",
+        "args": [
+          "--acp=true"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/JetBrains/junie/releases/download/888.180/junie-release-888.180-macos-amd64.zip",
+        "cmd": "./Applications/junie.app/Contents/MacOS/junie",
+        "args": [
+          "--acp=true"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/JetBrains/junie/releases/download/888.180/junie-release-888.180-linux-aarch64.zip",
+        "cmd": "./junie-app/bin/junie",
+        "args": [
+          "--acp=true"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/JetBrains/junie/releases/download/888.180/junie-release-888.180-linux-amd64.zip",
+        "cmd": "./junie-app/bin/junie",
+        "args": [
+          "--acp=true"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/JetBrains/junie/releases/download/888.180/junie-release-888.180-windows-amd64.zip",
+        "cmd": "./junie/junie.exe",
+        "args": [
+          "--acp=true"
+        ]
+      }
     }
   }
 }

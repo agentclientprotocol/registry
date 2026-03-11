@@ -3,6 +3,16 @@ dist/
 
 # Verification sandboxes
 .sandbox/
+.matrix-sandbox/
+.docker-state/
+.sandbox-*/
+.matrix-sandbox-*/
+
+# Local protocol-matrix/debug output
+.protocol-matrix-*/
+.tmp-*/
+.tmp-*.out
+.tmp-*.err
 
 # Python
 __pycache__/
