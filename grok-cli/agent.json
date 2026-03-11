@@ -1,54 +1,33 @@
 {
   "id": "grok-cli",
-  "name": "Grok-cli",
-  "description": "An open-source AI agent that brings the power of xAI's Grok models directly into your terminal and Zed editor.",
-  "author": "micro-tech",
+  "name": "Grok CLI",
   "version": "0.1.6",
+  "description": "An open-source AI agent that brings the power of xAI's Grok models directly into your terminal and Zed editor.",
   "repository": "https://github.com/micro-tech/grok-cli",
+  "authors": ["john mcconnell"],
   "license": "License",
-  "icon": "https://www.google.com/search?q=https://raw.githubusercontent.com/micro-tech/grok-cli/main/icon.svg",
-  "type": "custom",
-  "command": "grok",
-  "args": ["--acp"],
-  "env_vars": [
-    {
-      "name": "GROK_API_KEY",
-      "description": "Your xAI API key from console.x.ai",
-      "required": true
-    }
-  ],
-  "targets": {
-    "darwin-x86_64": {
-      "bin": "grok"
-    },
-    "darwin-aarch64": {
-      "bin": "grok"
-    },
-    "linux-x86_64": {
-      "bin": "grok"
-    },
-    "windows-x86_64": {
-      "bin": "grok.exe"
-    }
-  },
+  "icon": "https://raw.githubusercontent.com/micro-tech/grok-cli/master/icon.svg",
   "distribution": {
     "binary": {
       "darwin-x86_64": {
         "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-macos-x86_64.zip",
-
-        "cmd": "grok"
+        "cmd": "grok",
+        "args": ["acp", "stdio"]
       },
       "darwin-aarch64": {
         "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-macos-aarch64.zip",
-        "cmd": "grok"
+        "cmd": "grok",
+        "args": ["acp", "stdio"]
       },
       "linux-x86_64": {
         "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-linux-x86_64.zip",
-        "cmd": "grok"
+        "cmd": "grok",
+        "args": ["acp", "stdio"]
       },
       "windows-x86_64": {
         "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-windows-x86_64.zip",
-        "cmd": "grok.exe"
+        "cmd": "grok.exe",
+        "args": ["acp", "stdio"]
       }
     }
   }
