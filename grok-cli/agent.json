@@ -3,7 +3,7 @@
   "name": "Grok-cli",
   "description": "An open-source AI agent that brings the power of xAI's Grok models directly into your terminal and Zed editor.",
   "author": "micro-tech",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "repository": "https://github.com/micro-tech/grok-cli",
   "license": "License",
   "icon": "https://www.google.com/search?q=https://raw.githubusercontent.com/micro-tech/grok-cli/main/icon.svg",
