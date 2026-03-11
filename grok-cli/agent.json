@@ -34,19 +34,20 @@
   "distribution": {
     "binary": {
       "darwin-x86_64": {
-        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.4/grok-cli-macos-x86_64.zip",
+        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-macos-x86_64.zip",
+
         "cmd": "grok"
       },
       "darwin-aarch64": {
-        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.4/grok-cli-macos-aarch64.zip",
+        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-macos-aarch64.zip",
         "cmd": "grok"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.4/grok-cli-linux-x86_64.zip",
+        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-linux-x86_64.zip",
         "cmd": "grok"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.4/grok-cli-windows-x86_64.zip",
+        "archive": "https://github.com/micro-tech/grok-cli/releases/download/v0.1.6/grok-cli-windows-x86_64.zip",
         "cmd": "grok.exe"
       }
     }
