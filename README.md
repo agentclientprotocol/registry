@@ -23,6 +23,10 @@ https://cdn.agentclientprotocol.com/registry/v1/latest/registry.json
 
 See [FORMAT.md](FORMAT.md) for the registry schema, distribution types, and platform targets.
 
+## Automatic Version Updates
+
+Agent versions are automatically updated via a cron job that runs hourly. It checks for new releases across all supported distribution types (npm, PyPI, GitHub releases) and commits updates directly to `main`.
+
 ## Adding an Agent
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for instructions.

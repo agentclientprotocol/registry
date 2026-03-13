@@ -2,6 +2,7 @@
 """Build aggregated registry.json from individual agent directories."""
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -12,11 +13,11 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from registry_utils import (
-    SKIP_DIRS,
     extract_npm_package_name,
     extract_npm_package_version,
     extract_pypi_package_name,
     normalize_version,
+    should_skip_dir,
 )
 
 try:
@@ -263,6 +264,10 @@ def validate_icon(icon_path: Path) -> list[str]:
     except Exception as e:
         errors.append(f"Cannot read icon: {e}")
         return errors
+
+    # Reject HTML/XML comments (they break MDX/JSX when icons are embedded in docs)
+    if "<!--" in content:
+        errors.append("Icon contains HTML comments which break MDX embedding; remove them")
 
     # Parse SVG as XML
     try:
@@ -531,7 +536,7 @@ def build_registry(dry_run: bool = False):
         print("  Install with: pip install jsonschema")
 
     for entry_dir in sorted(registry_dir.iterdir()):
-        if not entry_dir.is_dir() or entry_dir.name in SKIP_DIRS:
+        if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
             continue
 
         agent_json_path = entry_dir / "agent.json"
@@ -556,35 +561,51 @@ def build_registry(dry_run: bool = False):
     if not agents:
         print("\nWarning: No agents found")
 
-    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "claude-acp", "junie"}
-    jetbrains_agent_count = len([a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS])
+    # Agents excluded from registry.json (default registry)
+    DEFAULT_EXCLUDE_IDS = {"github-copilot"}
+    default_agents = [a for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
+
+    # Agents excluded from registry-for-jetbrains.json
+    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "junie", "github-copilot-cli"}
+
+    def patch_agent_for_jetbrains(agent):
+        if agent["id"] == "claude-acp":
+            assert "npx" in agent["distribution"], "claude-acp must have npx distribution"
+            agent = copy.deepcopy(agent)
+            agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
+        return agent
+
+    jetbrains_agents = [
+        patch_agent_for_jetbrains(a) for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS
+    ]
 
     if dry_run:
         print(f"\nDry run: validated {len(agents)} agents successfully")
-        print(f"  registry.json would contain {len(agents)} agents")
-        excluded = ", ".join(JETBRAINS_EXCLUDE_IDS)
+        print(
+            f"  registry.json would contain {len(default_agents)} agents"
+            f" (excluded: {', '.join(sorted(DEFAULT_EXCLUDE_IDS))})"
+        )
         print(
             f"  registry-for-jetbrains.json would contain "
-            f"{jetbrains_agent_count} agents (excluded: {excluded})"
+            f"{len(jetbrains_agents)} agents (excluded: {', '.join(sorted(JETBRAINS_EXCLUDE_IDS))})"
         )
         return
-
-    registry = {"version": REGISTRY_VERSION, "agents": agents, "extensions": []}
 
     # Create dist directory
     dist_dir = registry_dir / "dist"
     dist_dir.mkdir(exist_ok=True)
 
     # Write registry.json
+    registry = {"version": REGISTRY_VERSION, "agents": default_agents, "extensions": []}
     output_path = dist_dir / "registry.json"
     with open(output_path, "w") as f:
         json.dump(registry, f, indent=2)
         f.write("\n")
 
-    # Write registry-for-jetbrains.json (without codex and claude)
+    # Write registry-for-jetbrains.json
     jetbrains_registry = {
         "version": REGISTRY_VERSION,
-        "agents": [a for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS],
+        "agents": jetbrains_agents,
     }
     jetbrains_output_path = dist_dir / "registry-for-jetbrains.json"
     with open(jetbrains_output_path, "w") as f:
@@ -606,10 +627,15 @@ def build_registry(dry_run: bool = False):
             schema_dst = dist_dir / schema_file
             schema_dst.write_bytes(schema_src.read_bytes())
 
-    print(f"\nBuilt dist/ with {len(agents)} agents")
-    print(f"  registry.json: {len(agents)} agents")
-    excluded = ", ".join(JETBRAINS_EXCLUDE_IDS)
-    print(f"  registry-for-jetbrains.json: {jetbrains_agent_count} agents (excluded: {excluded})")
+    print(f"\nBuilt dist/ with {len(agents)} total agents")
+    print(
+        f"  registry.json: {len(default_agents)} agents"
+        f" (excluded: {', '.join(sorted(DEFAULT_EXCLUDE_IDS))})"
+    )
+    print(
+        f"  registry-for-jetbrains.json: {len(jetbrains_agents)} agents"
+        f" (excluded: {', '.join(sorted(JETBRAINS_EXCLUDE_IDS))})"
+    )
 
 
 if __name__ == "__main__":

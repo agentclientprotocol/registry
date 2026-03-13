@@ -27,10 +27,10 @@ from pathlib import Path
 from typing import NamedTuple
 
 from registry_utils import (
-    SKIP_DIRS,
     extract_npm_package_name,
     extract_pypi_package_name,
     load_quarantine,
+    should_skip_dir,
 )
 
 
@@ -85,9 +85,16 @@ def make_request(url: str, headers: dict | None = None) -> dict | str | None:
     except urllib.error.HTTPError as e:
         if e.code == 404:
             return None
+        if e.code >= 500:
+            return None
         raise
     except (urllib.error.URLError, TimeoutError, OSError):
         return None
+
+
+def is_prerelease(version: str) -> bool:
+    """Check if a version string is a pre-release (e.g., 1.0.0-beta.3)."""
+    return bool(re.match(r"^\d+\.\d+\.\d+-.+", version))
 
 
 def get_npm_latest_version(package_name: str) -> str | None:
@@ -154,9 +161,7 @@ def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
         for entry_dir in sorted(base_path.iterdir()):
             if not entry_dir.is_dir():
                 continue
-            if entry_dir.name in SKIP_DIRS:
-                continue
-            if entry_dir.name.startswith("."):
+            if should_skip_dir(entry_dir.name):
                 continue
 
             agent_json = entry_dir / "agent.json"
@@ -205,6 +210,8 @@ def check_agent_version(
         latest = get_npm_latest_version(package_name)
         if not latest:
             return None, UpdateError(agent_id, f"Could not fetch npm version for {package_name}")
+        if is_prerelease(latest):
+            return None, None  # Skip pre-release versions
         source_versions["npx"] = (latest, f"https://registry.npmjs.org/{package_name}")
 
     if "uvx" in distribution:
@@ -215,15 +222,19 @@ def check_agent_version(
         latest = get_pypi_latest_version(package_name)
         if not latest:
             return None, UpdateError(agent_id, f"Could not fetch PyPI version for {package_name}")
+        if is_prerelease(latest):
+            return None, None  # Skip pre-release versions
         source_versions["uvx"] = (latest, f"https://pypi.org/pypi/{package_name}/json")
 
-    if "binary" in distribution and repository:
+    if "binary" in distribution and repository and "github.com" in repository:
         latest, _assets = get_github_latest_release(repository)
         if not latest:
             return None, UpdateError(
                 agent_id,
                 f"Could not fetch GitHub release for {repository}",
             )
+        if is_prerelease(latest):
+            return None, None  # Skip pre-release versions
         source_versions["binary"] = (latest, repository)
 
     if not source_versions:

@@ -9,6 +9,7 @@ import json
 import os
 import subprocess
 import tempfile
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -30,6 +31,9 @@ class AuthCheckResult:
     success: bool
     auth_methods: list[AuthMethod] = field(default_factory=list)
     error: str | None = None
+    stderr_tail: str | None = None
+    duration_seconds: float | None = None
+    process_exit_code: int | None = None
 
 
 def parse_auth_methods(auth_methods_raw: list[dict]) -> list[AuthMethod]:
@@ -122,6 +126,29 @@ def read_jsonrpc(proc: subprocess.Popen, timeout: float) -> dict | None:
         ) from e
 
 
+def _collect_proc_diagnostics(proc: subprocess.Popen) -> tuple[str | None, int | None]:
+    """Collect stderr tail and exit code from a process (non-blocking).
+
+    Returns:
+        (stderr_tail, exit_code) — either may be None if unavailable.
+    """
+    import select
+
+    exit_code = proc.poll()
+
+    stderr_tail: str | None = None
+    try:
+        ready, _, _ = select.select([proc.stderr], [], [], 0.5)
+        if ready:
+            data = proc.stderr.read(8192)
+            if data:
+                stderr_tail = data[-4000:]
+    except Exception:
+        pass
+
+    return stderr_tail, exit_code
+
+
 def run_auth_check(
     cmd: list[str],
     cwd: Path,
@@ -151,6 +178,7 @@ def run_auth_check(
         full_env["HOME"] = sandbox_home
 
     proc = None
+    t0 = time.monotonic()
     try:
         # Make binary executable if needed
         exe_path = Path(cmd[0])
@@ -194,15 +222,25 @@ def run_auth_check(
         response = read_jsonrpc(proc, timeout)
 
         if response is None:
+            duration = time.monotonic() - t0
+            stderr_tail, exit_code = _collect_proc_diagnostics(proc)
             return AuthCheckResult(
                 success=False,
                 error=f"Timeout after {timeout}s waiting for initialize response",
+                stderr_tail=stderr_tail,
+                duration_seconds=duration,
+                process_exit_code=exit_code,
             )
 
         if "error" in response:
+            duration = time.monotonic() - t0
+            stderr_tail, exit_code = _collect_proc_diagnostics(proc)
             return AuthCheckResult(
                 success=False,
                 error=f"Agent error: {response['error']}",
+                stderr_tail=stderr_tail,
+                duration_seconds=duration,
+                process_exit_code=exit_code,
             )
 
         result = response.get("result", {})
@@ -214,16 +252,32 @@ def run_auth_check(
         # Validate
         is_valid, message = validate_auth_methods(auth_methods)
 
+        if is_valid:
+            return AuthCheckResult(
+                success=True,
+                auth_methods=auth_methods,
+            )
+
+        duration = time.monotonic() - t0
+        stderr_tail, exit_code = _collect_proc_diagnostics(proc)
         return AuthCheckResult(
-            success=is_valid,
+            success=False,
             auth_methods=auth_methods,
-            error=None if is_valid else message,
+            error=message,
+            stderr_tail=stderr_tail,
+            duration_seconds=duration,
+            process_exit_code=exit_code,
         )
 
     except Exception as e:
+        duration = time.monotonic() - t0
+        stderr_tail, exit_code = _collect_proc_diagnostics(proc) if proc else (None, None)
         return AuthCheckResult(
             success=False,
             error=f"Error during auth check: {type(e).__name__}: {e}",
+            stderr_tail=stderr_tail,
+            duration_seconds=duration,
+            process_exit_code=exit_code,
         )
     finally:
         if proc:
