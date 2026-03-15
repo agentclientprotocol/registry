@@ -1,7 +1,7 @@
 {
   "id": "factory-droid",
   "name": "Factory Droid",
-  "version": "0.74.0",
+  "version": "0.75.0",
   "description": "Factory Droid - AI coding agent powered by Factory AI",
   "authors": [
     "Factory AI"
@@ -9,7 +9,7 @@
   "license": "proprietary",
   "distribution": {
     "npx": {
-      "package": "droid@0.74.0",
+      "package": "droid@0.75.0",
       "args": [
         "exec",
         "--output-format",

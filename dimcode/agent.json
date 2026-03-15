@@ -1,7 +1,7 @@
 {
   "id": "dimcode",
   "name": "DimCode",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A coding agent that puts leading models at your command.",
   "authors": [
     "ArcShips"
@@ -9,7 +9,7 @@
   "license": "proprietary",
   "distribution": {
     "npx": {
-      "package": "dimcode@0.0.17",
+      "package": "dimcode@0.0.18",
       "args": [
         "acp"
       ]
