@@ -1,0 +1,16 @@
+{
+  "id": "wave-code",
+  "name": "Wave Code",
+  "version": "0.10.1",
+  "description": "CLI-based code assistant powered by AI, built with React and Ink",
+  "repository": "https://github.com/netease-lcap/wave-agent",
+  "authors": ["NetEase LCAP"],
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "wave-code@0.10.1",
+      "args": ["--acp"]
+    }
+  }
+}
