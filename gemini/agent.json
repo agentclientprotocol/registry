@@ -4,16 +4,12 @@
   "version": "0.33.1",
   "description": "Google's official CLI for Gemini",
   "repository": "https://github.com/google-gemini/gemini-cli",
-  "authors": [
-    "Google"
-  ],
+  "authors": ["Google"],
   "license": "Apache-2.0",
   "distribution": {
     "npx": {
       "package": "@google/gemini-cli@0.33.1",
-      "args": [
-        "--experimental-acp"
-      ]
+      "args": ["--acp"]
     }
   }
 }
