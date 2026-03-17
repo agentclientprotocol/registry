@@ -1,7 +1,7 @@
 {
   "id": "github-copilot-cli",
   "name": "GitHub Copilot",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "GitHub's AI pair programmer",
   "repository": "https://github.com/github/copilot-cli",
   "authors": [
@@ -10,7 +10,7 @@
   "license": "proprietary",
   "distribution": {
     "npx": {
-      "package": "@github/copilot@1.0.6",
+      "package": "@github/copilot@1.0.7",
       "args": [
         "--acp"
       ]
