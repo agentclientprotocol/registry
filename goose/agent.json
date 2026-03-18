@@ -40,7 +40,7 @@
       },
       "windows-x86_64": {
         "archive": "https://github.com/block/goose/releases/download/v1.28.0/goose-x86_64-pc-windows-msvc.zip",
-        "cmd": "./goose.exe",
+        "cmd": "./goose-package\\goose.exe",
         "args": [
           "acp"
         ]
