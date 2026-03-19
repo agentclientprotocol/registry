@@ -4,9 +4,8 @@
   "version": "7.0.51",
   "description": "The open source coding agent",
   "repository": "https://github.com/Kilo-Org/kilocode",
-  "authors": [
-    "Kilo Code"
-  ],
+  "website": "https://kilo.ai/",
+  "authors": ["Kilo Code"],
   "license": "MIT",
   "icon": "./icon.svg",
   "distribution": {
@@ -14,37 +13,27 @@
       "darwin-aarch64": {
         "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.51/kilo-darwin-arm64.zip",
         "cmd": "./kilo",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "darwin-x86_64": {
         "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.51/kilo-darwin-x64.zip",
         "cmd": "./kilo",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "linux-aarch64": {
         "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.51/kilo-linux-arm64.tar.gz",
         "cmd": "./kilo",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "linux-x86_64": {
         "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.51/kilo-linux-x64.tar.gz",
         "cmd": "./kilo",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       },
       "windows-x86_64": {
         "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.0.51/kilo-windows-x64.zip",
         "cmd": "./kilo.exe",
-        "args": [
-          "acp"
-        ]
+        "args": ["acp"]
       }
     },
     "npx": {

@@ -4,9 +4,8 @@
   "version": "2.5.0",
   "description": "Mistral's open-source coding assistant",
   "repository": "https://github.com/mistralai/mistral-vibe",
-  "authors": [
-    "Mistral AI"
-  ],
+  "website": "https://mistral.ai/products/vibe",
+  "authors": ["Mistral AI"],
   "license": "Apache-2.0",
   "icon": "./icon.svg",
   "distribution": {

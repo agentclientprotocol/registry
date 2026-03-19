@@ -103,6 +103,25 @@ class TestCheckAgentVersionNonGitHubRepo:
         assert update is None
         assert error is None
 
+    def test_website_only_binary_is_skipped(self):
+        """Binary-only agent with website metadata but no repository should be silently skipped."""
+        agent_data = {
+            "id": "cursor",
+            "version": "0.1.0",
+            "website": "https://cursor.com/docs/cli/acp",
+            "distribution": {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://example.com/agent.tar.gz",
+                        "cmd": "./agent",
+                    }
+                }
+            },
+        }
+        update, error = check_agent_version(Path("cursor/agent.json"), agent_data)
+        assert update is None
+        assert error is None
+
     def test_no_repo_binary_only_is_skipped(self):
         """Binary-only agent with no repository should be silently skipped."""
         agent_data = {

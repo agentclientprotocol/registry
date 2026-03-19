@@ -4,9 +4,8 @@
   "version": "0.6.2",
   "description": "Code and build agents with comprehensive multi-provider support",
   "repository": "https://github.com/evalstate/fast-agent",
-  "authors": [
-    "enquiries@fast-agent.ai"
-  ],
+  "website": "https://fast-agent.ai",
+  "authors": ["enquiries@fast-agent.ai"],
   "license": "Apache 2.0",
   "distribution": {
     "uvx": {

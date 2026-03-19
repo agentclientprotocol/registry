@@ -18,6 +18,7 @@ Each agent has the following structure:
   "version": "1.0.0",
   "description": "Entry description",
   "repository": "https://github.com/...",
+  "website": "https://example.com/docs",
   "authors": ["Author Name"],
   "license": "MIT",
   "icon": "https://.../entry-id.svg",

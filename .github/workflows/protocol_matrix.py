@@ -186,6 +186,7 @@ def reuse_previous_record(
     record["name"] = agent.get("name", agent["id"])
     record["registryVersion"] = agent.get("version")
     record["repository"] = agent.get("repository")
+    record["website"] = agent.get("website")
     record["distribution"] = dist_type or "none"
     record["reusedFromPrevious"] = True
     if not record.get("probedAt"):
@@ -834,6 +835,7 @@ def probe_agent(
         "name": agent.get("name", agent_id),
         "registryVersion": agent.get("version"),
         "repository": agent.get("repository"),
+        "website": agent.get("website"),
         "distribution": dist_type or "none",
         "initialize": asdict(ProbeOutcome(status="process_error", message="Not probed")),
         "protocolVersion": None,

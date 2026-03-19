@@ -4,9 +4,8 @@
   "version": "0.1.3",
   "description": "Batteries-included AI coding and general purpose agent powered by LangChain.",
   "repository": "https://github.com/langchain-ai/deepagentsjs",
-  "authors": [
-    "LangChain"
-  ],
+  "website": "https://docs.langchain.com/oss/javascript/deepagents/overview",
+  "authors": ["LangChain"],
   "license": "MIT",
   "distribution": {
     "npx": {
