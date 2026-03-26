@@ -1,8 +1,9 @@
 {
   "id": "qoder",
   "name": "Qoder CLI",
-  "version": "0.1.33",
+  "version": "0.1.36",
   "description": "AI coding assistant with agentic capabilities",
+  "website": "https://qoder.com",
   "authors": [
     "Qoder AI"
   ],
@@ -10,7 +11,7 @@
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "@qoder-ai/qodercli@0.1.33",
+      "package": "@qoder-ai/qodercli@0.1.36",
       "args": [
         "--acp"
       ]
