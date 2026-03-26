@@ -576,7 +576,7 @@ def build_registry(dry_run: bool = False):
             agent = copy.deepcopy(agent)
             agent["version"] = JETBRAINS_CLAUDE_ACP_VERSION
             agent["distribution"]["npx"]["package"] = (
-                f"@agentclientprotocol/claude-agent-acp@{JETBRAINS_CLAUDE_ACP_VERSION}"
+                f"@zed-industries/claude-agent-acp@{JETBRAINS_CLAUDE_ACP_VERSION}"
             )
             agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
         return agent
