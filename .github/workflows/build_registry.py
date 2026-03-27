@@ -568,10 +568,16 @@ def build_registry(dry_run: bool = False):
     # Agents excluded from registry-for-jetbrains.json
     JETBRAINS_EXCLUDE_IDS = {"codex-acp", "junie", "github-copilot-cli"}
 
+    JETBRAINS_CLAUDE_ACP_VERSION = "0.22.2"
+
     def patch_agent_for_jetbrains(agent):
         if agent["id"] == "claude-acp":
             assert "npx" in agent["distribution"], "claude-acp must have npx distribution"
             agent = copy.deepcopy(agent)
+            agent["version"] = JETBRAINS_CLAUDE_ACP_VERSION
+            agent["distribution"]["npx"]["package"] = (
+                f"@zed-industries/claude-agent-acp@{JETBRAINS_CLAUDE_ACP_VERSION}"
+            )
             agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
         return agent
 
