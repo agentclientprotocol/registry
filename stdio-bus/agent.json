@@ -1,24 +1,19 @@
 {
   "id": "stdio-bus",
   "name": "stdio Bus",
-  "version": "1.4.12",
-  "description": "Worker implementations for stdio Bus kernel - ACP, MCP, and protocol bridges",
+  "version": "1.5.1",
+  "description": "High-performance message routing daemon for agent protocols (ACP, MCP) via NDJSON over stdin/stdout with OAuth 2.1 authentication support",
   "repository": "https://github.com/stdiobus/workers-registry",
   "authors": [
     "Raman Marozau <raman@worktif.com>"
   ],
-  "icon": "./icon.svg",
   "license": "Apache-2.0",
   "distribution": {
     "npx": {
       "package": "@stdiobus/workers-registry",
       "args": [
-        "openai-agent"
-      ],
-      "env": {
-        "OPENAI_BASE_URL": "",
-        "OPENAI_MODEL": "gpt-5.1"
-      }
+        "acp-registry"
+      ]
     }
   }
 }
