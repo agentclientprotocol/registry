@@ -4,9 +4,8 @@
   "version": "0.4.0",
   "description": "Co-building with a seasoned Rust partner.",
   "repository": "https://github.com/Corust-ai/corust-agent-release",
-  "authors": [
-    "Corust AI <support@corust.ai>"
-  ],
+  "website": "https://corust.ai/",
+  "authors": ["Corust AI <support@corust.ai>"],
   "license": "GPL-3.0-or-later",
   "distribution": {
     "binary": {
