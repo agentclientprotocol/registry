@@ -1,16 +1,16 @@
 {
   "id": "codebuddy-code",
   "name": "Codebuddy Code",
-  "version": "2.56.1",
+  "version": "2.67.0",
   "description": "Tencent Cloud's official intelligent coding tool",
-  "repository": "https://www.codebuddy.cn/cli/",
+  "website": "https://www.codebuddy.cn/cli/",
   "authors": [
     "Tencent Cloud"
   ],
   "license": "Proprietary",
   "distribution": {
     "npx": {
-      "package": "@tencent-ai/codebuddy-code@2.56.1",
+      "package": "@tencent-ai/codebuddy-code@2.67.0",
       "args": [
         "--acp"
       ]

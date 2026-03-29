@@ -4,6 +4,7 @@
   "version": "0.2.1",
   "description": "Autohand Code - AI coding agent powered by Autohand AI",
   "repository": "https://github.com/autohandai/autohand-acp",
+  "website": "https://www.autohand.ai/cli/",
   "authors": ["Autohand AI"],
   "license": "Apache-2.0",
   "distribution": {
