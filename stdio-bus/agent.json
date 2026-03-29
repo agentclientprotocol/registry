@@ -1,7 +1,7 @@
 {
   "id": "stdio-bus",
   "name": "stdio Bus",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "High-performance message routing daemon for agent protocols (ACP, MCP) via NDJSON over stdin/stdout with OAuth 2.1 authentication support",
   "repository": "https://github.com/stdiobus/workers-registry",
   "authors": [
