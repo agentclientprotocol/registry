@@ -12,22 +12,22 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/VladoIvankovic/codeep-zed/releases/download/v1.2.114/codeep-darwin-aarch64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.2.114/codeep-darwin-aarch64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/VladoIvankovic/codeep-zed/releases/download/v1.2.114/codeep-darwin-x86_64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.2.114/codeep-darwin-x86_64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/VladoIvankovic/codeep-zed/releases/download/v1.2.114/codeep-linux-x86_64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.2.114/codeep-linux-x86_64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/VladoIvankovic/codeep-zed/releases/download/v1.2.114/codeep-linux-aarch64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.2.114/codeep-linux-aarch64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       }
