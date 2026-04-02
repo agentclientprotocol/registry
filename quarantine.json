@@ -1,5 +1,6 @@
 {
   "junie": "Auto-update disabled",
   "crow-cli": "Python dependency issue",
+  "cursor": "Auth check timeout in CI; investigate slow or hanging binary download",
   "minion-code": "Python dependency issue"
 }
