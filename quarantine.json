@@ -1,6 +1,3 @@
 {
-  "junie": "Auto-update disabled",
-  "crow-cli": "Python dependency issue",
-  "fast-agent": "Python dependency issue",
-  "minion-code": "Python dependency issue"
+  "junie": "Auto-update disabled"
 }
