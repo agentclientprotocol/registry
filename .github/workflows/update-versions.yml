@@ -51,12 +51,13 @@ jobs:
         id: check
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          INPUT_AGENTS: ${{ inputs.agents }}
         run: |
           set +e
 
           ARGS="--json"
-          if [ -n "${{ inputs.agents }}" ]; then
-            ARGS="$ARGS --agents ${{ inputs.agents }}"
+          if [ -n "$INPUT_AGENTS" ]; then
+            ARGS="$ARGS --agents $INPUT_AGENTS"
           fi
 
           OUTPUT=$(python .github/workflows/update_versions.py $ARGS)
@@ -157,10 +158,11 @@ jobs:
       - name: Apply version updates
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          INPUT_AGENTS: ${{ inputs.agents }}
         run: |
           ARGS="--apply"
-          if [ -n "${{ inputs.agents }}" ]; then
-            ARGS="$ARGS --agents ${{ inputs.agents }}"
+          if [ -n "$INPUT_AGENTS" ]; then
+            ARGS="$ARGS --agents $INPUT_AGENTS"
           fi
 
           python .github/workflows/update_versions.py $ARGS
@@ -172,15 +174,28 @@ jobs:
 
       - name: Verify agent auth support
         timeout-minutes: 15
-        run: python3 .github/workflows/verify_agents.py --auth-check
+        env:
+          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+        run: |
+          UPDATED_AGENTS=$(echo "$UPDATES_JSON" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          ids = [u['agent_id'] for u in data.get('updates', [])]
+          if not ids:
+              print('ERROR: No agent IDs found in updates JSON', file=sys.stderr)
+              sys.exit(1)
+          print(','.join(ids))
+          ")
+          echo "Verifying updated agents: $UPDATED_AGENTS"
+          python3 .github/workflows/verify_agents.py --auth-check --agent "$UPDATED_AGENTS"
 
       - name: Generate commit message
         id: commit_msg
+        env:
+          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
         run: |
-          UPDATES='${{ needs.check-versions.outputs.updates_json }}'
-
           # Generate summary of updates
-          SUMMARY=$(echo "$UPDATES" | python3 -c "
+          SUMMARY=$(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
           data = json.load(sys.stdin)
           updates = data.get('updates', [])
@@ -192,7 +207,7 @@ jobs:
           ")
 
           # Generate details
-          DETAILS=$(echo "$UPDATES" | python3 -c "
+          DETAILS=$(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
           data = json.load(sys.stdin)
           for u in data.get('updates', []):
