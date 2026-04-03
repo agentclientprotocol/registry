@@ -47,6 +47,8 @@ jobs:
     name: Build & Validate
     needs: lint-and-test
     runs-on: ubuntu-latest
+    outputs:
+      agent_ids: ${{ steps.list-agents.outputs.ids }}
 
     steps:
       - uses: actions/checkout@v6
@@ -62,9 +64,30 @@ jobs:
       - name: Validate and build
         run: uv run --with jsonschema .github/workflows/build_registry.py
 
-      - name: Verify agent auth support
-        timeout-minutes: 15
-        run: python3 .github/workflows/verify_agents.py --auth-check
+      - name: List agents for auth matrix
+        id: list-agents
+        run: |
+          IDS=$(PYTHONPATH=.github/workflows python3 -c "
+          import json
+          from pathlib import Path
+          from registry_utils import load_quarantine, should_skip_dir
+
+          registry_dir = Path('.')
+          quarantine = load_quarantine(registry_dir)
+          agents = []
+          for d in sorted(registry_dir.iterdir()):
+              if not d.is_dir() or should_skip_dir(d.name):
+                  continue
+              f = d / 'agent.json'
+              if not f.exists():
+                  continue
+              data = json.load(open(f))
+              aid = data.get('id', d.name)
+              if aid not in quarantine:
+                  agents.append(aid)
+          print(json.dumps(agents))
+          ")
+          echo "ids=$IDS" >> "$GITHUB_OUTPUT"
 
       - name: List dist
         run: ls -la dist/
@@ -76,9 +99,31 @@ jobs:
           name: registry
           path: dist/
 
+  verify-auth:
+    name: Auth (${{ matrix.agent_id }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        agent_id: ${{ fromJson(needs.build.outputs.agent_ids) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Verify auth
+        env:
+          AGENT_ID: ${{ matrix.agent_id }}
+        run: python3 .github/workflows/verify_agents.py --auth-check --agent "$AGENT_ID"
+
   upload:
     name: Upload to S3
-    needs: build
+    needs: [build, verify-auth]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
@@ -131,7 +176,7 @@ jobs:
 
   release:
     name: Publish GitHub Release
-    needs: build
+    needs: [build, verify-auth]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
