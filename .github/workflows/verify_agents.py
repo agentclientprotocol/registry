@@ -29,11 +29,6 @@ except ImportError:
     HAS_AUTH_CLIENT = False
 
 
-def get_github_token() -> str | None:
-    """Get GitHub token from environment."""
-    return os.environ.get("GITHUB_TOKEN")
-
-
 # Platform detection
 PLATFORM_MAP = {
     ("Darwin", "arm64"): "darwin-aarch64",
@@ -80,9 +75,6 @@ def download_file(url: str, dest: Path) -> bool:
     try:
         req = urllib.request.Request(url)
         req.add_header("User-Agent", "ACP-Registry-Verifier/1.0")
-        token = get_github_token()
-        if token and "github.com" in url:
-            req.add_header("Authorization", f"token {token}")
         with urllib.request.urlopen(req, timeout=60) as response:
             total = response.headers.get("Content-Length")
             if total:

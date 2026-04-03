@@ -60,14 +60,10 @@ jobs:
           node-version: "lts/*"
 
       - name: Validate and build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: uv run --with jsonschema .github/workflows/build_registry.py
 
       - name: Verify agent auth support
         timeout-minutes: 15
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 .github/workflows/verify_agents.py --auth-check
 
       - name: List dist
