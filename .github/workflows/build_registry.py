@@ -56,6 +56,11 @@ SKIP_URL_VALIDATION = os.environ.get("SKIP_URL_VALIDATION", "").lower() in (
 )
 
 
+def get_github_token() -> str | None:
+    """Get GitHub token from environment."""
+    return os.environ.get("GITHUB_TOKEN")
+
+
 def url_exists(url: str, method: str = "HEAD", retries: int = 3) -> bool:
     """Check if a URL exists using HEAD or GET request with retries."""
     import time
@@ -64,6 +69,9 @@ def url_exists(url: str, method: str = "HEAD", retries: int = 3) -> bool:
         try:
             req = urllib.request.Request(url, method=method)
             req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
+            token = get_github_token()
+            if token and "github.com" in url:
+                req.add_header("Authorization", f"token {token}")
             with urllib.request.urlopen(req, timeout=15) as response:
                 return response.status in (200, 301, 302)
         except urllib.error.HTTPError as e:

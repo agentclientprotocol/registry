@@ -168,6 +168,8 @@ jobs:
           python .github/workflows/update_versions.py $ARGS
 
       - name: Validate registry build
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           pip install jsonschema
           python .github/workflows/build_registry.py
@@ -175,6 +177,7 @@ jobs:
       - name: Verify agent auth support
         timeout-minutes: 15
         env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
         run: |
           UPDATED_AGENTS=$(echo "$UPDATES_JSON" | python3 -c "
