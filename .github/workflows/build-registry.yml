@@ -67,26 +67,7 @@ jobs:
       - name: List agents for auth matrix
         id: list-agents
         run: |
-          IDS=$(PYTHONPATH=.github/workflows python3 -c "
-          import json
-          from pathlib import Path
-          from registry_utils import load_quarantine, should_skip_dir
-
-          registry_dir = Path('.')
-          quarantine = load_quarantine(registry_dir)
-          agents = []
-          for d in sorted(registry_dir.iterdir()):
-              if not d.is_dir() or should_skip_dir(d.name):
-                  continue
-              f = d / 'agent.json'
-              if not f.exists():
-                  continue
-              data = json.load(open(f))
-              aid = data.get('id', d.name)
-              if aid not in quarantine:
-                  agents.append(aid)
-          print(json.dumps(agents))
-          ")
+          IDS=$(python3 .github/workflows/verify_agents.py --list-ids)
           echo "ids=$IDS" >> "$GITHUB_OUTPUT"
 
       - name: List dist
@@ -102,6 +83,7 @@ jobs:
   verify-auth:
     name: Auth (${{ matrix.agent_id }})
     needs: build
+    if: needs.build.outputs.agent_ids != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
@@ -127,7 +109,7 @@ jobs:
   upload:
     name: Upload to S3
     needs: [build, verify-auth]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: always() && !failure() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       S3_PREFIX: registry/v1
@@ -180,7 +162,7 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: [build, verify-auth]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: always() && !failure() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
