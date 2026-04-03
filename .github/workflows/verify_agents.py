@@ -847,7 +847,12 @@ Examples:
 
     # Handle --list-ids: print agent IDs as JSON and exit
     if args.list_ids:
+        # Redirect diagnostic output (quarantine notices) to stderr
+        # so only the JSON array is captured by command substitution.
+        old_stdout = sys.stdout
+        sys.stdout = sys.stderr
         agents = load_registry(registry_dir)
+        sys.stdout = old_stdout
         print(json.dumps([a["id"] for a in agents]))
         return
 
