@@ -1,6 +1,5 @@
 {
   "junie": "Auto-update disabled",
   "crow-cli": "Python dependency issue",
-  "dimcode": "Auth check timeout in CI; npx process hangs during ACP handshake",
   "minion-code": "Python dependency issue"
 }
