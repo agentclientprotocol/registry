@@ -14,11 +14,6 @@ dist/
 .tmp-*.out
 .tmp-*.err
 
-# vtcode session artifacts (created when verify_agents runs vtcode locally)
-.vtcode/
-vtcode.toml
-.tmp/
-
 # Python
 __pycache__/
 *.py[cod]
