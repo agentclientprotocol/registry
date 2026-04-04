@@ -8,6 +8,7 @@ on:
       - "*/icon.svg"
       - ".github/workflows/**"
       - "*.schema.json"
+      - "quarantine.json"
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +16,7 @@ on:
       - "*/icon.svg"
       - ".github/workflows/**"
       - "*.schema.json"
+      - "quarantine.json"
   workflow_dispatch:
 
 permissions:
