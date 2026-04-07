@@ -1,16 +1,21 @@
 {
   "id": "qwen-code",
   "name": "Qwen Code",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Alibaba's Qwen coding assistant",
   "repository": "https://github.com/QwenLM/qwen-code",
   "website": "https://qwenlm.github.io/qwen-code-docs/en/users/overview",
-  "authors": ["Alibaba Qwen Team"],
+  "authors": [
+    "Alibaba Qwen Team"
+  ],
   "license": "Apache-2.0",
   "distribution": {
     "npx": {
-      "package": "@qwen-code/qwen-code@0.14.0",
-      "args": ["--acp", "--experimental-skills"]
+      "package": "@qwen-code/qwen-code@0.14.1",
+      "args": [
+        "--acp",
+        "--experimental-skills"
+      ]
     }
   }
 }
