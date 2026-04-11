@@ -573,12 +573,6 @@ def build_registry(dry_run: bool = False):
             assert "npx" in agent["distribution"], "claude-acp must have npx distribution"
             agent = copy.deepcopy(agent)
             agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
-        elif agent["id"] == "gemini":
-            assert "npx" in agent["distribution"], "gemini must have npx distribution"
-            agent = copy.deepcopy(agent)
-            jb_version = "0.36.0-preview.6"
-            agent["version"] = jb_version
-            agent["distribution"]["npx"]["package"] = f"@google/gemini-cli@{jb_version}"
         return agent
 
     jetbrains_agents = [

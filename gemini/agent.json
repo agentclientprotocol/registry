@@ -11,7 +11,7 @@
   "license": "Apache-2.0",
   "distribution": {
     "npx": {
-      "package": "@google/gemini-cli@0.37.0",
+      "package": "@google/gemini-cli@0.37.1",
       "args": [
         "--acp"
       ]
