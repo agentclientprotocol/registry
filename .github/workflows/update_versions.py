@@ -169,9 +169,7 @@ def get_pypi_versions(package_name: str) -> set[str] | None:
             for version, files in releases.items():
                 if not files or is_prerelease(version):
                     continue
-                if all(
-                    isinstance(file, dict) and file.get("yanked", False) for file in files
-                ):
+                if all(isinstance(file, dict) and file.get("yanked", False) for file in files):
                     continue
                 normalized = normalize_release_version(version)
                 if normalized:

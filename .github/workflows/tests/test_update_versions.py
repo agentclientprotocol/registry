@@ -176,9 +176,7 @@ class TestCheckAgentVersionMultiSourceResolution:
 
     @patch("update_versions.get_npm_versions")
     @patch("update_versions.get_github_release_versions")
-    def test_uses_latest_common_stable_version(
-        self, mock_gh_release_versions, mock_npm_versions
-    ):
+    def test_uses_latest_common_stable_version(self, mock_gh_release_versions, mock_npm_versions):
         """Pick the highest version published on every distribution source."""
         mock_npm_versions.return_value = {"7.2.0", "7.2.1", "7.2.4"}
         mock_gh_release_versions.return_value = {"7.2.0", "7.2.1"}
