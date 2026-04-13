@@ -136,7 +136,10 @@ def get_npm_versions(package_name: str) -> set[str] | None:
     # Handle scoped packages: @scope/name -> %40scope%2Fname
     encoded_name = package_name.replace("@", "%40").replace("/", "%2F")
     url = f"https://registry.npmjs.org/{encoded_name}"
-    data = make_request(url)
+    data = make_request(
+        url,
+        headers={"Accept": "application/vnd.npm.install-v1+json"},
+    )
     if isinstance(data, dict):
         versions = data.get("versions", {})
         if isinstance(versions, dict):
