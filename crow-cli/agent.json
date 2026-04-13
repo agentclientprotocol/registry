@@ -1,19 +1,39 @@
 {
   "id": "crow-cli",
   "name": "crow-cli",
-  "version": "0.1.14",
+  "version": "0.1.19",
   "description": "Minimal ACP Native Coding Agent",
   "repository": "https://github.com/crow-cli/crow-cli",
-  "authors": [
-    "Thomas Wood"
-  ],
+  "website": "https://crow-ai.dev",
+  "authors": ["Thomas Wood"],
   "license": "Apache-2.0",
   "distribution": {
-    "uvx": {
-      "package": "crow-cli",
-      "args": [
-        "acp"
-      ]
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.19/crow-cli-darwin-aarch64.tar.gz",
+        "cmd": "./crow-cli",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.19/crow-cli-darwin-x86_64.tar.gz",
+        "cmd": "./crow-cli",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.19/crow-cli-linux-aarch64.tar.gz",
+        "cmd": "./crow-cli",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.19/crow-cli-linux-x86_64.tar.gz",
+        "cmd": "./crow-cli",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.19/crow-cli-windows-x86_64.zip",
+        "cmd": "./crow-cli.exe",
+        "args": ["acp"]
+      }
     }
   }
 }
