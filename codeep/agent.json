@@ -1,7 +1,7 @@
 {
   "id": "codeep",
   "name": "Codeep",
-  "version": "1.3.26",
+  "version": "1.3.27",
   "description": "AI coding agent for the terminal. Multi-provider LLM support (Anthropic, OpenAI, Gemini, DeepSeek, and more), plan tracking, MCP support, and session history.",
   "repository": "https://github.com/VladoIvankovic/Codeep",
   "website": "https://codeep.dev",
@@ -12,22 +12,22 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.26/codeep-darwin-aarch64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.27/codeep-darwin-aarch64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.26/codeep-darwin-x86_64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.27/codeep-darwin-x86_64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.26/codeep-linux-x86_64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.27/codeep-linux-x86_64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.26/codeep-linux-aarch64.tar.gz",
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v1.3.27/codeep-linux-aarch64.tar.gz",
         "cmd": "codeep",
         "args": ["acp"]
       }
