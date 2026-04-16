@@ -76,7 +76,7 @@ jobs:
         run: ls -la dist/
 
       - name: Upload artifacts
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: registry
@@ -111,7 +111,7 @@ jobs:
   upload:
     name: Upload to S3
     needs: [build, verify-auth]
-    if: always() && !failure() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: always() && !failure() && !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       S3_PREFIX: registry/v1
@@ -164,7 +164,7 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: [build, verify-auth]
-    if: always() && !failure() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: always() && !failure() && !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
