@@ -566,7 +566,7 @@ def build_registry(dry_run: bool = False):
     default_agents = [a for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
 
     # Agents excluded from registry-for-jetbrains.json
-    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "junie", "github-copilot-cli"}
+    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "github-copilot-cli"}
 
     def patch_agent_for_jetbrains(agent):
         if agent["id"] == "claude-acp":
