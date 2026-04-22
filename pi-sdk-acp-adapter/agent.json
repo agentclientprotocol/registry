@@ -1,0 +1,16 @@
+{
+  "id": "pi-sdk-acp-adapter",
+  "name": "Pi Coding Agent",
+  "version": "0.1.6",
+  "description": "ACP adapter for Pi Coding Agent SDK.",
+  "repository": "https://github.com/frmhd/pi-sdk-acp-adapter",
+  "website": "https://github.com/frmhd/pi-sdk-acp-adapter#readme",
+  "authors": ["Mario Zechner", "frmhd"],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@frmhd/pi-sdk-acp-adapter@0.1.6",
+      "args": []
+    }
+  }
+}
