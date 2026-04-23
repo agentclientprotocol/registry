@@ -1,7 +1,7 @@
 {
   "id": "corust-agent",
   "name": "Corust Agent",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Co-building with a seasoned Rust partner.",
   "repository": "https://github.com/Corust-ai/corust-agent-release",
   "website": "https://corust.ai/",
@@ -12,19 +12,19 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.0/agent-darwin-arm64.tar.gz",
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.1/agent-darwin-arm64.tar.gz",
         "cmd": "./corust-agent-acp"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.0/agent-darwin-x64.tar.gz",
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.1/agent-darwin-x64.tar.gz",
         "cmd": "./corust-agent-acp"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.0/agent-linux-x64.tar.gz",
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.1/agent-linux-x64.tar.gz",
         "cmd": "./corust-agent-acp"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.0/agent-windows-x64.zip",
+        "archive": "https://github.com/Corust-ai/corust-agent-release/releases/download/v0.5.1/agent-windows-x64.zip",
         "cmd": "./corust-agent-acp.exe"
       }
     }

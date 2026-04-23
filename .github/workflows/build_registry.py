@@ -566,29 +566,13 @@ def build_registry(dry_run: bool = False):
     default_agents = [a for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
 
     # Agents excluded from registry-for-jetbrains.json
-    JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
+    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "github-copilot-cli"}
 
     def patch_agent_for_jetbrains(agent):
         if agent["id"] == "claude-acp":
             assert "npx" in agent["distribution"], "claude-acp must have npx distribution"
             agent = copy.deepcopy(agent)
             agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
-        if agent["id"] == "codex-acp":
-            return {
-                "id": "codex-acp",
-                "name": "Codex",
-                "version": "beta",
-                "description": "ACP adapter for OpenAI's coding assistant",
-                "authors": ["OpenAI", "JetBrains s.r.o."],
-                "license": "Apache-2.0",
-                "distribution": {
-                    "npx": {
-                        "package": "@jetbrains/codex-acp@beta",
-                        "args": ["-acp"],
-                    }
-                },
-                "icon": agent["icon"],
-            }
         return agent
 
     jetbrains_agents = [
