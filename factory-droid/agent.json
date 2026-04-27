@@ -14,7 +14,7 @@
       "args": [
         "exec",
         "--output-format",
-        "acp"
+        "acp-daemon"
       ],
       "env": {
         "DROID_DISABLE_AUTO_UPDATE": "true",
