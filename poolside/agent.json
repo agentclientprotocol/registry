@@ -2,10 +2,10 @@
   "id": "poolside",
   "name": "Poolside",
   "version": "1.0.0",
-  "description": "Poolside's coding agent, powered by the pool CLI",
+  "description": "Poolside's coding agent",
   "repository": "https://github.com/poolsideai/pool",
   "website": "https://poolside.ai",
-  "authors": ["Poolside <engineering@poolside.ai>"],
+  "authors": ["Poolside <feedback@poolside.ai>"],
   "license": "proprietary",
   "distribution": {
     "binary": {
