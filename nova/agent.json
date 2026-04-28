@@ -1,7 +1,7 @@
 {
   "id": "nova",
   "name": "Nova",
-  "version": "1.0.100",
+  "version": "1.1.0",
   "description": "Nova by Compass AI - a fully-fledged software engineer at your command",
   "repository": "https://github.com/Compass-Agentic-Platform/nova",
   "website": "https://www.compassap.ai/portfolio/nova.html",
@@ -12,7 +12,7 @@
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "@compass-ai/nova@1.0.100",
+      "package": "@compass-ai/nova@1.1.0",
       "args": [
         "acp"
       ]
