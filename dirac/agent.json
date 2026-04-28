@@ -12,7 +12,7 @@
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "dirac-cli@0.3.0",
+      "package": "dirac-cli@0.3.1",
       "args": [
         "--acp"
       ]
