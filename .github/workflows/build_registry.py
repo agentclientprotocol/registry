@@ -568,12 +568,17 @@ def build_registry(dry_run: bool = False):
     # Agents excluded from registry-for-jetbrains.json
     JETBRAINS_EXCLUDE_IDS = {"codex-acp", "github-copilot-cli"}
 
+    # Agents flagged as bundled in the JetBrains registry
+    JETBRAINS_BUNDLED_IDS = {"claude-acp", "junie", "codex-acp", "gemini"}
+
     def patch_agent_for_jetbrains(agent):
-        if agent["id"] == "claude-acp":
-            assert "npx" in agent["distribution"], "claude-acp must have npx distribution"
-            agent = copy.deepcopy(agent)
-            agent["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
-        return agent
+        patched = copy.deepcopy(agent)
+        if patched["id"] == "claude-acp":
+            assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
+            patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
+        if patched["id"] in JETBRAINS_BUNDLED_IDS:
+            patched["bundled"] = True
+        return patched
 
     jetbrains_agents = [
         patch_agent_for_jetbrains(a) for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS

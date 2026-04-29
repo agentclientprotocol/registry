@@ -1,7 +1,7 @@
 {
   "id": "stakpak",
   "name": "Stakpak",
-  "version": "0.3.74",
+  "version": "0.3.78",
   "description": "Open-source DevOps agent in Rust with enterprise-grade security",
   "repository": "https://github.com/stakpak/agent",
   "website": "https://stakpak.dev",
@@ -13,35 +13,35 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.74/stakpak-darwin-aarch64.tar.gz",
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.78/stakpak-darwin-aarch64.tar.gz",
         "cmd": "./stakpak",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.74/stakpak-darwin-x86_64.tar.gz",
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.78/stakpak-darwin-x86_64.tar.gz",
         "cmd": "./stakpak",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.74/stakpak-linux-aarch64.tar.gz",
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.78/stakpak-linux-aarch64.tar.gz",
         "cmd": "./stakpak",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.74/stakpak-linux-x86_64.tar.gz",
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.78/stakpak-linux-x86_64.tar.gz",
         "cmd": "./stakpak",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.74/stakpak-windows-x86_64.zip",
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.78/stakpak-windows-x86_64.zip",
         "cmd": "./stakpak.exe",
         "args": [
           "acp"
