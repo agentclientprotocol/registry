@@ -28,6 +28,7 @@ try:
 except ImportError:
     HAS_AUTH_CLIENT = False
 
+
 # Platform detection
 PLATFORM_MAP = {
     ("Darwin", "arm64"): "darwin-aarch64",
@@ -823,6 +824,11 @@ Examples:
         default=DEFAULT_AUTH_TIMEOUT,
         help=f"ACP handshake timeout in seconds (default: {DEFAULT_AUTH_TIMEOUT})",
     )
+    parser.add_argument(
+        "--list-ids",
+        action="store_true",
+        help="Print non-quarantined agent IDs as a JSON array and exit",
+    )
     args = parser.parse_args()
 
     # Always show what's happening
@@ -838,6 +844,17 @@ Examples:
     # Find registry directory
     registry_dir = Path(__file__).parent.parent.parent
     sandbox_base = registry_dir / args.sandbox_dir
+
+    # Handle --list-ids: print agent IDs as JSON and exit
+    if args.list_ids:
+        # Redirect diagnostic output (quarantine notices) to stderr
+        # so only the JSON array is captured by command substitution.
+        old_stdout = sys.stdout
+        sys.stdout = sys.stderr
+        agents = load_registry(registry_dir)
+        sys.stdout = old_stdout
+        print(json.dumps([a["id"] for a in agents]))
+        return
 
     # Handle --clean-all
     if args.clean_all:
