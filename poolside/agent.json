@@ -3,7 +3,6 @@
   "name": "Poolside",
   "version": "1.0.0",
   "description": "Poolside's coding agent",
-  "repository": "https://github.com/poolsideai/pool",
   "website": "https://poolside.ai",
   "authors": ["Poolside <feedback@poolside.ai>"],
   "license": "proprietary",
