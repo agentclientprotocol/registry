@@ -8,6 +8,7 @@ on:
       - "*/icon.svg"
       - ".github/workflows/**"
       - "*.schema.json"
+      - "quarantine.json"
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +16,7 @@ on:
       - "*/icon.svg"
       - ".github/workflows/**"
       - "*.schema.json"
+      - "quarantine.json"
   workflow_dispatch:
 
 permissions:
@@ -29,7 +31,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
 
       - name: Ruff check
         working-directory: .github/workflows
@@ -47,12 +49,14 @@ jobs:
     name: Build & Validate
     needs: lint-and-test
     runs-on: ubuntu-latest
+    outputs:
+      agent_ids: ${{ steps.list-agents.outputs.ids }}
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -62,24 +66,52 @@ jobs:
       - name: Validate and build
         run: uv run --with jsonschema .github/workflows/build_registry.py
 
-      - name: Verify agent auth support
-        timeout-minutes: 15
-        run: python3 .github/workflows/verify_agents.py --auth-check
+      - name: List agents for auth matrix
+        id: list-agents
+        run: |
+          IDS=$(python3 .github/workflows/verify_agents.py --list-ids)
+          echo "ids=$IDS" >> "$GITHUB_OUTPUT"
 
       - name: List dist
         run: ls -la dist/
 
       - name: Upload artifacts
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: registry
           path: dist/
 
+  verify-auth:
+    name: Auth (${{ matrix.agent_id }})
+    needs: build
+    if: needs.build.outputs.agent_ids != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        agent_id: ${{ fromJson(needs.build.outputs.agent_ids) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Verify auth
+        env:
+          AGENT_ID: ${{ matrix.agent_id }}
+        run: python3 .github/workflows/verify_agents.py --auth-check --agent "$AGENT_ID"
+
   upload:
     name: Upload to S3
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, verify-auth]
+    if: always() && !failure() && !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       S3_PREFIX: registry/v1
@@ -131,8 +163,8 @@ jobs:
 
   release:
     name: Publish GitHub Release
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, verify-auth]
+    if: always() && !failure() && !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -151,7 +183,7 @@ jobs:
       # Generating a GitHub token, so that PRs and tags created by
       # the action can trigger actions workflows.
       - name: Generate GitHub token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
         id: generate-token
         with:
           # GitHub App ID secret name
