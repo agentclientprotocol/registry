@@ -45,6 +45,8 @@ def make_record(
     return {
         "id": "agent-1",
         "registryVersion": version,
+        "repository": None,
+        "website": None,
         "distribution": distribution,
         "initialize": {"status": init_status, "code": None, "message": None},
         "authMethods": ["agent"],
@@ -171,6 +173,7 @@ def test_reuse_previous_record_updates_metadata_and_marks_row_reused():
         "name": "Agent One",
         "version": "1.2.3",
         "repository": "https://example.com/repo",
+        "website": "https://example.com/docs",
     }
     previous_record = make_record(probed_at=None)
 
@@ -179,6 +182,7 @@ def test_reuse_previous_record_updates_metadata_and_marks_row_reused():
     assert reused["name"] == "Agent One"
     assert reused["registryVersion"] == "1.2.3"
     assert reused["repository"] == "https://example.com/repo"
+    assert reused["website"] == "https://example.com/docs"
     assert reused["distribution"] == "npx"
     assert reused["reusedFromPrevious"] is True
     assert reused["probedAt"] == "2026-03-05T00:00:00+00:00"

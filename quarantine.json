@@ -1,4 +1,5 @@
 {
-  "junie": "Auto-update disabled"
+  "deepagents": "Missing npm dependency",
+  "junie": "Auto-update disabled",
+  "minion-code": "Python dependency issue"
 }
-

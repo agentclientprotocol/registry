@@ -10,7 +10,6 @@ Registry of agents implementing the [Agent Client Protocol, ACP](https://github.
 > All agents are verified via CI to ensure they return valid `authMethods` in the ACP handshake.
 > See [AUTHENTICATION.md](AUTHENTICATION.md) for implementation details and the [ACP auth methods proposal](https://github.com/agentclientprotocol/agent-client-protocol/blob/main/docs/rfds/auth-methods.mdx) for the specification.
 
-
 ## Usage
 
 Fetch the registry index:

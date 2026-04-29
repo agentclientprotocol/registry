@@ -39,7 +39,7 @@ jobs:
         # Generating a GitHub token, so that PRs and tags created by
         # the action can trigger actions workflows.
         name: Generate GitHub token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
         id: generate-token
         with:
           # GitHub App ID secret name
@@ -51,12 +51,13 @@ jobs:
         id: check
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          INPUT_AGENTS: ${{ inputs.agents }}
         run: |
           set +e
 
           ARGS="--json"
-          if [ -n "${{ inputs.agents }}" ]; then
-            ARGS="$ARGS --agents ${{ inputs.agents }}"
+          if [ -n "$INPUT_AGENTS" ]; then
+            ARGS="$ARGS --agents $INPUT_AGENTS"
           fi
 
           OUTPUT=$(python .github/workflows/update_versions.py $ARGS)
@@ -90,7 +91,7 @@ jobs:
       issues: write
     steps:
       - name: Create failure issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const title = `Version check failed - ${new Date().toISOString().split('T')[0]}`;
@@ -152,15 +153,16 @@ jobs:
           node-version: "lts/*"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
 
       - name: Apply version updates
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          INPUT_AGENTS: ${{ inputs.agents }}
         run: |
           ARGS="--apply"
-          if [ -n "${{ inputs.agents }}" ]; then
-            ARGS="$ARGS --agents ${{ inputs.agents }}"
+          if [ -n "$INPUT_AGENTS" ]; then
+            ARGS="$ARGS --agents $INPUT_AGENTS"
           fi
 
           python .github/workflows/update_versions.py $ARGS
@@ -172,15 +174,28 @@ jobs:
 
       - name: Verify agent auth support
         timeout-minutes: 15
-        run: python3 .github/workflows/verify_agents.py --auth-check
+        env:
+          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+        run: |
+          UPDATED_AGENTS=$(echo "$UPDATES_JSON" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          ids = [u['agent_id'] for u in data.get('updates', [])]
+          if not ids:
+              print('ERROR: No agent IDs found in updates JSON', file=sys.stderr)
+              sys.exit(1)
+          print(','.join(ids))
+          ")
+          echo "Verifying updated agents: $UPDATED_AGENTS"
+          python3 .github/workflows/verify_agents.py --auth-check --agent "$UPDATED_AGENTS"
 
       - name: Generate commit message
         id: commit_msg
+        env:
+          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
         run: |
-          UPDATES='${{ needs.check-versions.outputs.updates_json }}'
-
           # Generate summary of updates
-          SUMMARY=$(echo "$UPDATES" | python3 -c "
+          SUMMARY=$(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
           data = json.load(sys.stdin)
           updates = data.get('updates', [])
@@ -192,7 +207,7 @@ jobs:
           ")
 
           # Generate details
-          DETAILS=$(echo "$UPDATES" | python3 -c "
+          DETAILS=$(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
           data = json.load(sys.stdin)
           for u in data.get('updates', []):
@@ -232,7 +247,7 @@ jobs:
     steps:
       - *generate-token
       - name: Create failure issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:
