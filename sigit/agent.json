@@ -1,0 +1,41 @@
+{
+  "id": "sigit",
+  "name": "siGit Code",
+  "version": "1.0.0",
+  "description": "Local-first coding agent. Runs entirely on your machine with optional on-device LLM inference via Onde.",
+  "repository": "https://github.com/getsigit/sigit",
+  "website": "https://github.com/getsigit/sigit",
+  "authors": ["smbCloud"],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.0.0/sigit-macos-arm64.tar.gz",
+        "cmd": "./sigit"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.0.0/sigit-macos-amd64.tar.gz",
+        "cmd": "./sigit"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.0.0/sigit-linux-arm64",
+        "cmd": "./sigit-linux-arm64"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.0.0/sigit-linux-amd64",
+        "cmd": "./sigit-linux-amd64"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.0.0/sigit-win-arm64.exe",
+        "cmd": "./sigit-win-arm64.exe"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.0.0/sigit-win-amd64.exe",
+        "cmd": "./sigit-win-amd64.exe"
+      }
+    },
+    "npx": {
+      "package": "@smbcloud/sigit@1.0.0"
+    }
+  }
+}
