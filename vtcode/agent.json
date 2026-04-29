@@ -1,7 +1,7 @@
 {
   "id": "vtcode",
   "name": "VT Code",
-  "version": "0.96.14",
+  "version": "0.105.1",
   "description": "An open-source coding agent with LLM-native code understanding and robust shell safety. Supports multiple LLM providers with automatic failover and efficient context management.",
   "repository": "https://github.com/vinhnx/VTCode",
   "website": "https://github.com/vinhnx/VTCode/blob/main/docs/guides/zed-acp.md",
@@ -10,7 +10,7 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/vinhnx/VTCode/releases/download/0.96.14/vtcode-0.96.14-aarch64-apple-darwin.tar.gz",
+        "archive": "https://github.com/vinhnx/VTCode/releases/download/0.105.1/vtcode-0.105.1-aarch64-apple-darwin.tar.gz",
         "cmd": "./vtcode",
         "args": ["acp"],
         "env": {
@@ -19,7 +19,7 @@
         }
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/vinhnx/VTCode/releases/download/0.96.14/vtcode-0.96.14-x86_64-apple-darwin.tar.gz",
+        "archive": "https://github.com/vinhnx/VTCode/releases/download/0.105.1/vtcode-0.105.1-x86_64-apple-darwin.tar.gz",
         "cmd": "./vtcode",
         "args": ["acp"],
         "env": {
@@ -28,7 +28,7 @@
         }
       },
       "linux-x86_64": {
-        "archive": "https://github.com/vinhnx/VTCode/releases/download/0.96.14/vtcode-0.96.14-x86_64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/vinhnx/VTCode/releases/download/0.105.1/vtcode-0.105.1-x86_64-unknown-linux-gnu.tar.gz",
         "cmd": "./vtcode",
         "args": ["acp"],
         "env": {
