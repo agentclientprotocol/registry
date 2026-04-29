@@ -1,6 +1,7 @@
 {
   "id": "argy-code",
   "name": "Argy Code",
+  "version": "1.4.2",
   "description": "AI coding agent for the terminal. Implements ACP over stdio. Supports session management, real-time tool call streaming, file edits, permission delegation, and MCP servers. Authenticate with `argy auth login` or ARGY_PAT.",
   "repository": "https://github.com/demkada/argy-code",
   "authors": [
