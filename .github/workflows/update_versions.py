@@ -63,7 +63,7 @@ def get_github_token() -> str | None:
     return os.environ.get("GITHUB_TOKEN")
 
 
-def make_request(url: str, headers: dict | None = None) -> dict | str | None:
+def make_request(url: str, headers: dict | None = None) -> dict | list | str | None:
     """Make HTTP request and return JSON response."""
     req_headers = {"User-Agent": "ACP-Registry-Version-Checker/1.0"}
     if headers:
@@ -93,27 +93,98 @@ def make_request(url: str, headers: dict | None = None) -> dict | str | None:
 
 
 def is_prerelease(version: str) -> bool:
-    """Check if a version string is a pre-release (e.g., 1.0.0-beta.3)."""
-    return bool(re.match(r"^\d+\.\d+\.\d+-.+", version))
+    """Check if a version string is not a stable numeric dotted release."""
+    normalized = version.lstrip("v")
+    return not bool(re.fullmatch(r"\d+(?:\.\d+)*", normalized))
 
 
-def get_npm_latest_version(package_name: str) -> str | None:
-    """Get latest version of an npm package."""
+def normalize_release_version(version: str | None) -> str | None:
+    """Normalize comparable release versions to a consistent dotted form."""
+    if not version:
+        return None
+    if re.fullmatch(r"\d+", version):
+        return f"{version}.0.0"
+    if re.fullmatch(r"\d+\.\d+", version):
+        return f"{version}.0"
+    return version
+
+
+def version_sort_key(version: str) -> tuple[int, ...]:
+    """Return a sortable key for numeric dotted release versions."""
+    normalized = normalize_release_version(version)
+    if not normalized or not re.fullmatch(r"\d+(?:\.\d+)*", normalized):
+        raise ValueError(f"Unsupported version format: {version}")
+    return tuple(int(part) for part in normalized.split("."))
+
+
+def get_highest_stable_version(versions: set[str]) -> str | None:
+    """Return the highest non-prerelease version from a set."""
+    stable_versions = {
+        normalized
+        for version in versions
+        if not is_prerelease(version)
+        for normalized in [normalize_release_version(version)]
+        if normalized is not None
+    }
+    if not stable_versions:
+        return None
+    return max(stable_versions, key=version_sort_key)
+
+
+def get_npm_versions(package_name: str) -> set[str] | None:
+    """Get all stable published versions of an npm package."""
     # Handle scoped packages: @scope/name -> %40scope%2Fname
     encoded_name = package_name.replace("@", "%40").replace("/", "%2F")
-    url = f"https://registry.npmjs.org/{encoded_name}/latest"
-    data = make_request(url)
-    if isinstance(data, dict) and "version" in data:
-        return data["version"]
+    url = f"https://registry.npmjs.org/{encoded_name}"
+    data = make_request(
+        url,
+        headers={"Accept": "application/vnd.npm.install-v1+json"},
+    )
+    if isinstance(data, dict):
+        versions = data.get("versions", {})
+        if isinstance(versions, dict):
+            stable_versions = {
+                normalized
+                for version in versions
+                if not is_prerelease(version)
+                for normalized in [normalize_release_version(version)]
+                if normalized is not None
+            }
+            if stable_versions:
+                return stable_versions
+
+        dist_tags = data.get("dist-tags", {})
+        if isinstance(dist_tags, dict):
+            latest = normalize_release_version(dist_tags.get("latest"))
+            if latest and not is_prerelease(latest):
+                return {latest}
     return None
 
 
-def get_pypi_latest_version(package_name: str) -> str | None:
-    """Get latest version of a PyPI package."""
+def get_pypi_versions(package_name: str) -> set[str] | None:
+    """Get all stable published versions of a PyPI package."""
     url = f"https://pypi.org/pypi/{package_name}/json"
     data = make_request(url)
-    if isinstance(data, dict) and "info" in data:
-        return data["info"].get("version")
+    if isinstance(data, dict):
+        releases = data.get("releases", {})
+        if isinstance(releases, dict):
+            stable_versions = set()
+            for version, files in releases.items():
+                if not files or is_prerelease(version):
+                    continue
+                if all(isinstance(file, dict) and file.get("yanked", False) for file in files):
+                    continue
+                normalized = normalize_release_version(version)
+                if normalized:
+                    stable_versions.add(normalized)
+            if stable_versions:
+                return stable_versions
+
+        info = data.get("info", {})
+        if isinstance(info, dict):
+            latest = normalize_release_version(info.get("version"))
+            if latest and not is_prerelease(latest):
+                return {latest}
     return None
 
 
@@ -137,14 +208,44 @@ def get_github_latest_release(repo_url: str) -> tuple[str | None, list[str]]:
     if isinstance(data, dict):
         tag = data.get("tag_name", "")
         # Strip 'v' prefix if present
-        version = tag.lstrip("v") if tag else None
-        # Normalize to semver (x.y -> x.y.0)
-        if version and re.match(r"^\d+\.\d+$", version):
-            version = f"{version}.0"
+        version = normalize_release_version(tag.lstrip("v") if tag else None)
         assets = [a["name"] for a in data.get("assets", [])]
         return version, assets
 
     return None, []
+
+
+def get_github_release_versions(repo_url: str) -> set[str] | None:
+    """Get stable GitHub release versions published for a repository."""
+    match = re.search(r"github\.com/([^/]+)/([^/]+)", repo_url)
+    if not match:
+        return None
+
+    owner, repo = match.groups()
+    if repo.endswith(".git"):
+        repo = repo[:-4]
+
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases?per_page=100"
+    data = make_request(api_url)
+    if isinstance(data, list):
+        versions = set()
+        for release in data:
+            if not isinstance(release, dict):
+                continue
+            if release.get("draft") or release.get("prerelease"):
+                continue
+            tag = release.get("tag_name", "")
+            version = normalize_release_version(tag.lstrip("v") if tag else None)
+            if version and not is_prerelease(version):
+                versions.add(version)
+        if versions:
+            return versions
+
+    latest, _assets = get_github_latest_release(repo_url)
+    if latest:
+        return {latest}
+
+    return None
 
 
 def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
@@ -199,56 +300,58 @@ def check_agent_version(
     distribution = agent_data.get("distribution", {})
     repository = agent_data.get("repository", "")
 
-    # Collect latest versions from all distribution sources
-    source_versions: dict[str, tuple[str, str]] = {}  # type -> (version, source_url)
+    # Collect stable published versions from all distribution sources
+    current_version = normalize_release_version(current_version) or current_version
+    source_versions: dict[str, tuple[set[str], str]] = {}  # type -> (versions, source_url)
 
     if "npx" in distribution:
         package_spec = distribution["npx"].get("package", "")
         package_name = extract_npm_package_name(package_spec)
         if not package_name:
             return None, UpdateError(agent_id, "Could not extract npm package name")
-        latest = get_npm_latest_version(package_name)
-        if not latest:
-            return None, UpdateError(agent_id, f"Could not fetch npm version for {package_name}")
-        if is_prerelease(latest):
-            return None, None  # Skip pre-release versions
-        source_versions["npx"] = (latest, f"https://registry.npmjs.org/{package_name}")
+        versions = get_npm_versions(package_name)
+        if not versions:
+            return None, UpdateError(agent_id, f"Could not fetch npm versions for {package_name}")
+        source_versions["npx"] = (versions, f"https://registry.npmjs.org/{package_name}")
 
     if "uvx" in distribution:
         package_spec = distribution["uvx"].get("package", "")
         package_name = extract_pypi_package_name(package_spec)
         if not package_name:
             return None, UpdateError(agent_id, "Could not extract PyPI package name")
-        latest = get_pypi_latest_version(package_name)
-        if not latest:
-            return None, UpdateError(agent_id, f"Could not fetch PyPI version for {package_name}")
-        if is_prerelease(latest):
-            return None, None  # Skip pre-release versions
-        source_versions["uvx"] = (latest, f"https://pypi.org/pypi/{package_name}/json")
+        versions = get_pypi_versions(package_name)
+        if not versions:
+            return None, UpdateError(agent_id, f"Could not fetch PyPI versions for {package_name}")
+        source_versions["uvx"] = (versions, f"https://pypi.org/pypi/{package_name}/json")
 
     if "binary" in distribution and repository and "github.com" in repository:
-        latest, _assets = get_github_latest_release(repository)
-        if not latest:
+        versions = get_github_release_versions(repository)
+        if not versions:
             return None, UpdateError(
                 agent_id,
-                f"Could not fetch GitHub release for {repository}",
+                f"Could not fetch GitHub releases for {repository}",
             )
-        if is_prerelease(latest):
-            return None, None  # Skip pre-release versions
-        source_versions["binary"] = (latest, repository)
+        source_versions["binary"] = (versions, repository)
 
     if not source_versions:
         if distribution:
             return None, None  # Has distributions but none are checkable (e.g. binary without repo)
         return None, UpdateError(agent_id, "Unknown distribution type")
 
-    # Fail if sources disagree on the latest version
-    unique_versions = {v for v, _ in source_versions.values()}
-    if len(unique_versions) > 1:
-        details = ", ".join(f"{t}={v}" for t, (v, _) in sorted(source_versions.items()))
+    common_versions: set[str] | None = None
+    for versions, _source_url in source_versions.values():
+        common_versions = set(versions) if common_versions is None else common_versions & versions
+
+    if not common_versions:
+        details = ", ".join(
+            f"{dist_type}={get_highest_stable_version(versions) or 'none'}"
+            for dist_type, (versions, _) in sorted(source_versions.items())
+        )
         return None, UpdateError(agent_id, f"Version mismatch across distributions: {details}")
 
-    latest_version = unique_versions.pop()
+    latest_version = get_highest_stable_version(common_versions)
+    if not latest_version:
+        return None, UpdateError(agent_id, "No stable versions found across distributions")
     if latest_version == current_version:
         return None, None  # Up to date
 
