@@ -1,40 +1,43 @@
 {
   "id": "codex-acp",
   "name": "Codex CLI",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "ACP adapter for OpenAI's coding assistant",
   "repository": "https://github.com/zed-industries/codex-acp",
-  "authors": ["OpenAI", "Zed Industries"],
+  "authors": [
+    "OpenAI",
+    "Zed Industries"
+  ],
   "license": "Apache-2.0",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.11.1/codex-acp-0.11.1-aarch64-apple-darwin.tar.gz",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.12.0/codex-acp-0.12.0-aarch64-apple-darwin.tar.gz",
         "cmd": "./codex-acp"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.11.1/codex-acp-0.11.1-x86_64-apple-darwin.tar.gz",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.12.0/codex-acp-0.12.0-x86_64-apple-darwin.tar.gz",
         "cmd": "./codex-acp"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.11.1/codex-acp-0.11.1-aarch64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.12.0/codex-acp-0.12.0-aarch64-unknown-linux-gnu.tar.gz",
         "cmd": "./codex-acp"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.11.1/codex-acp-0.11.1-x86_64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.12.0/codex-acp-0.12.0-x86_64-unknown-linux-gnu.tar.gz",
         "cmd": "./codex-acp"
       },
       "windows-aarch64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.11.1/codex-acp-0.11.1-aarch64-pc-windows-msvc.zip",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.12.0/codex-acp-0.12.0-aarch64-pc-windows-msvc.zip",
         "cmd": "./codex-acp.exe"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.11.1/codex-acp-0.11.1-x86_64-pc-windows-msvc.zip",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.12.0/codex-acp-0.12.0-x86_64-pc-windows-msvc.zip",
         "cmd": "./codex-acp.exe"
       }
     },
     "npx": {
-      "package": "@zed-industries/codex-acp@0.11.1"
+      "package": "@zed-industries/codex-acp@0.12.0"
     }
   }
 }

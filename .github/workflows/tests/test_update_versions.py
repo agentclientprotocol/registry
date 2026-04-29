@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from update_versions import check_agent_version, make_request
+from update_versions import check_agent_version, is_prerelease, make_request
 
 
 class TestMakeRequestServerErrors:
@@ -81,6 +81,13 @@ class TestMakeRequestServerErrors:
             make_request("https://example.com/api")
 
 
+class TestPrereleaseDetection:
+    """Test filtering of non-stable package versions."""
+
+    def test_rc_suffix_is_treated_as_prerelease(self):
+        assert is_prerelease("0.1.17rc0")
+
+
 class TestCheckAgentVersionNonGitHubRepo:
     """Test that non-GitHub repository URLs are skipped for binary distributions."""
 
@@ -140,10 +147,10 @@ class TestCheckAgentVersionNonGitHubRepo:
         assert update is None
         assert error is None
 
-    @patch("update_versions.get_github_latest_release")
-    def test_github_repo_binary_still_checked(self, mock_gh_release):
+    @patch("update_versions.get_github_release_versions")
+    def test_github_repo_binary_still_checked(self, mock_gh_release_versions):
         """Binary agent with GitHub repository should still be checked."""
-        mock_gh_release.return_value = ("2.0.0", ["asset.tar.gz"])
+        mock_gh_release_versions.return_value = {"2.0.0"}
         agent_data = {
             "id": "some-agent",
             "version": "1.0.0",
@@ -161,4 +168,101 @@ class TestCheckAgentVersionNonGitHubRepo:
         assert error is None
         assert update is not None
         assert update.latest_version == "2.0.0"
-        mock_gh_release.assert_called_once_with("https://github.com/owner/repo")
+        mock_gh_release_versions.assert_called_once_with("https://github.com/owner/repo")
+
+
+class TestCheckAgentVersionMultiSourceResolution:
+    """Test version resolution when multiple distribution sources disagree."""
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.get_github_release_versions")
+    def test_uses_latest_common_stable_version(self, mock_gh_release_versions, mock_npm_versions):
+        """Pick the highest version published on every distribution source."""
+        mock_npm_versions.return_value = {"7.2.0", "7.2.1", "7.2.4"}
+        mock_gh_release_versions.return_value = {"7.2.0", "7.2.1"}
+        agent_data = {
+            "id": "kilo",
+            "version": "7.2.0",
+            "repository": "https://github.com/owner/repo",
+            "distribution": {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://github.com/owner/repo/releases/download/v7.2.0/agent.tar.gz",
+                        "cmd": "./agent",
+                    }
+                },
+                "npx": {
+                    "package": "@owner/cli@7.2.0",
+                    "args": ["acp"],
+                },
+            },
+        }
+
+        update, error = check_agent_version(Path("kilo/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "7.2.1"
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.get_github_release_versions")
+    def test_no_update_when_current_version_is_latest_common(
+        self, mock_gh_release_versions, mock_npm_versions
+    ):
+        """Do not fail or update when sources disagree but the current version is shared."""
+        mock_npm_versions.return_value = {"7.2.0", "7.2.1", "7.2.4"}
+        mock_gh_release_versions.return_value = {"7.2.0", "7.2.1"}
+        agent_data = {
+            "id": "kilo",
+            "version": "7.2.1",
+            "repository": "https://github.com/owner/repo",
+            "distribution": {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://github.com/owner/repo/releases/download/v7.2.1/agent.tar.gz",
+                        "cmd": "./agent",
+                    }
+                },
+                "npx": {
+                    "package": "@owner/cli@7.2.1",
+                    "args": ["acp"],
+                },
+            },
+        }
+
+        update, error = check_agent_version(Path("kilo/agent.json"), agent_data)
+
+        assert error is None
+        assert update is None
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.get_github_release_versions")
+    def test_returns_error_when_sources_have_no_common_version(
+        self, mock_gh_release_versions, mock_npm_versions
+    ):
+        """Keep the mismatch as an error when there is no shared stable version."""
+        mock_npm_versions.return_value = {"7.2.4"}
+        mock_gh_release_versions.return_value = {"7.2.1"}
+        agent_data = {
+            "id": "kilo",
+            "version": "7.2.0",
+            "repository": "https://github.com/owner/repo",
+            "distribution": {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://github.com/owner/repo/releases/download/v7.2.0/agent.tar.gz",
+                        "cmd": "./agent",
+                    }
+                },
+                "npx": {
+                    "package": "@owner/cli@7.2.0",
+                    "args": ["acp"],
+                },
+            },
+        }
+
+        update, error = check_agent_version(Path("kilo/agent.json"), agent_data)
+
+        assert update is None
+        assert error is not None
+        assert error.error == "Version mismatch across distributions: binary=7.2.1, npx=7.2.4"

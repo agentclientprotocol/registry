@@ -39,7 +39,7 @@ jobs:
         # Generating a GitHub token, so that PRs and tags created by
         # the action can trigger actions workflows.
         name: Generate GitHub token
-        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
         id: generate-token
         with:
           # GitHub App ID secret name
@@ -91,7 +91,7 @@ jobs:
       issues: write
     steps:
       - name: Create failure issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const title = `Version check failed - ${new Date().toISOString().split('T')[0]}`;
@@ -153,7 +153,7 @@ jobs:
           node-version: "lts/*"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
 
       - name: Apply version updates
         env:
@@ -247,7 +247,7 @@ jobs:
     steps:
       - *generate-token
       - name: Create failure issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         with:

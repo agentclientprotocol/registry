@@ -1,0 +1,63 @@
+{
+  "id": "cortex-code",
+  "name": "Snowflake Cortex Code",
+  "version": "1.0.58",
+  "description": "Snowflake's Cortex Code coding agent",
+  "repository": "https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code",
+  "authors": [
+    "Snowflake"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.58%2B183258.b9d8c6466577/coco-1.0.58%2B183258.b9d8c6466577-darwin-arm64.tar.gz",
+        "cmd": "./cortex",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.58%2B183258.b9d8c6466577/coco-1.0.58%2B183258.b9d8c6466577-darwin-amd64.tar.gz",
+        "cmd": "./cortex",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.58%2B183258.b9d8c6466577/coco-1.0.58%2B183258.b9d8c6466577-linux-amd64.tar.gz",
+        "cmd": "./cortex",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.58%2B183258.b9d8c6466577/coco-1.0.58%2B183258.b9d8c6466577-linux-arm64.tar.gz",
+        "cmd": "./cortex",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.58%2B183258.b9d8c6466577/coco-1.0.58%2B183258.b9d8c6466577-windows-amd64.tar.gz",
+        "cmd": "./cortex.exe",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "windows-aarch64": {
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.58%2B183258.b9d8c6466577/coco-1.0.58%2B183258.b9d8c6466577-windows-arm64.tar.gz",
+        "cmd": "./cortex.exe",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      }
+    }
+  }
+}

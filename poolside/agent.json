@@ -1,0 +1,43 @@
+{
+  "id": "poolside",
+  "name": "Poolside",
+  "version": "1.0.0",
+  "description": "Poolside's coding agent",
+  "website": "https://poolside.ai",
+  "authors": ["Poolside <feedback@poolside.ai>"],
+  "license": "proprietary",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://downloads.poolside.ai/pool/v1.0.0/pool-darwin-arm64.tar.gz",
+        "cmd": "./pool-darwin-arm64",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://downloads.poolside.ai/pool/v1.0.0/pool-darwin-amd64.tar.gz",
+        "cmd": "./pool-darwin-amd64",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://downloads.poolside.ai/pool/v1.0.0/pool-linux-arm64.tar.gz",
+        "cmd": "./pool-linux-arm64",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://downloads.poolside.ai/pool/v1.0.0/pool-linux-amd64.tar.gz",
+        "cmd": "./pool-linux-amd64",
+        "args": ["acp"]
+      },
+      "windows-aarch64": {
+        "archive": "https://downloads.poolside.ai/pool/v1.0.0/pool-windows-arm64.tar.gz",
+        "cmd": "./pool-windows-arm64.exe",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://downloads.poolside.ai/pool/v1.0.0/pool-windows-amd64.tar.gz",
+        "cmd": "./pool-windows-amd64.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
