@@ -1,0 +1,20 @@
+{
+  "id": "llmrix-devtool",
+  "name": "Llmrix Devtool",
+  "version": "0.0.5",
+  "description": "An AI coding agent for autonomous development workflows. Supports multi-agent task execution with file system access, terminal operations, and context-aware code generation.",
+  "repository": "https://github.com/llmrix/llmrix-devtool-plugin",
+  "website": "https://www.llmrix.com",
+  "authors": [
+    "llmrix"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "llmrix-devtool@0.0.5",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
