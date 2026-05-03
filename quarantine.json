@@ -1,5 +1,6 @@
 {
   "deepagents": "Missing npm dependency",
   "junie": "Auto-update disabled",
-  "minion-code": "Python dependency issue"
+  "minion-code": "Python dependency issue",
+  "vtcode": "Missing windows builds"
 }
