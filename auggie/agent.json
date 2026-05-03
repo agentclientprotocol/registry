@@ -1,21 +1,17 @@
 {
   "id": "auggie",
   "name": "Auggie CLI",
-  "version": "0.24.0",
+  "version": "0.25.1",
   "description": "Augment Code's powerful software agent, backed by industry-leading context engine",
   "repository": "https://github.com/augmentcode/auggie",
   "website": "https://www.augmentcode.com/",
-  "authors": [
-    "Augment Code <support@augmentcode.com>"
-  ],
+  "authors": ["Augment Code <support@augmentcode.com>"],
   "license": "proprietary",
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "@augmentcode/auggie@0.24.0",
-      "args": [
-        "--acp"
-      ],
+      "package": "@augmentcode/auggie@0.25.1",
+      "args": ["--acp"],
       "env": {
         "AUGMENT_DISABLE_AUTO_UPDATE": "1"
       }

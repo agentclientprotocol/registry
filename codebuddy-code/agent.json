@@ -1,19 +1,15 @@
 {
   "id": "codebuddy-code",
   "name": "Codebuddy Code",
-  "version": "2.94.3",
+  "version": "2.95.0",
   "description": "Tencent Cloud's official intelligent coding tool",
   "website": "https://www.codebuddy.cn/cli/",
-  "authors": [
-    "Tencent Cloud"
-  ],
+  "authors": ["Tencent Cloud"],
   "license": "Proprietary",
   "distribution": {
     "npx": {
-      "package": "@tencent-ai/codebuddy-code@2.94.3",
-      "args": [
-        "--acp"
-      ]
+      "package": "@tencent-ai/codebuddy-code@2.95.0",
+      "args": ["--acp"]
     }
   }
 }
