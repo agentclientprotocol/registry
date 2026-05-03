@@ -1,4 +1,5 @@
 {
+  "agoragentic-acp": "Postinstall script",
   "deepagents": "Missing npm dependency",
   "junie": "Auto-update disabled",
   "minion-code": "Python dependency issue",
