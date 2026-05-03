@@ -31,6 +31,7 @@ from registry_utils import (
     extract_pypi_package_name,
     load_quarantine,
     should_skip_dir,
+    validate_distribution_urls,
 )
 
 
@@ -50,6 +51,20 @@ class UpdateError(NamedTuple):
 
     agent_id: str
     error: str
+
+
+class SkippedUpdate(NamedTuple):
+    """A planned update that was reverted because its new URLs were not reachable.
+
+    These are not fatal: the workflow keeps the agent at its current version and
+    continues applying the rest of the updates so a single broken upstream doesn't
+    block the whole hourly auto-update cycle.
+    """
+
+    agent_id: str
+    current_version: str
+    latest_version: str
+    reason: str
 
 
 # Directories to scan for agents
@@ -368,14 +383,23 @@ def check_agent_version(
     ), None
 
 
-def apply_update(update: VersionUpdate) -> bool:
-    """Apply a version update to an agent, updating all distribution types."""
+def apply_update(update: VersionUpdate) -> tuple[bool, str | None]:
+    """Apply a version update to an agent, updating all distribution types.
+
+    Returns:
+        (True, None): update was applied and validated.
+        (False, reason): update was applied then reverted because the new
+            distribution URLs were unreachable. The agent.json is restored to its
+            pre-update content. ``reason`` describes which URLs failed.
+        (False, None): hard I/O / parse failure (caller should treat as fatal).
+    """
     try:
         with open(update.agent_path) as f:
-            agent_data = json.load(f)
+            original_content = f.read()
+            agent_data = json.loads(original_content)
     except (json.JSONDecodeError, OSError) as e:
         print(f"Error reading {update.agent_path}: {e}", file=sys.stderr)
-        return False
+        return False, None
 
     old_version = agent_data["version"]
     new_version = update.latest_version
@@ -428,10 +452,28 @@ def apply_update(update: VersionUpdate) -> bool:
         with open(update.agent_path, "w") as f:
             json.dump(agent_data, f, indent=2)
             f.write("\n")
-        return True
     except OSError as e:
         print(f"Error writing {update.agent_path}: {e}", file=sys.stderr)
-        return False
+        return False, None
+
+    # Validate that the new distribution URLs are reachable. If any URL fails
+    # (e.g. upstream stopped publishing a Windows binary at this version), revert
+    # to the original content and report the agent as skipped — the caller will
+    # carry on with the remaining updates.
+    url_errors = validate_distribution_urls(distribution)
+    if url_errors:
+        try:
+            with open(update.agent_path, "w") as f:
+                f.write(original_content)
+        except OSError as e:
+            print(
+                f"Error reverting {update.agent_path} after URL check failed: {e}",
+                file=sys.stderr,
+            )
+            return False, None
+        return False, "; ".join(url_errors)
+
+    return True, None
 
 
 def main():
@@ -495,6 +537,51 @@ def main():
             if not args.json:
                 print(f"OK ({agent_data.get('version', 'unknown')})")
 
+    skipped: list[SkippedUpdate] = []
+
+    # Apply updates if requested. We do this before assembling the JSON output so
+    # the JSON can report agents that were reverted because their new URLs 404'd.
+    if args.apply and updates:
+        print()
+        print("Applying updates...")
+        applied = 0
+        failed = 0
+        kept_updates: list[VersionUpdate] = []
+        for update in updates:
+            if not args.json:
+                print(f"  Updating {update.agent_id}...", end=" ", flush=True)
+            ok, skip_reason = apply_update(update)
+            if ok:
+                applied += 1
+                kept_updates.append(update)
+                if not args.json:
+                    print("OK")
+            elif skip_reason:
+                skipped.append(
+                    SkippedUpdate(
+                        agent_id=update.agent_id,
+                        current_version=update.current_version,
+                        latest_version=update.latest_version,
+                        reason=skip_reason,
+                    )
+                )
+                if not args.json:
+                    print(f"SKIPPED ({skip_reason})")
+            else:
+                failed += 1
+                if not args.json:
+                    print("FAILED")
+
+        # Drop reverted agents from the canonical update list so downstream
+        # consumers (commit message, verify-agents) only see what actually changed.
+        updates = kept_updates
+
+        print()
+        summary = f"Applied {applied} updates, {failed} failed"
+        if skipped:
+            summary += f", {len(skipped)} skipped (broken upstream URLs)"
+        print(summary)
+
     # Output results
     if args.json:
         result = {
@@ -510,15 +597,28 @@ def main():
                 for u in updates
             ],
             "errors": [{"agent_id": e.agent_id, "error": e.error} for e in errors],
+            "skipped": [
+                {
+                    "agent_id": s.agent_id,
+                    "current_version": s.current_version,
+                    "latest_version": s.latest_version,
+                    "reason": s.reason,
+                }
+                for s in skipped
+            ],
             "up_to_date": up_to_date,
         }
         print(json.dumps(result, indent=2))
     else:
         print()
         print("=" * 60)
-        print(
-            f"Summary: {len(updates)} updates, {len(errors)} errors, {len(up_to_date)} up-to-date"
+        summary_line = (
+            f"Summary: {len(updates)} updates, {len(errors)} errors, "
+            f"{len(up_to_date)} up-to-date"
         )
+        if skipped:
+            summary_line += f", {len(skipped)} skipped"
+        print(summary_line)
 
         if updates:
             print()
@@ -529,36 +629,24 @@ def main():
                     f"{u.latest_version} ({u.distribution_type})"
                 )
 
+        if skipped:
+            print()
+            print("Skipped (broken upstream URLs, kept at current version):")
+            for s in skipped:
+                print(
+                    f"  - {s.agent_id}: {s.current_version} -> "
+                    f"{s.latest_version}: {s.reason}"
+                )
+
         if errors:
             print()
             print("Errors:")
             for e in errors:
                 print(f"  - {e.agent_id}: {e.error}")
 
-    # Apply updates if requested
-    if args.apply and updates:
-        print()
-        print("Applying updates...")
-        applied = 0
-        failed = 0
-        for update in updates:
-            if not args.json:
-                print(f"  Updating {update.agent_id}...", end=" ", flush=True)
-            if apply_update(update):
-                applied += 1
-                if not args.json:
-                    print("OK")
-            else:
-                failed += 1
-                if not args.json:
-                    print("FAILED")
-
-        print()
-        print(f"Applied {applied} updates, {failed} failed")
-
-        # Exit with error if any updates failed
-        if failed > 0:
-            sys.exit(1)
+    # Exit with error if any apply attempts had hard I/O failures.
+    if args.apply and "failed" in locals() and failed > 0:
+        sys.exit(1)
 
     # Exit with special code if updates are available (for CI)
     if updates and not args.apply:
