@@ -566,7 +566,7 @@ def build_registry(dry_run: bool = False):
     default_agents = [a for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
 
     # Agents excluded from registry-for-jetbrains.json
-    JETBRAINS_EXCLUDE_IDS = {"codex-acp", "github-copilot-cli"}
+    JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
 
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp", "junie", "codex-acp", "gemini"}
@@ -576,6 +576,17 @@ def build_registry(dry_run: bool = False):
         if patched["id"] == "claude-acp":
             assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
             patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
+        if patched["id"] == "codex-acp":
+            patched["name"] = "Codex"
+            patched["version"] = "0.0.43"
+            patched["repository"] = "https://github.com/agentclientprotocol/codex-acp"
+            patched["authors"] = ["OpenAI", "JetBrains s.r.o."]
+            patched["distribution"] = {
+                "npx": {
+                    "package": "@jetbrains/codex-acp@0.0.43",
+                    "args": ["-acp"],
+                }
+            }
         if patched["id"] in JETBRAINS_BUNDLED_IDS:
             patched["bundled"] = True
         return patched

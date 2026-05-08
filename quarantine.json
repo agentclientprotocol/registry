@@ -1,5 +1,8 @@
 {
+  "agoragentic-acp": "Postinstall script",
   "deepagents": "Missing npm dependency",
   "junie": "Auto-update disabled",
-  "minion-code": "Python dependency issue"
+  "mistral-vibe": "missing windows build",
+  "minion-code": "Python dependency issue",
+  "vtcode": "Missing windows builds"
 }

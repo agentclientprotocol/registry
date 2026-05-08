@@ -5,9 +5,7 @@
   "description": "Agent marketplace with 174+ AI capabilities. Browse, invoke, and pay for agent services settled in USDC on Base L2.",
   "repository": "https://github.com/rhein1/agoragentic-integrations",
   "website": "https://agoragentic.com",
-  "authors": [
-    "ACRE / Agoragentic"
-  ],
+  "authors": ["ACRE / Agoragentic"],
   "license": "MIT",
   "distribution": {
     "npx": {
