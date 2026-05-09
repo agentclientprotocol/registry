@@ -583,7 +583,7 @@ def build_registry(dry_run: bool = False):
             patched["authors"] = ["OpenAI", "JetBrains s.r.o."]
             patched["distribution"] = {
                 "npx": {
-                    "package": "@jetbrains/codex-acp@0.0.43",
+                    "package": "@agentclientprotocol/codex-acp@0.0.43",
                     "args": ["-acp"],
                 }
             }
