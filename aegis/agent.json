@@ -1,0 +1,16 @@
+{
+  "id": "aegis",
+  "name": "Aegis",
+  "version": "0.6.6",
+  "description": "Enterprise orchestration middleware for Claude Code — REST API, MCP server, SSE, webhooks, and dashboard",
+  "repository": "https://github.com/OneStepAt4time/aegis",
+  "website": "https://github.com/OneStepAt4time/aegis#readme",
+  "authors": ["OneStepAt4time"],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@onestepat4time/aegis@0.6.6",
+      "args": ["mcp"]
+    }
+  }
+}
