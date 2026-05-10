@@ -47,7 +47,7 @@
       }
     },
     "npx": {
-      "package": "@argy-cloud/code@1.9.1",
+      "package": "@argycloud/code@1.9.1",
       "args": [
         "acp"
       ]
