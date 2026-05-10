@@ -1,7 +1,7 @@
 {
   "id": "dirac",
   "name": "Dirac",
-  "version": "0.3.40",
+  "version": "0.3.41",
   "description": "Reduces API costs by more than 50%, produces better and faster work. Uses Hash anchored parallel edits, AST manipulation and a whole lot of neat optimizations. Fully Open Source.",
   "repository": "https://github.com/dirac-run/dirac",
   "website": "https://dirac.run",
@@ -12,7 +12,7 @@
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "dirac-cli@0.3.40",
+      "package": "dirac-cli@0.3.41",
       "args": [
         "--acp"
       ]
