@@ -569,7 +569,7 @@ def build_registry(dry_run: bool = False):
     JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
 
     # Agents flagged as bundled in the JetBrains registry
-    JETBRAINS_BUNDLED_IDS = {"claude-acp", "junie", "codex-acp", "gemini"}
+    JETBRAINS_BUNDLED_IDS = {"claude-acp"}
 
     def patch_agent_for_jetbrains(agent):
         patched = copy.deepcopy(agent)
@@ -578,12 +578,12 @@ def build_registry(dry_run: bool = False):
             patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
         if patched["id"] == "codex-acp":
             patched["name"] = "Codex"
-            patched["version"] = "0.0.43"
+            patched["version"] = "0.0.44"
             patched["repository"] = "https://github.com/agentclientprotocol/codex-acp"
             patched["authors"] = ["OpenAI", "JetBrains s.r.o."]
             patched["distribution"] = {
                 "npx": {
-                    "package": "@agentclientprotocol/codex-acp@0.0.43",
+                    "package": "@agentclientprotocol/codex-acp@0.0.44",
                     "args": ["-acp"],
                 }
             }
