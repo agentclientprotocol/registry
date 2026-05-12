@@ -1,0 +1,17 @@
+{
+  "id": "omp-acp",
+  "name": "Oh My Pi ACP",
+  "version": "0.1.2",
+  "description": "ACP adapter for the Oh My Pi coding agent.",
+  "repository": "https://github.com/jiwangyihao/omp-acp",
+  "website": "https://github.com/jiwangyihao/omp-acp#readme",
+  "authors": [
+    "jiwangyihao"
+  ],
+  "license": "MPL-2.0",
+  "distribution": {
+    "npx": {
+      "package": "omp-acp@0.1.2"
+    }
+  }
+}
