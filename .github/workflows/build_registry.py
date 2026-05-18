@@ -7,17 +7,14 @@ import json
 import os
 import re
 import sys
-import urllib.error
-import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from registry_utils import (
-    extract_npm_package_name,
     extract_npm_package_version,
-    extract_pypi_package_name,
     normalize_version,
     should_skip_dir,
+    validate_distribution_urls,
 )
 
 try:
@@ -47,40 +44,6 @@ DEFAULT_BASE_URL = "https://cdn.agentclientprotocol.com/registry/v1/latest"
 # Icon requirements
 PREFERRED_ICON_SIZE = 16
 ALLOWED_FILL_STROKE_VALUES = {"currentcolor", "none", "inherit"}
-
-# URL validation
-SKIP_URL_VALIDATION = os.environ.get("SKIP_URL_VALIDATION", "").lower() in (
-    "1",
-    "true",
-    "yes",
-)
-
-
-def url_exists(url: str, method: str = "HEAD", retries: int = 3) -> bool:
-    """Check if a URL exists using HEAD or GET request with retries."""
-    import time
-
-    for attempt in range(retries):
-        try:
-            req = urllib.request.Request(url, method=method)
-            req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
-            with urllib.request.urlopen(req, timeout=15) as response:
-                return response.status in (200, 301, 302)
-        except urllib.error.HTTPError as e:
-            # Some servers don't support HEAD, try GET
-            if method == "HEAD" and e.code in (403, 405):
-                return url_exists(url, method="GET", retries=retries - attempt)
-            if attempt < retries - 1 and e.code in (429, 500, 502, 503, 504):
-                time.sleep(2**attempt)
-                continue
-            return False
-        except (urllib.error.URLError, TimeoutError, OSError):
-            if attempt < retries - 1:
-                time.sleep(2**attempt)
-                continue
-            return False
-    return False
-
 
 def extract_version_from_url(url: str) -> str | None:
     """Extract version from binary archive URL."""
@@ -143,44 +106,6 @@ def validate_distribution_versions(agent_version: str, distribution: dict) -> li
                     f"uvx package version ({pkg_version}) doesn't match "
                     f"agent version ({agent_version})"
                 )
-
-    return errors
-
-
-def validate_distribution_urls(distribution: dict) -> list[str]:
-    """Validate that distribution URLs exist."""
-    if SKIP_URL_VALIDATION:
-        return []
-
-    errors = []
-
-    # Check binary archive URLs
-    if "binary" in distribution:
-        for platform, target in distribution["binary"].items():
-            if "archive" in target:
-                url = target["archive"]
-                if not url_exists(url):
-                    errors.append(f"Binary archive URL not accessible for {platform}: {url}")
-
-    # Check npm package URLs (registry.npmjs.org)
-    seen_npm = set()
-    for dist_type in ("npx",):
-        if dist_type in distribution:
-            package = distribution[dist_type].get("package", "")
-            pkg_name = extract_npm_package_name(package)
-            if pkg_name and pkg_name not in seen_npm:
-                seen_npm.add(pkg_name)
-                npm_url = f"https://registry.npmjs.org/{pkg_name}"
-                if not url_exists(npm_url):
-                    errors.append(f"npm package not found: {pkg_name}")
-
-    # Check PyPI package URLs
-    if "uvx" in distribution:
-        package = distribution["uvx"].get("package", "")
-        pkg_name = extract_pypi_package_name(package)
-        pypi_url = f"https://pypi.org/pypi/{pkg_name}/json"
-        if not url_exists(pypi_url):
-            errors.append(f"PyPI package not found: {pkg_name}")
 
     return errors
 

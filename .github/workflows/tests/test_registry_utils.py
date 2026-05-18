@@ -3,6 +3,7 @@
 import json
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 from registry_utils import (
     extract_npm_package_name,
@@ -11,6 +12,7 @@ from registry_utils import (
     load_quarantine,
     normalize_version,
     should_skip_dir,
+    validate_distribution_urls,
 )
 
 
@@ -96,6 +98,72 @@ class TestLoadQuarantine:
             p = Path(d) / "quarantine.json"
             p.write_text("not json")
             assert load_quarantine(Path(d)) == {}
+
+
+class TestValidateDistributionUrls:
+    """Distribution URL validation (moved from build_registry.py)."""
+
+    def test_returns_no_errors_when_all_urls_reachable(self):
+        distribution = {
+            "binary": {
+                "darwin-aarch64": {
+                    "archive": "https://example.com/agent-darwin.tar.gz",
+                    "cmd": "./agent",
+                },
+                "linux-x86_64": {
+                    "archive": "https://example.com/agent-linux.tar.gz",
+                    "cmd": "./agent",
+                },
+            }
+        }
+        with patch("registry_utils.url_exists", return_value=True):
+            assert validate_distribution_urls(distribution) == []
+
+    def test_reports_unreachable_binary_archive(self):
+        distribution = {
+            "binary": {
+                "darwin-aarch64": {
+                    "archive": "https://example.com/ok.tar.gz",
+                    "cmd": "./agent",
+                },
+                "windows-x86_64": {
+                    "archive": "https://example.com/missing-windows.zip",
+                    "cmd": "agent.exe",
+                },
+            }
+        }
+
+        def fake_url_exists(url, *_args, **_kwargs):
+            return "missing" not in url
+
+        with patch("registry_utils.url_exists", side_effect=fake_url_exists):
+            errors = validate_distribution_urls(distribution)
+
+        assert len(errors) == 1
+        assert "windows-x86_64" in errors[0]
+        assert "missing-windows.zip" in errors[0]
+
+    def test_skip_url_validation_env_returns_empty(self, monkeypatch):
+        monkeypatch.setenv("SKIP_URL_VALIDATION", "1")
+        # Re-import to pick up the patched env var.
+        import importlib
+
+        import registry_utils
+
+        importlib.reload(registry_utils)
+        try:
+            distribution = {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://example.com/anything.tar.gz",
+                        "cmd": "./agent",
+                    }
+                }
+            }
+            assert registry_utils.validate_distribution_urls(distribution) == []
+        finally:
+            monkeypatch.delenv("SKIP_URL_VALIDATION", raising=False)
+            importlib.reload(registry_utils)
 
 
 class TestShouldSkipDir:

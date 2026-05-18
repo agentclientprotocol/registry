@@ -1,12 +1,20 @@
 """Tests for update_versions.py."""
 
+import json
+import tempfile
 import urllib.error
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from update_versions import check_agent_version, is_prerelease, make_request
+from update_versions import (
+    VersionUpdate,
+    apply_update,
+    check_agent_version,
+    is_prerelease,
+    make_request,
+)
 
 
 class TestMakeRequestServerErrors:
@@ -266,3 +274,95 @@ class TestCheckAgentVersionMultiSourceResolution:
         assert update is None
         assert error is not None
         assert error.error == "Version mismatch across distributions: binary=7.2.1, npx=7.2.4"
+
+
+class TestApplyUpdateUrlValidation:
+    """apply_update reverts and reports skipped when new URLs aren't reachable.
+
+    Regression test for the failure mode where an upstream stops publishing one
+    platform's binary at a new version (e.g. vtcode 0.105.5 dropped Windows zip),
+    which previously caused the entire hourly auto-update workflow to fail.
+    """
+
+    def _write_agent(self, tmpdir: Path, agent_data: dict) -> Path:
+        agent_dir = tmpdir / agent_data["id"]
+        agent_dir.mkdir()
+        path = agent_dir / "agent.json"
+        path.write_text(json.dumps(agent_data, indent=2) + "\n")
+        return path
+
+    def _build_update(self, path: Path, agent_data: dict, new_version: str) -> VersionUpdate:
+        return VersionUpdate(
+            agent_id=agent_data["id"],
+            agent_path=path,
+            current_version=agent_data["version"],
+            latest_version=new_version,
+            distribution_type="binary",
+            source_url="https://github.com/owner/repo",
+        )
+
+    def test_reverts_when_new_binary_url_missing(self):
+        agent_data = {
+            "id": "vtlike",
+            "version": "0.96.14",
+            "distribution": {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://github.com/owner/repo/releases/download/0.96.14/agent-0.96.14-aarch64-apple-darwin.tar.gz",
+                        "cmd": "./agent",
+                    },
+                    "windows-x86_64": {
+                        "archive": "https://github.com/owner/repo/releases/download/0.96.14/agent-0.96.14-x86_64-pc-windows-msvc.zip",
+                        "cmd": "agent.exe",
+                    },
+                }
+            },
+        }
+        with tempfile.TemporaryDirectory() as d:
+            tmpdir = Path(d)
+            path = self._write_agent(tmpdir, agent_data)
+            original = path.read_text()
+            update = self._build_update(path, agent_data, "0.105.5")
+
+            # New version's Windows zip 404s; macOS exists.
+            def fake_url_exists(url, *_args, **_kwargs):
+                return "windows" not in url
+
+            with patch("registry_utils.url_exists", side_effect=fake_url_exists):
+                ok, reason = apply_update(update)
+
+            assert ok is False
+            assert reason is not None
+            assert "windows-x86_64" in reason
+            # File must be byte-identical to its pre-update state.
+            assert path.read_text() == original
+
+    def test_succeeds_when_all_new_urls_reachable(self):
+        agent_data = {
+            "id": "okagent",
+            "version": "1.0.0",
+            "distribution": {
+                "binary": {
+                    "darwin-aarch64": {
+                        "archive": "https://github.com/owner/repo/releases/download/1.0.0/agent-1.0.0-aarch64-apple-darwin.tar.gz",
+                        "cmd": "./agent",
+                    },
+                }
+            },
+        }
+        with tempfile.TemporaryDirectory() as d:
+            tmpdir = Path(d)
+            path = self._write_agent(tmpdir, agent_data)
+            update = self._build_update(path, agent_data, "1.1.0")
+
+            with patch("registry_utils.url_exists", return_value=True):
+                ok, reason = apply_update(update)
+
+            assert ok is True
+            assert reason is None
+            written = json.loads(path.read_text())
+            assert written["version"] == "1.1.0"
+            assert (
+                written["distribution"]["binary"]["darwin-aarch64"]["archive"]
+                == "https://github.com/owner/repo/releases/download/1.1.0/agent-1.1.0-aarch64-apple-darwin.tar.gz"
+            )
