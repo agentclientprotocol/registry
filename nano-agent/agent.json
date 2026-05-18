@@ -1,0 +1,47 @@
+{
+  "id": "nano-agent",
+  "name": "Nano Agent",
+  "version": "0.6.21",
+  "description": "Lightweight Go-based AI coding agent with turn-based architecture, swarm multi-agent support, and OpenAI/Anthropic-compatible LLM backends",
+  "website": "https://binary-releases.oss-cn-hangzhou.aliyuncs.com/nano/latest/install.sh",
+  "authors": [
+    "Nano Agent Team"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://binary-releases.oss-cn-hangzhou.aliyuncs.com/nano/v0.6.21/nano-darwin-arm64.tar.gz",
+        "cmd": "./nano",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://binary-releases.oss-cn-hangzhou.aliyuncs.com/nano/v0.6.21/nano-darwin-amd64.tar.gz",
+        "cmd": "./nano",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://binary-releases.oss-cn-hangzhou.aliyuncs.com/nano/v0.6.21/nano-linux-arm64.tar.gz",
+        "cmd": "./nano",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://binary-releases.oss-cn-hangzhou.aliyuncs.com/nano/v0.6.21/nano-linux-amd64.tar.gz",
+        "cmd": "./nano",
+        "args": [
+          "acp",
+          "serve"
+        ]
+      }
+    }
+  }
+}
