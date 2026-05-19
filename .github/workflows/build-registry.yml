@@ -213,9 +213,12 @@ jobs:
             NOTES="- Initial release"
           fi
 
-          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$NOTES" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          NOTES_DELIMITER="$(uuidgen)"
+          {
+            echo "notes<<$NOTES_DELIMITER"
+            printf '%s\n' "$NOTES"
+            echo "$NOTES_DELIMITER"
+          } >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
 

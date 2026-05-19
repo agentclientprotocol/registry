@@ -32,7 +32,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from verify_agents import build_agent_command, load_registry, prepare_binary
+from verify_agents import (
+    build_agent_command,
+    build_agent_process_env,
+    load_registry,
+    prepare_binary,
+)
 
 DEFAULT_INIT_TIMEOUT = 120.0
 DEFAULT_RPC_TIMEOUT = 5.0
@@ -904,18 +909,14 @@ def probe_agent(
 
     home_dir = sandbox / "home"
     home_dir.mkdir(parents=True, exist_ok=True)
-    full_env = {
-        "HOME": str(home_dir),
-        "TERM": "dumb",
-        **env,
-    }
+    full_env = build_agent_process_env(env, home_dir, sandbox / "tmp")
 
     proc: subprocess.Popen | None = None
     try:
         proc = subprocess.Popen(
             cmd,
             cwd=cwd,
-            env={**dict(os.environ), **full_env},
+            env=full_env,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

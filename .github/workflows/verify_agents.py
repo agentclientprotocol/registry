@@ -10,12 +10,13 @@ import json
 import os
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
 import urllib.request
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import NamedTuple
 
 from registry_utils import extract_npm_package_name, load_quarantine, should_skip_dir
@@ -44,6 +45,28 @@ STARTUP_GRACE = 2  # seconds to wait before checking if process is alive
 DEFAULT_SANDBOX_DIR = ".sandbox"
 DEFAULT_AUTH_TIMEOUT = 120  # seconds for ACP handshake (includes npx download time)
 SYSTEM_COMMANDS = {"node", "python", "python3", "java", "ruby"}
+MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
+AGENT_ENV_PASSTHROUGH = {
+    "CI",
+    "COMSPEC",
+    "NPM_CONFIG_CACHE",
+    "NODE_EXTRA_CA_CERTS",
+    "PATH",
+    "PATHEXT",
+    "PYTHON_KEYRING_BACKEND",
+    "PYTHON_KEYRING_DISABLED",
+    "REQUESTS_CA_BUNDLE",
+    "SSL_CERT_DIR",
+    "SSL_CERT_FILE",
+    "SystemRoot",
+    "TMP",
+    "TMPDIR",
+    "TEMP",
+    "UV_CACHE_DIR",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME",
+}
 NPX_INSTALL_RETRY_PATTERNS = (
     "shim not found",
     "please reinstall: npm install",
@@ -79,24 +102,82 @@ def download_file(url: str, dest: Path) -> bool:
             total = response.headers.get("Content-Length")
             if total:
                 total = int(total)
+                if total > MAX_DOWNLOAD_BYTES:
+                    raise ValueError(
+                        f"download is {total / 1024 / 1024:.1f} MB, "
+                        f"exceeding the {MAX_DOWNLOAD_BYTES / 1024 / 1024:.0f} MB limit"
+                    )
                 print(f"      Downloading {total / 1024 / 1024:.1f} MB...", end="", flush=True)
             else:
                 print("      Downloading...", end="", flush=True)
-            data = response.read()
-            dest.write_bytes(data)
-            print(f" done ({len(data) / 1024 / 1024:.1f} MB)")
+            downloaded = 0
+            with dest.open("wb") as output:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    downloaded += len(chunk)
+                    if downloaded > MAX_DOWNLOAD_BYTES:
+                        raise ValueError(
+                            f"download exceeded the {MAX_DOWNLOAD_BYTES / 1024 / 1024:.0f} MB limit"
+                        )
+                    output.write(chunk)
+            print(f" done ({downloaded / 1024 / 1024:.1f} MB)")
         return True
     except Exception as e:
+        dest.unlink(missing_ok=True)
         print(f"\n      Download failed: {e}")
         return False
+
+
+def is_safe_relative_path(path: str) -> bool:
+    """Return whether a registry-supplied path stays relative inside the sandbox."""
+    normalized = path.replace("\\", "/")
+    posix_path = PurePosixPath(normalized)
+    windows_path = PureWindowsPath(path)
+    return (
+        normalized not in {"", "."}
+        and not posix_path.is_absolute()
+        and not windows_path.is_absolute()
+        and not windows_path.drive
+        and ".." not in posix_path.parts
+    )
+
+
+def is_zip_symlink(info: zipfile.ZipInfo) -> bool:
+    """Detect POSIX symlink entries stored in zip metadata."""
+    return stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK
+
+
+def extract_zip_safely(archive: Path, dest: Path) -> None:
+    """Extract a zip while rejecting traversal paths and symlinks."""
+    dest_root = dest.resolve()
+    with zipfile.ZipFile(archive) as zf:
+        for info in zf.infolist():
+            normalized_name = info.filename.replace("\\", "/")
+            if not is_safe_relative_path(normalized_name):
+                raise ValueError(f"unsafe zip member path: {info.filename}")
+            if is_zip_symlink(info):
+                raise ValueError(f"zip member is a symlink: {info.filename}")
+
+            target = dest / normalized_name
+            if not target.resolve().is_relative_to(dest_root):
+                raise ValueError(f"zip member escapes destination: {info.filename}")
+
+            if info.is_dir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with zf.open(info) as source, target.open("wb") as output:
+                shutil.copyfileobj(source, output)
 
 
 def extract_archive(archive: Path, dest: Path) -> bool:
     """Extract archive to destination."""
     try:
         if archive.suffix == ".zip":
-            with zipfile.ZipFile(archive) as zf:
-                zf.extractall(dest)
+            extract_zip_safely(archive, dest)
         elif archive.name.endswith(".tar.gz") or archive.name.endswith(".tgz"):
             with tarfile.open(archive, "r:gz") as tf:
                 tf.extractall(dest, filter="data")
@@ -115,10 +196,38 @@ def extract_archive(archive: Path, dest: Path) -> bool:
         return False
 
 
+def build_agent_process_env(
+    env: dict[str, str] | None,
+    home_dir: Path,
+    temp_dir: Path | None = None,
+) -> dict[str, str]:
+    """Build the limited environment exposed to third-party agent processes."""
+    full_env = {
+        name: value
+        for name in AGENT_ENV_PASSTHROUGH
+        if (value := os.environ.get(name)) not in (None, "")
+    }
+
+    home_dir.mkdir(parents=True, exist_ok=True)
+    full_env["HOME"] = str(home_dir)
+    full_env["TERM"] = "dumb"
+
+    if temp_dir is not None:
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        full_env.setdefault("TMPDIR", str(temp_dir))
+        full_env.setdefault("TEMP", str(temp_dir))
+        full_env.setdefault("TMP", str(temp_dir))
+
+    if env:
+        full_env.update(env)
+
+    return full_env
+
+
 def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int | None, str, str]:
     """Run a process with timeout, return (exit_code, stdout, stderr)."""
-    full_env = os.environ.copy()
-    full_env.update(env)
+    home_dir = Path(env["HOME"]) if "HOME" in env else cwd / "home"
+    full_env = build_agent_process_env(env, home_dir, cwd / "tmp")
 
     try:
         proc = subprocess.Popen(
@@ -151,7 +260,8 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
 
 def normalize_command_path(cmd: str) -> str:
     """Normalize command paths like ./tool to tool for lookup."""
-    return cmd[2:] if cmd.startswith("./") else cmd
+    normalized = cmd.replace("\\", "/")
+    return normalized[2:] if normalized.startswith("./") else normalized
 
 
 def ensure_executable(path: Path) -> None:
@@ -174,6 +284,9 @@ def resolve_binary_executable(extract_dir: Path, cmd: str) -> Path | None:
         system_cmd = shutil.which(target_cmd)
         return Path(system_cmd) if system_cmd else None
 
+    if not is_safe_relative_path(target_cmd):
+        return None
+
     for path in extract_dir.rglob(target_cmd):
         return path
 
@@ -182,6 +295,7 @@ def resolve_binary_executable(extract_dir: Path, cmd: str) -> Path | None:
         raw_file = files_in_extract[0]
         expected_path = extract_dir / target_cmd
         if raw_file != expected_path and not expected_path.exists():
+            expected_path.parent.mkdir(parents=True, exist_ok=True)
             raw_file.rename(expected_path)
         return expected_path
 
@@ -229,8 +343,8 @@ def prepare_npx_package(
     timeout: float,
 ) -> str | None:
     """Install an npm package into the sandbox so postinstall hooks can run."""
-    full_env = os.environ.copy()
-    full_env.update(env)
+    home_dir = Path(env["HOME"]) if "HOME" in env else sandbox / "home"
+    full_env = build_agent_process_env(env, home_dir, sandbox / "tmp")
 
     try:
         result = subprocess.run(

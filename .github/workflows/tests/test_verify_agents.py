@@ -1,10 +1,13 @@
 import os
 import stat
+import zipfile
 from pathlib import Path
 
 from verify_agents import (
+    build_agent_process_env,
     build_installed_npx_command,
     ensure_executable,
+    extract_archive,
     npm_package_bin_name,
     resolve_binary_executable,
     should_retry_npx_auth_with_install,
@@ -20,6 +23,75 @@ def test_resolve_binary_executable_renames_single_raw_binary(tmp_path: Path):
     assert resolved == tmp_path / "agent"
     assert resolved.exists()
     assert not raw_binary.exists()
+
+
+def test_build_agent_process_env_does_not_pass_github_context(monkeypatch, tmp_path: Path):
+    monkeypatch.setenv("GITHUB_TOKEN", "secret")
+    monkeypatch.setenv("GITHUB_WORKSPACE", str(tmp_path / "repo"))
+    monkeypatch.setenv("PATH", "/usr/bin")
+
+    env = build_agent_process_env({"AGENT_FLAG": "1"}, tmp_path / "home", tmp_path / "tmp")
+
+    assert env["PATH"] == "/usr/bin"
+    assert env["HOME"] == str(tmp_path / "home")
+    assert env["AGENT_FLAG"] == "1"
+    assert "GITHUB_TOKEN" not in env
+    assert "GITHUB_WORKSPACE" not in env
+
+
+def test_resolve_binary_executable_rejects_unsafe_paths(tmp_path: Path):
+    assert resolve_binary_executable(tmp_path, "../agent") is None
+    assert resolve_binary_executable(tmp_path, "/bin/sh") is None
+    assert resolve_binary_executable(tmp_path, "C:\\Windows\\system32\\cmd.exe") is None
+
+
+def test_resolve_binary_executable_accepts_windows_style_relative_path(tmp_path: Path):
+    binary = tmp_path / "dist-package" / "cursor-agent.cmd"
+    binary.parent.mkdir()
+    binary.write_text("@echo off\n")
+
+    resolved = resolve_binary_executable(tmp_path, "./dist-package\\cursor-agent.cmd")
+
+    assert resolved == binary
+
+
+def test_extract_archive_rejects_zip_path_traversal(tmp_path: Path):
+    archive = tmp_path / "bad.zip"
+    dest = tmp_path / "dest"
+    dest.mkdir()
+
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("../outside.txt", "owned")
+
+    assert not extract_archive(archive, dest)
+    assert not (tmp_path / "outside.txt").exists()
+
+
+def test_extract_archive_rejects_zip_symlinks(tmp_path: Path):
+    archive = tmp_path / "bad.zip"
+    dest = tmp_path / "dest"
+    dest.mkdir()
+
+    info = zipfile.ZipInfo("agent-link")
+    info.create_system = 3
+    info.external_attr = (stat.S_IFLNK | 0o777) << 16
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr(info, "agent")
+
+    assert not extract_archive(archive, dest)
+    assert not (dest / "agent-link").exists()
+
+
+def test_extract_archive_allows_safe_zip_entries(tmp_path: Path):
+    archive = tmp_path / "good.zip"
+    dest = tmp_path / "dest"
+    dest.mkdir()
+
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("bin/agent", "#!/bin/sh\n")
+
+    assert extract_archive(archive, dest)
+    assert (dest / "bin" / "agent").read_text() == "#!/bin/sh\n"
 
 
 def test_ensure_executable_adds_execute_bits(tmp_path: Path):

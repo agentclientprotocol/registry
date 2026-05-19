@@ -68,6 +68,8 @@ jobs:
           NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
           XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
           XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+          MATRIX_SANDBOX_DIR: ${{ runner.temp }}/matrix-sandbox
+          MATRIX_OUTPUT_DIR: ${{ runner.temp }}/protocol-matrix
           DISPATCH_AGENTS: ${{ inputs.agents }}
           DISPATCH_SKIP_AGENTS: ${{ inputs.skip_agents }}
           DISPATCH_TABLE_MODE: ${{ inputs.table_mode }}
@@ -100,11 +102,21 @@ jobs:
             exit 1
           fi
 
-          mkdir -p "$UV_CACHE_DIR" "$NPM_CONFIG_CACHE" "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME"
+          mkdir -p \
+            "$UV_CACHE_DIR" \
+            "$NPM_CONFIG_CACHE" \
+            "$XDG_CACHE_HOME" \
+            "$XDG_CONFIG_HOME" \
+            "$MATRIX_SANDBOX_DIR" \
+            "$MATRIX_OUTPUT_DIR"
+
+          if [[ -f .protocol-matrix/latest.json ]]; then
+            cp .protocol-matrix/latest.json "$MATRIX_OUTPUT_DIR/latest.json"
+          fi
 
           ARGS=(
-            --sandbox-dir .matrix-sandbox
-            --output-dir .protocol-matrix
+            --sandbox-dir "$MATRIX_SANDBOX_DIR"
+            --output-dir "$MATRIX_OUTPUT_DIR"
             --init-timeout 120
             --rpc-timeout 5
             --table-mode "$TABLE_MODE"
@@ -126,13 +138,15 @@ jobs:
 
       - name: Summarize matrix run
         id: summary
+        env:
+          MATRIX_OUTPUT_DIR: ${{ runner.temp }}/protocol-matrix
         run: |
           python3 - <<'PY'
           import json
           import os
           from pathlib import Path
 
-          data = json.loads(Path('.protocol-matrix/latest.json').read_text())
+          data = json.loads((Path(os.environ['MATRIX_OUTPUT_DIR']) / 'latest.json').read_text())
           summary = data.get('summary', {})
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
@@ -153,13 +167,15 @@ jobs:
           PY
 
       - name: Record matrix base SHA
-        run: git rev-parse HEAD > .protocol-matrix/base-sha.txt
+        env:
+          MATRIX_OUTPUT_DIR: ${{ runner.temp }}/protocol-matrix
+        run: git rev-parse HEAD > "$MATRIX_OUTPUT_DIR/base-sha.txt"
 
       - name: Upload matrix artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: protocol-matrix
-          path: .protocol-matrix/
+          path: ${{ runner.temp }}/protocol-matrix/
           if-no-files-found: error
           include-hidden-files: true
           retention-days: 1

@@ -13,6 +13,28 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+AGENT_ENV_PASSTHROUGH = {
+    "CI",
+    "COMSPEC",
+    "NPM_CONFIG_CACHE",
+    "NODE_EXTRA_CA_CERTS",
+    "PATH",
+    "PATHEXT",
+    "PYTHON_KEYRING_BACKEND",
+    "PYTHON_KEYRING_DISABLED",
+    "REQUESTS_CA_BUNDLE",
+    "SSL_CERT_DIR",
+    "SSL_CERT_FILE",
+    "SystemRoot",
+    "TMP",
+    "TMPDIR",
+    "TEMP",
+    "UV_CACHE_DIR",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME",
+}
+
 
 @dataclass
 class AuthMethod:
@@ -166,8 +188,12 @@ def run_auth_check(
     Returns:
         AuthCheckResult with success status and auth methods
     """
-    # Build isolated environment
-    full_env = os.environ.copy()
+    # Build isolated environment without leaking GitHub Actions credentials or workspace paths.
+    full_env = {
+        name: value
+        for name in AGENT_ENV_PASSTHROUGH
+        if (value := os.environ.get(name)) not in (None, "")
+    }
     full_env["TERM"] = "dumb"
     if env:
         full_env.update(env)

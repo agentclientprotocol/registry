@@ -60,9 +60,12 @@ jobs:
           echo "$OUTPUT"
 
           # Save JSON output
-          echo "updates_json<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$OUTPUT" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          UPDATES_DELIMITER="$(uuidgen)"
+          {
+            echo "updates_json<<$UPDATES_DELIMITER"
+            printf '%s\n' "$OUTPUT"
+            echo "$UPDATES_DELIMITER"
+          } >> "$GITHUB_OUTPUT"
 
           # Check if updates are available (exit code 2)
           if [ "$EXIT_CODE" -eq 2 ]; then
@@ -454,9 +457,12 @@ jobs:
           ")
 
           echo "summary=$SUMMARY" >> "$GITHUB_OUTPUT"
-          echo "details<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$DETAILS" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          DETAILS_DELIMITER="$(uuidgen)"
+          {
+            echo "details<<$DETAILS_DELIMITER"
+            printf '%s\n' "$DETAILS"
+            echo "$DETAILS_DELIMITER"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Commit and push to main
         env:
@@ -475,12 +481,7 @@ jobs:
             exit 1
           fi
 
-          git commit -m "$(cat <<EOF
-          $COMMIT_SUMMARY
-
-          $COMMIT_DETAILS
-          EOF
-          )"
+          git commit -m "$COMMIT_SUMMARY" -m "$COMMIT_DETAILS"
           git push origin main
 
   notify-apply-failure:
