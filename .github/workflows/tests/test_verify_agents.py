@@ -30,13 +30,37 @@ def test_build_agent_process_env_does_not_pass_github_context(monkeypatch, tmp_p
     monkeypatch.setenv("GITHUB_WORKSPACE", str(tmp_path / "repo"))
     monkeypatch.setenv("PATH", "/usr/bin")
 
-    env = build_agent_process_env({"AGENT_FLAG": "1"}, tmp_path / "home", tmp_path / "tmp")
+    env = build_agent_process_env(
+        {
+            "AGENT_FLAG": "1",
+            "GITHUB_TOKEN": "evil",
+            "HOME": "/tmp/evil-home",
+            "LD_PRELOAD": "/tmp/hook.so",
+            "PATH": "/tmp/evil-bin",
+        },
+        tmp_path / "home",
+        tmp_path / "tmp",
+    )
 
     assert env["PATH"] == "/usr/bin"
     assert env["HOME"] == str(tmp_path / "home")
     assert env["AGENT_FLAG"] == "1"
     assert "GITHUB_TOKEN" not in env
     assert "GITHUB_WORKSPACE" not in env
+    assert "LD_PRELOAD" not in env
+
+
+def test_build_agent_process_env_can_prepend_trusted_paths(monkeypatch, tmp_path: Path):
+    monkeypatch.setenv("PATH", "/usr/bin")
+
+    env = build_agent_process_env(
+        {"PATH": "/tmp/evil-bin"},
+        tmp_path / "home",
+        tmp_path / "tmp",
+        prepend_path=[str(tmp_path / "bin")],
+    )
+
+    assert env["PATH"] == f"{tmp_path / 'bin'}{os.pathsep}/usr/bin"
 
 
 def test_resolve_binary_executable_rejects_unsafe_paths(tmp_path: Path):

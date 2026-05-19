@@ -32,6 +32,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from registry_utils import subprocess_group_kwargs, terminate_process_group
 from verify_agents import (
     build_agent_command,
     build_agent_process_env,
@@ -496,14 +497,7 @@ def collect_stderr_tail(proc: subprocess.Popen, max_chars: int = 1200) -> str | 
 
 def stop_process(proc: subprocess.Popen) -> None:
     """Terminate process gracefully, then force kill if needed."""
-    if proc.poll() is not None:
-        return
-    proc.terminate()
-    try:
-        proc.wait(timeout=2)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        proc.wait(timeout=2)
+    terminate_process_group(proc)
 
 
 def probe_params_for_method(
@@ -922,6 +916,7 @@ def probe_agent(
             stderr=subprocess.PIPE,
             text=True,
             bufsize=1,
+            **subprocess_group_kwargs(),
         )
 
         request_id = 1

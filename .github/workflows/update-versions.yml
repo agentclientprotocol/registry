@@ -356,22 +356,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      # Generating a GitHub token, so that PRs and tags created by
-      # the action can trigger actions workflows.
-      - name: Generate GitHub token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
-        id: generate-token
-        with:
-          # GitHub App ID secret name
-          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
-          # GitHub App private key secret name
-          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
-
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          token: ${{ steps.generate-token.outputs.token }}
           ref: main
+          persist-credentials: false
 
       - name: Download update artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
@@ -464,7 +453,8 @@ jobs:
             echo "$DETAILS_DELIMITER"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Commit and push to main
+      - name: Commit updated manifests
+        id: commit
         env:
           COMMIT_SUMMARY: ${{ steps.commit_msg.outputs.summary }}
           COMMIT_DETAILS: ${{ steps.commit_msg.outputs.details }}
@@ -482,7 +472,26 @@ jobs:
           fi
 
           git commit -m "$COMMIT_SUMMARY" -m "$COMMIT_DETAILS"
-          git push origin main
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # Generating a GitHub token, so that commits created by the
+      # action can trigger the registry publication workflow.
+      - name: Generate GitHub token
+        if: steps.commit.outputs.committed == 'true'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        id: generate-token
+        with:
+          # GitHub App ID secret name
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          # GitHub App private key secret name
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
+      - name: Push updates to main
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_APP_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          git -c http.extraheader="AUTHORIZATION: Bearer $GH_APP_TOKEN" push origin main
 
   notify-apply-failure:
     needs: [check-versions, apply-updates, verify-updates, commit-updates]

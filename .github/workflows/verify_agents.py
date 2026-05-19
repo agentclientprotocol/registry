@@ -20,7 +20,14 @@ import zipfile
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import NamedTuple
 
-from registry_utils import extract_npm_package_name, load_quarantine, should_skip_dir
+from registry_utils import (
+    extract_npm_package_name,
+    load_quarantine,
+    sanitize_agent_env,
+    should_skip_dir,
+    subprocess_group_kwargs,
+    terminate_process_group,
+)
 
 # Import auth client (only needed when --auth-check is used)
 try:
@@ -222,6 +229,7 @@ def build_agent_process_env(
     env: dict[str, str] | None,
     home_dir: Path,
     temp_dir: Path | None = None,
+    prepend_path: list[str] | None = None,
 ) -> dict[str, str]:
     """Build the limited environment exposed to third-party agent processes."""
     full_env = {
@@ -240,8 +248,13 @@ def build_agent_process_env(
         full_env.setdefault("TEMP", str(temp_dir))
         full_env.setdefault("TMP", str(temp_dir))
 
-    if env:
-        full_env.update(env)
+    full_env.update(sanitize_agent_env(env))
+    full_env["HOME"] = str(home_dir)
+    full_env["TERM"] = "dumb"
+
+    if prepend_path:
+        base_path = full_env.get("PATH", os.environ.get("PATH", ""))
+        full_env["PATH"] = os.pathsep.join([*prepend_path, base_path])
 
     return full_env
 
@@ -260,6 +273,7 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            **subprocess_group_kwargs(),
         )
 
         try:
@@ -267,11 +281,7 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
             return proc.returncode, stdout, stderr
         except subprocess.TimeoutExpired:
             # Process still running after timeout - this is often good (waiting for input)
-            proc.terminate()
-            try:
-                proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                proc.kill()
+            terminate_process_group(proc)
             return None, "", "(process was still running - terminated)"
 
     except FileNotFoundError as e:
@@ -363,10 +373,11 @@ def prepare_npx_package(
     sandbox: Path,
     env: dict[str, str],
     timeout: float,
+    prepend_path: list[str] | None = None,
 ) -> str | None:
     """Install an npm package into the sandbox so postinstall hooks can run."""
     home_dir = Path(env["HOME"]) if "HOME" in env else sandbox / "home"
-    full_env = build_agent_process_env(env, home_dir, sandbox / "tmp")
+    full_env = build_agent_process_env(env, home_dir, sandbox / "tmp", prepend_path)
 
     try:
         result = subprocess.run(
@@ -384,6 +395,7 @@ def prepare_npx_package(
             capture_output=True,
             text=True,
             timeout=timeout,
+            **subprocess_group_kwargs(),
         )
     except subprocess.TimeoutExpired:
         return f"npm install timed out after {timeout}s"
@@ -670,7 +682,7 @@ def build_agent_command(
         cmd = []
         cwd = sandbox
 
-    return cmd, cwd, env
+    return cmd, cwd, sanitize_agent_env(env)
 
 
 def _print_auth_diagnostics(result) -> None:
@@ -719,9 +731,6 @@ def verify_auth(
     # Create isolated environment with sandbox HOME
     auth_sandbox = sandbox / "auth-home"
     auth_sandbox.mkdir(exist_ok=True)
-    env = {
-        "HOME": str(auth_sandbox),
-    }
     auth_path_entries = [
         str(auth_sandbox / ".local" / "bin"),
         str(sandbox / "node_modules" / ".bin"),
@@ -735,14 +744,20 @@ def verify_auth(
             agent_id, dist_type, False, f"Cannot build command for {dist_type}", skipped=True
         )
 
-    env.update(agent_env)
-    env["PATH"] = os.pathsep.join(auth_path_entries + [env.get("PATH", os.environ.get("PATH", ""))])
+    env = sanitize_agent_env(agent_env)
 
     if verbose:
         print(f"    → Auth check: {' '.join(cmd[:3])}...")
 
     # Run auth check
-    result = run_auth_check(cmd, cwd, env, auth_timeout)
+    result = run_auth_check(
+        cmd,
+        cwd,
+        env,
+        auth_timeout,
+        home_dir=auth_sandbox,
+        prepend_path=auth_path_entries,
+    )
 
     if result.success:
         methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
@@ -757,7 +772,13 @@ def verify_auth(
         args = npx_dist.get("args", [])
 
         print("    Installing package into sandbox and retrying...")
-        install_error = prepare_npx_package(package, sandbox, env, auth_timeout)
+        install_error = prepare_npx_package(
+            package,
+            sandbox,
+            env,
+            auth_timeout,
+            prepend_path=auth_path_entries,
+        )
         if install_error is not None:
             return Result(agent_id, dist_type, False, install_error)
 
@@ -770,7 +791,14 @@ def verify_auth(
                 f"Installed package did not expose a runnable binary: {package}",
             )
 
-        result = run_auth_check(installed_cmd, sandbox, env, auth_timeout)
+        result = run_auth_check(
+            installed_cmd,
+            sandbox,
+            env,
+            auth_timeout,
+            home_dir=auth_sandbox,
+            prepend_path=auth_path_entries,
+        )
         if result.success:
             methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
             return Result(agent_id, dist_type, True, f"Auth OK (installed): {methods_info}")
@@ -780,7 +808,14 @@ def verify_auth(
 
     # Retry once for transient failures
     print("    Retrying...")
-    result = run_auth_check(cmd, cwd, env, auth_timeout)
+    result = run_auth_check(
+        cmd,
+        cwd,
+        env,
+        auth_timeout,
+        home_dir=auth_sandbox,
+        prepend_path=auth_path_entries,
+    )
 
     if result.success:
         methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)

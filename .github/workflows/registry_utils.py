@@ -1,7 +1,10 @@
 """Shared utilities for ACP registry scripts."""
 
 import json
+import os
 import re
+import signal
+import subprocess
 import sys
 from pathlib import Path
 
@@ -17,10 +20,146 @@ SKIP_DIRS = {
     ".ruff_cache",
 }
 
+AGENT_ENV_RESERVED_NAMES = {
+    "ACTIONS_ID_TOKEN_REQUEST_TOKEN",
+    "ACTIONS_ID_TOKEN_REQUEST_URL",
+    "CI",
+    "COMSPEC",
+    "DYLD_INSERT_LIBRARIES",
+    "GITHUB_ACTION",
+    "GITHUB_ACTIONS",
+    "GITHUB_ACTOR",
+    "GITHUB_API_URL",
+    "GITHUB_ENV",
+    "GITHUB_EVENT_NAME",
+    "GITHUB_EVENT_PATH",
+    "GITHUB_GRAPHQL_URL",
+    "GITHUB_JOB",
+    "GITHUB_OUTPUT",
+    "GITHUB_PATH",
+    "GITHUB_REF",
+    "GITHUB_REPOSITORY",
+    "GITHUB_RUN_ID",
+    "GITHUB_SERVER_URL",
+    "GITHUB_SHA",
+    "GITHUB_STEP_SUMMARY",
+    "GITHUB_TOKEN",
+    "GITHUB_WORKFLOW",
+    "GITHUB_WORKSPACE",
+    "HOME",
+    "LD_PRELOAD",
+    "NODE_EXTRA_CA_CERTS",
+    "NODE_OPTIONS",
+    "NPM_CONFIG_CACHE",
+    "NPM_CONFIG_USERCONFIG",
+    "NPM_TOKEN",
+    "PATH",
+    "PATHEXT",
+    "PIP_INDEX_URL",
+    "PIP_TRUSTED_HOST",
+    "PYTHONHOME",
+    "PYTHONPATH",
+    "REQUESTS_CA_BUNDLE",
+    "RUNNER_TEMP",
+    "RUNNER_TOOL_CACHE",
+    "RUNNER_WORKSPACE",
+    "SSL_CERT_DIR",
+    "SSL_CERT_FILE",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "TMPDIR",
+    "UV_CACHE_DIR",
+    "UV_INDEX_URL",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME",
+}
+AGENT_ENV_RESERVED_PREFIXES = (
+    "ACTIONS_",
+    "AWS_",
+    "AZURE_",
+    "DYLD_",
+    "GCLOUD_",
+    "GITHUB_",
+    "GOOGLE_",
+    "LD_",
+    "NODE_",
+    "NPM_",
+    "PIP_",
+    "PYTHON_",
+    "RUNNER_",
+    "SSH_",
+    "UV_",
+    "XDG_",
+)
+
 
 def should_skip_dir(name: str) -> bool:
     """Return whether a top-level directory should be skipped during registry scans."""
     return name in SKIP_DIRS or name.startswith(".")
+
+
+def is_reserved_agent_env_name(name: str) -> bool:
+    """Return whether a registry-provided env var would affect runner/process plumbing."""
+    normalized = name.strip()
+    return normalized in AGENT_ENV_RESERVED_NAMES or normalized.startswith(
+        AGENT_ENV_RESERVED_PREFIXES
+    )
+
+
+def sanitize_agent_env(env: dict[str, str] | None) -> dict[str, str]:
+    """Drop registry-provided env vars that could expose credentials or alter launch state."""
+    if not env:
+        return {}
+    return {
+        name: value
+        for name, value in env.items()
+        if isinstance(name, str)
+        and isinstance(value, str)
+        and name
+        and not is_reserved_agent_env_name(name)
+    }
+
+
+def subprocess_group_kwargs() -> dict:
+    """Return Popen kwargs that isolate spawned agent descendants into their own group."""
+    if os.name == "nt":
+        return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    return {"start_new_session": True}
+
+
+def terminate_process_group(proc: subprocess.Popen, timeout: float = 2) -> None:
+    """Terminate a process and descendants started with subprocess_group_kwargs."""
+    if os.name == "nt":
+        if proc.poll() is not None:
+            return
+        proc.terminate()
+    else:
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            return
+        except OSError:
+            proc.terminate()
+
+    try:
+        proc.wait(timeout=timeout)
+        return
+    except subprocess.TimeoutExpired:
+        pass
+
+    if os.name == "nt":
+        proc.kill()
+    else:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            return
+        except OSError:
+            proc.kill()
+
+    proc.wait(timeout=timeout)
 
 
 def extract_npm_package_name(package_spec: str) -> str:

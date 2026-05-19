@@ -13,6 +13,8 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from registry_utils import sanitize_agent_env, subprocess_group_kwargs, terminate_process_group
+
 AGENT_ENV_PASSTHROUGH = {
     "CI",
     "COMSPEC",
@@ -176,6 +178,8 @@ def run_auth_check(
     cwd: Path,
     env: dict[str, str] | None = None,
     timeout: float = 60.0,
+    home_dir: Path | None = None,
+    prepend_path: list[str] | None = None,
 ) -> AuthCheckResult:
     """Verify an agent supports ACP authentication.
 
@@ -195,13 +199,18 @@ def run_auth_check(
         if (value := os.environ.get(name)) not in (None, "")
     }
     full_env["TERM"] = "dumb"
-    if env:
-        full_env.update(env)
+    full_env.update(sanitize_agent_env(env))
 
     # Use a temporary directory as HOME if not specified
-    if "HOME" not in (env or {}):
-        sandbox_home = tempfile.mkdtemp(prefix="acp-auth-check-")
-        full_env["HOME"] = sandbox_home
+    if home_dir is None:
+        home_dir = Path(tempfile.mkdtemp(prefix="acp-auth-check-"))
+    else:
+        home_dir.mkdir(parents=True, exist_ok=True)
+    full_env["HOME"] = str(home_dir)
+
+    if prepend_path:
+        base_path = full_env.get("PATH", os.environ.get("PATH", ""))
+        full_env["PATH"] = os.pathsep.join([*prepend_path, base_path])
 
     proc = None
     t0 = time.monotonic()
@@ -221,6 +230,7 @@ def run_auth_check(
             stderr=subprocess.PIPE,
             text=True,
             bufsize=0,
+            **subprocess_group_kwargs(),
         )
 
         # Send initialize request with capabilities
@@ -307,8 +317,4 @@ def run_auth_check(
         )
     finally:
         if proc:
-            proc.terminate()
-            try:
-                proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                proc.kill()
+            terminate_process_group(proc)

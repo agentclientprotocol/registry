@@ -206,18 +206,11 @@ jobs:
       committed: ${{ steps.commit.outputs.committed }}
 
     steps:
-      - name: Generate GitHub token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
-        id: generate-token
-        with:
-          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
-          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
-
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          token: ${{ steps.generate-token.outputs.token }}
           ref: main
+          persist-credentials: false
 
       - name: Download matrix artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
@@ -226,9 +219,11 @@ jobs:
           path: .protocol-matrix
 
       - name: Validate matrix artifact
+        id: validate_artifact
         run: |
           python3 - <<'PY'
           import json
+          import os
           import re
           import subprocess
           import sys
@@ -274,12 +269,27 @@ jobs:
               print(f"Unexpected matrix artifact path: {rel_path}", file=sys.stderr)
               sys.exit(1)
 
-          json.loads((base / "latest.json").read_text())
+          data = json.loads((base / "latest.json").read_text())
+          report_date = data.get("date")
+          if not isinstance(report_date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", report_date):
+              print(f"Invalid matrix report date: {report_date!r}", file=sys.stderr)
+              sys.exit(1)
+          if not (base / "snapshots" / f"{report_date}.json").is_file():
+              print(f"Matrix artifact is missing JSON snapshot for {report_date}", file=sys.stderr)
+              sys.exit(1)
+          if not (base / "snapshots" / f"{report_date}.md").is_file():
+              print(f"Matrix artifact is missing Markdown snapshot for {report_date}", file=sys.stderr)
+              sys.exit(1)
           (base / "base-sha.txt").unlink()
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"report_date={report_date}", file=output)
           PY
 
       - name: Commit matrix update
         id: commit
+        env:
+          REPORT_DATE: ${{ steps.validate_artifact.outputs.report_date }}
         run: |
           git config user.name "acp-release[bot]"
           git config user.email "2373403+acp-release[bot]@users.noreply.github.com"
@@ -291,15 +301,32 @@ jobs:
             exit 0
           fi
 
-          git commit -m "docs: update protocol matrix for ${{ needs.generate.outputs.report_date }}"
-          git push origin "HEAD:main"
+          git commit -m "docs: update protocol matrix for $REPORT_DATE"
           echo "committed=true" >> "$GITHUB_OUTPUT"
 
+      - name: Generate GitHub token
+        if: steps.commit.outputs.committed == 'true'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
+      - name: Push matrix update
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_APP_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          git -c http.extraheader="AUTHORIZATION: Bearer $GH_APP_TOKEN" push origin "HEAD:main"
+
       - name: Write commit summary
+        env:
+          REPORT_DATE: ${{ steps.validate_artifact.outputs.report_date }}
+          COMMITTED: ${{ steps.commit.outputs.committed }}
         run: |
           {
             echo "## Protocol matrix commit"
             echo
-            echo "- Date: `${{ needs.generate.outputs.report_date }}`"
-            echo "- Committed update: `${{ steps.commit.outputs.committed }}`"
+            echo "- Date: `$REPORT_DATE`"
+            echo "- Committed update: `$COMMITTED`"
           } >> "$GITHUB_STEP_SUMMARY"
