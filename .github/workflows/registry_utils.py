@@ -95,6 +95,10 @@ AGENT_ENV_RESERVED_PREFIXES = (
     "UV_",
     "XDG_",
 )
+AGENT_ENV_RESERVED_NAMES_NORMALIZED = {name.upper() for name in AGENT_ENV_RESERVED_NAMES}
+AGENT_ENV_RESERVED_PREFIXES_NORMALIZED = tuple(
+    prefix.upper() for prefix in AGENT_ENV_RESERVED_PREFIXES
+)
 
 
 def should_skip_dir(name: str) -> bool:
@@ -104,9 +108,9 @@ def should_skip_dir(name: str) -> bool:
 
 def is_reserved_agent_env_name(name: str) -> bool:
     """Return whether a registry-provided env var would affect runner/process plumbing."""
-    normalized = name.strip()
-    return normalized in AGENT_ENV_RESERVED_NAMES or normalized.startswith(
-        AGENT_ENV_RESERVED_PREFIXES
+    normalized = name.strip().upper()
+    return normalized in AGENT_ENV_RESERVED_NAMES_NORMALIZED or normalized.startswith(
+        AGENT_ENV_RESERVED_PREFIXES_NORMALIZED
     )
 
 

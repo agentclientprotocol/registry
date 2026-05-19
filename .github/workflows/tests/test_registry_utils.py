@@ -148,6 +148,19 @@ class TestSanitizeAgentEnv:
 
         assert env == {"AGENT_FLAG": "1"}
 
+    def test_drops_reserved_names_case_insensitively(self):
+        env = sanitize_agent_env(
+            {
+                "AGENT_FLAG": "1",
+                "Path": "/tmp/bin",
+                "SYSTEMROOT": "C:\\Windows",
+                "github_token": "secret",
+                "pythonpath": "/tmp/python",
+            }
+        )
+
+        assert env == {"AGENT_FLAG": "1"}
+
 
 @pytest.mark.skipif(os.name == "nt", reason="process group behavior differs on Windows")
 def test_terminate_process_group_kills_background_child(tmp_path: Path):

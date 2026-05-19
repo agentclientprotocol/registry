@@ -212,30 +212,32 @@ jobs:
           ref: main
           persist-credentials: false
 
+      - name: Prepare matrix artifact directory
+        run: rm -rf "$RUNNER_TEMP/protocol-matrix-artifact"
+
       - name: Download matrix artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: protocol-matrix
-          path: .protocol-matrix
+          path: ${{ runner.temp }}/protocol-matrix-artifact
 
       - name: Validate matrix artifact
         id: validate_artifact
+        env:
+          MATRIX_ARTIFACT_DIR: ${{ runner.temp }}/protocol-matrix-artifact
+          MATRIX_TARGET_DIR: .protocol-matrix
         run: |
           python3 - <<'PY'
           import json
           import os
           import re
+          import shutil
           import subprocess
           import sys
           from pathlib import Path
 
-          base = Path(".protocol-matrix")
-          allowed = {
-              "base-sha.txt",
-              "latest.json",
-              "latest.md",
-          }
-          snapshot_pattern = re.compile(r"snapshots/\d{4}-\d{2}-\d{2}\.(json|md)")
+          base = Path(os.environ["MATRIX_ARTIFACT_DIR"])
+          target = Path(os.environ["MATRIX_TARGET_DIR"])
 
           if not (base / "latest.json").is_file() or not (base / "latest.md").is_file():
               print("Matrix artifact is missing latest.json or latest.md", file=sys.stderr)
@@ -257,30 +259,51 @@ jobs:
               )
               sys.exit(1)
 
-          for path in base.rglob("*"):
-              if path.is_symlink():
-                  print(f"Matrix artifact contains symlink: {path}", file=sys.stderr)
-                  sys.exit(1)
-              if path.is_dir():
-                  continue
-              rel_path = path.relative_to(base).as_posix()
-              if rel_path in allowed or snapshot_pattern.fullmatch(rel_path):
-                  continue
-              print(f"Unexpected matrix artifact path: {rel_path}", file=sys.stderr)
-              sys.exit(1)
-
           data = json.loads((base / "latest.json").read_text())
           report_date = data.get("date")
           if not isinstance(report_date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", report_date):
               print(f"Invalid matrix report date: {report_date!r}", file=sys.stderr)
               sys.exit(1)
+
+          expected_files = {
+              "base-sha.txt",
+              "latest.json",
+              "latest.md",
+              f"snapshots/{report_date}.json",
+              f"snapshots/{report_date}.md",
+          }
+
+          for path in base.rglob("*"):
+              if path.is_symlink():
+                  print(f"Matrix artifact contains symlink: {path}", file=sys.stderr)
+                  sys.exit(1)
+              rel_path = path.relative_to(base).as_posix()
+              if path.is_dir():
+                  if rel_path != "snapshots":
+                      print(f"Unexpected matrix artifact directory: {rel_path}", file=sys.stderr)
+                      sys.exit(1)
+                  continue
+              if rel_path in expected_files:
+                  continue
+              print(f"Unexpected matrix artifact path: {rel_path}", file=sys.stderr)
+              sys.exit(1)
+
           if not (base / "snapshots" / f"{report_date}.json").is_file():
               print(f"Matrix artifact is missing JSON snapshot for {report_date}", file=sys.stderr)
               sys.exit(1)
           if not (base / "snapshots" / f"{report_date}.md").is_file():
               print(f"Matrix artifact is missing Markdown snapshot for {report_date}", file=sys.stderr)
               sys.exit(1)
-          (base / "base-sha.txt").unlink()
+
+          for rel_path in [
+              "latest.json",
+              "latest.md",
+              f"snapshots/{report_date}.json",
+              f"snapshots/{report_date}.md",
+          ]:
+              destination = target / rel_path
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(base / rel_path, destination)
 
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               print(f"report_date={report_date}", file=output)
