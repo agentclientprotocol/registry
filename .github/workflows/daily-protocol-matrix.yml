@@ -340,7 +340,9 @@ jobs:
         env:
           GH_APP_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          git -c "http.extraheader=AUTHORIZATION: Bearer ${GH_APP_TOKEN}" push origin "HEAD:main"
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_APP_TOKEN" | base64 | tr -d '\n')"
+          echo "::add-mask::$AUTH_HEADER"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${AUTH_HEADER}" push origin "HEAD:main"
 
       - name: Write commit summary
         env:
