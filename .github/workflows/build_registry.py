@@ -70,7 +70,11 @@ class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
 URL_OPENER = urllib.request.build_opener(NoRedirectHandler)
 
 
-def is_public_https_url(url: str) -> bool:
+class UrlSafetyResolutionError(Exception):
+    """Raised when URL safety DNS resolution fails before the request attempt."""
+
+
+def is_public_https_url(url: str, retry_dns_errors: bool = False) -> bool:
     """Return whether URL validation may safely request this target."""
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme != "https" or not parsed.hostname:
@@ -82,7 +86,9 @@ def is_public_https_url(url: str) -> bool:
 
     try:
         addresses = socket.getaddrinfo(hostname, parsed.port or 443, type=socket.SOCK_STREAM)
-    except OSError:
+    except OSError as exc:
+        if retry_dns_errors:
+            raise UrlSafetyResolutionError from exc
         return False
 
     for *_, sockaddr in addresses:
@@ -105,15 +111,19 @@ def url_exists(
     """Check if a URL exists using HEAD or GET request with retries."""
     import time
 
-    if not is_public_https_url(url):
-        return False
-
     for attempt in range(retries):
         try:
+            if not is_public_https_url(url, retry_dns_errors=True):
+                return False
             req = urllib.request.Request(url, method=method)
             req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
             with URL_OPENER.open(req, timeout=15) as response:
                 return response.status in (200, 301, 302)
+        except UrlSafetyResolutionError:
+            if attempt < retries - 1:
+                time.sleep(2**attempt)
+                continue
+            return False
         except urllib.error.HTTPError as e:
             if e.code in (301, 302, 303, 307, 308):
                 if redirects_remaining <= 0:

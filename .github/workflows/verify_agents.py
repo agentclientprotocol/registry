@@ -373,9 +373,15 @@ def prepare_npx_package(
     env: dict[str, str],
     timeout: float,
     prepend_path: list[str] | None = None,
+    home_dir: Path | None = None,
 ) -> str | None:
     """Install an npm package into the sandbox so postinstall hooks can run."""
-    full_env = build_agent_process_env(env, sandbox / "home", sandbox / "tmp", prepend_path)
+    full_env = build_agent_process_env(
+        env,
+        home_dir or sandbox / "home",
+        sandbox / "tmp",
+        prepend_path,
+    )
 
     try:
         result = subprocess.run(
@@ -776,6 +782,7 @@ def verify_auth(
             env,
             auth_timeout,
             prepend_path=auth_path_entries,
+            home_dir=auth_sandbox,
         )
         if install_error is not None:
             return Result(agent_id, dist_type, False, install_error)

@@ -101,6 +101,32 @@ def test_prepare_npx_package_ignores_manifest_home(monkeypatch, tmp_path: Path):
     assert not evil_home.exists()
 
 
+def test_prepare_npx_package_uses_trusted_home_dir(monkeypatch, tmp_path: Path):
+    captured_env = {}
+
+    def fake_run(*args, **kwargs):
+        captured_env.update(kwargs["env"])
+        return subprocess.CompletedProcess(args=args, returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("verify_agents.subprocess.run", fake_run)
+
+    trusted_home = tmp_path / "auth-home"
+    evil_home = tmp_path / "evil-home"
+    assert (
+        prepare_npx_package(
+            "example-agent@1.0.0",
+            tmp_path,
+            {"HOME": str(evil_home)},
+            1,
+            home_dir=trusted_home,
+        )
+        is None
+    )
+
+    assert captured_env["HOME"] == str(trusted_home)
+    assert not evil_home.exists()
+
+
 def test_resolve_binary_executable_rejects_unsafe_paths(tmp_path: Path):
     assert resolve_binary_executable(tmp_path, "../agent") is None
     assert resolve_binary_executable(tmp_path, "/bin/sh") is None
