@@ -1,5 +1,7 @@
 import os
 import stat
+import subprocess
+import sys
 import zipfile
 from pathlib import Path
 
@@ -9,7 +11,9 @@ from verify_agents import (
     ensure_executable,
     extract_archive,
     npm_package_bin_name,
+    prepare_npx_package,
     resolve_binary_executable,
+    run_process,
     should_retry_npx_auth_with_install,
 )
 
@@ -61,6 +65,40 @@ def test_build_agent_process_env_can_prepend_trusted_paths(monkeypatch, tmp_path
     )
 
     assert env["PATH"] == f"{tmp_path / 'bin'}{os.pathsep}/usr/bin"
+
+
+def test_run_process_ignores_manifest_home(tmp_path: Path):
+    sandbox = tmp_path / "sandbox"
+    sandbox.mkdir()
+    evil_home = tmp_path / "evil-home"
+
+    exit_code, stdout, stderr = run_process(
+        [sys.executable, "-c", "import os; print(os.environ['HOME'])"],
+        sandbox,
+        {"HOME": str(evil_home)},
+        2,
+    )
+
+    assert exit_code == 0
+    assert stdout.strip() == str(sandbox / "home")
+    assert stderr == ""
+    assert not evil_home.exists()
+
+
+def test_prepare_npx_package_ignores_manifest_home(monkeypatch, tmp_path: Path):
+    captured_env = {}
+
+    def fake_run(*args, **kwargs):
+        captured_env.update(kwargs["env"])
+        return subprocess.CompletedProcess(args=args, returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr("verify_agents.subprocess.run", fake_run)
+
+    evil_home = tmp_path / "evil-home"
+    assert prepare_npx_package("example-agent@1.0.0", tmp_path, {"HOME": str(evil_home)}, 1) is None
+
+    assert captured_env["HOME"] == str(tmp_path / "home")
+    assert not evil_home.exists()
 
 
 def test_resolve_binary_executable_rejects_unsafe_paths(tmp_path: Path):

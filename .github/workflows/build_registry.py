@@ -90,14 +90,7 @@ def is_public_https_url(url: str) -> bool:
             ip = ipaddress.ip_address(sockaddr[0])
         except ValueError:
             return False
-        if (
-            ip.is_loopback
-            or ip.is_private
-            or ip.is_link_local
-            or ip.is_multicast
-            or ip.is_reserved
-            or ip.is_unspecified
-        ):
+        if not ip.is_global or ip.is_multicast:
             return False
 
     return bool(addresses)

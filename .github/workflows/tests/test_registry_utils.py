@@ -174,3 +174,40 @@ def test_terminate_process_group_kills_background_child(tmp_path: Path):
     time.sleep(0.6)
 
     assert not marker.exists()
+
+
+@pytest.mark.skipif(os.name == "nt", reason="process group behavior differs on Windows")
+def test_terminate_process_group_kills_sigterm_ignoring_child_after_parent_exits(tmp_path: Path):
+    ready = tmp_path / "child-ready"
+    marker = tmp_path / "child-ran"
+    child_script = (
+        "import pathlib, signal, time; "
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+        f"pathlib.Path({str(ready)!r}).write_text('ready'); "
+        "time.sleep(0.4); "
+        f"pathlib.Path({str(marker)!r}).write_text('ran')"
+    )
+    parent_script = (
+        "import subprocess, sys; "
+        f"subprocess.Popen([{sys.executable!r}, '-c', {child_script!r}]); "
+        "sys.exit(0)"
+    )
+    proc = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            parent_script,
+        ],
+        **subprocess_group_kwargs(),
+    )
+    proc.wait(timeout=2)
+
+    deadline = time.monotonic() + 2
+    while not ready.exists() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert ready.exists()
+
+    terminate_process_group(proc, timeout=0.1)
+    time.sleep(0.6)
+
+    assert not marker.exists()

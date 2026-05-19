@@ -1,11 +1,13 @@
 """Shared utilities for ACP registry scripts."""
 
+import contextlib
 import json
 import os
 import re
 import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 SKIP_DIRS = {
@@ -129,37 +131,80 @@ def subprocess_group_kwargs() -> dict:
     return {"start_new_session": True}
 
 
+def _posix_process_group_exists(pgid: int) -> bool:
+    try:
+        os.killpg(pgid, 0)
+    except ProcessLookupError:
+        return False
+    except OSError:
+        return True
+    return True
+
+
+def _wait_for_posix_process_group_exit(proc: subprocess.Popen, pgid: int, timeout: float) -> bool:
+    deadline = time.monotonic() + timeout
+    while True:
+        if proc.poll() is not None:
+            with contextlib.suppress(subprocess.TimeoutExpired):
+                proc.wait(timeout=0)
+
+        if not _posix_process_group_exists(pgid):
+            return True
+
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(0.05, remaining))
+
+
 def terminate_process_group(proc: subprocess.Popen, timeout: float = 2) -> None:
     """Terminate a process and descendants started with subprocess_group_kwargs."""
     if os.name == "nt":
         if proc.poll() is not None:
             return
         proc.terminate()
-    else:
         try:
-            os.killpg(proc.pid, signal.SIGTERM)
-        except ProcessLookupError:
+            proc.wait(timeout=timeout)
             return
-        except OSError:
-            proc.terminate()
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait(timeout=timeout)
+            return
 
+    pgid = proc.pid
+    group_signaled = False
     try:
-        proc.wait(timeout=timeout)
-        return
-    except subprocess.TimeoutExpired:
+        os.killpg(pgid, signal.SIGTERM)
+        group_signaled = True
+    except ProcessLookupError:
+        if proc.poll() is not None:
+            return
+    except OSError:
         pass
 
-    if os.name == "nt":
-        proc.kill()
-    else:
+    if not group_signaled:
+        if proc.poll() is None:
+            proc.terminate()
         try:
-            os.killpg(proc.pid, signal.SIGKILL)
-        except ProcessLookupError:
+            proc.wait(timeout=timeout)
             return
-        except OSError:
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait(timeout=timeout)
+            return
+
+    if _wait_for_posix_process_group_exit(proc, pgid, timeout):
+        return
+
+    try:
+        os.killpg(pgid, signal.SIGKILL)
+    except ProcessLookupError:
+        return
+    except OSError:
+        if proc.poll() is None:
             proc.kill()
 
-    proc.wait(timeout=timeout)
+    _wait_for_posix_process_group_exit(proc, pgid, timeout)
 
 
 def extract_npm_package_name(package_spec: str) -> str:

@@ -261,8 +261,7 @@ def build_agent_process_env(
 
 def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int | None, str, str]:
     """Run a process with timeout, return (exit_code, stdout, stderr)."""
-    home_dir = Path(env["HOME"]) if "HOME" in env else cwd / "home"
-    full_env = build_agent_process_env(env, home_dir, cwd / "tmp")
+    full_env = build_agent_process_env(env, cwd / "home", cwd / "tmp")
 
     try:
         proc = subprocess.Popen(
@@ -376,8 +375,7 @@ def prepare_npx_package(
     prepend_path: list[str] | None = None,
 ) -> str | None:
     """Install an npm package into the sandbox so postinstall hooks can run."""
-    home_dir = Path(env["HOME"]) if "HOME" in env else sandbox / "home"
-    full_env = build_agent_process_env(env, home_dir, sandbox / "tmp", prepend_path)
+    full_env = build_agent_process_env(env, sandbox / "home", sandbox / "tmp", prepend_path)
 
     try:
         result = subprocess.run(

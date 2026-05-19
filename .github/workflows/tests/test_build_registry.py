@@ -25,6 +25,14 @@ class TestUrlSafety:
 
         assert not is_public_https_url("https://example.com/archive.tar.gz")
 
+    def test_rejects_shared_address_space(self, monkeypatch):
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("100.64.0.1"),
+        )
+
+        assert not is_public_https_url("https://example.com/archive.tar.gz")
+
     def test_accepts_public_https_addresses(self, monkeypatch):
         monkeypatch.setattr(
             "build_registry.socket.getaddrinfo",
