@@ -58,19 +58,31 @@ def test_resolve_binary_executable_accepts_windows_style_relative_path(tmp_path:
 def test_extract_archive_rejects_zip_path_traversal(tmp_path: Path):
     archive = tmp_path / "bad.zip"
     dest = tmp_path / "dest"
-    dest.mkdir()
 
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("../outside.txt", "owned")
 
     assert not extract_archive(archive, dest)
+    assert not dest.exists()
+    assert not (tmp_path / "outside.txt").exists()
+
+
+def test_extract_archive_rejects_late_zip_traversal_without_partial_cache(tmp_path: Path):
+    archive = tmp_path / "bad.zip"
+    dest = tmp_path / "dest"
+
+    with zipfile.ZipFile(archive, "w") as zf:
+        zf.writestr("agent", "#!/bin/sh\n")
+        zf.writestr("../outside.txt", "owned")
+
+    assert not extract_archive(archive, dest)
+    assert not dest.exists()
     assert not (tmp_path / "outside.txt").exists()
 
 
 def test_extract_archive_rejects_zip_symlinks(tmp_path: Path):
     archive = tmp_path / "bad.zip"
     dest = tmp_path / "dest"
-    dest.mkdir()
 
     info = zipfile.ZipInfo("agent-link")
     info.create_system = 3
@@ -79,13 +91,12 @@ def test_extract_archive_rejects_zip_symlinks(tmp_path: Path):
         zf.writestr(info, "agent")
 
     assert not extract_archive(archive, dest)
-    assert not (dest / "agent-link").exists()
+    assert not dest.exists()
 
 
 def test_extract_archive_allows_safe_zip_entries(tmp_path: Path):
     archive = tmp_path / "good.zip"
     dest = tmp_path / "dest"
-    dest.mkdir()
 
     with zipfile.ZipFile(archive, "w") as zf:
         zf.writestr("bin/agent", "#!/bin/sh\n")

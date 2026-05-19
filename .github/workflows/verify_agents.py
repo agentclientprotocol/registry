@@ -14,6 +14,7 @@ import stat
 import subprocess
 import sys
 import tarfile
+import tempfile
 import urllib.request
 import zipfile
 from pathlib import Path, PurePosixPath, PureWindowsPath
@@ -153,6 +154,7 @@ def extract_zip_safely(archive: Path, dest: Path) -> None:
     """Extract a zip while rejecting traversal paths and symlinks."""
     dest_root = dest.resolve()
     with zipfile.ZipFile(archive) as zf:
+        members: list[tuple[zipfile.ZipInfo, Path]] = []
         for info in zf.infolist():
             normalized_name = info.filename.replace("\\", "/")
             if not is_safe_relative_path(normalized_name):
@@ -163,7 +165,9 @@ def extract_zip_safely(archive: Path, dest: Path) -> None:
             target = dest / normalized_name
             if not target.resolve().is_relative_to(dest_root):
                 raise ValueError(f"zip member escapes destination: {info.filename}")
+            members.append((info, target))
 
+        for info, target in members:
             if info.is_dir():
                 target.mkdir(parents=True, exist_ok=True)
                 continue
@@ -173,25 +177,43 @@ def extract_zip_safely(archive: Path, dest: Path) -> None:
                 shutil.copyfileobj(source, output)
 
 
+def remove_empty_extraction_dir(path: Path) -> None:
+    """Remove an empty extraction destination before replacing it atomically."""
+    if not path.exists():
+        return
+    if path.is_dir() and not any(path.iterdir()):
+        path.rmdir()
+        return
+    raise FileExistsError(f"extraction destination already exists: {path}")
+
+
 def extract_archive(archive: Path, dest: Path) -> bool:
     """Extract archive to destination."""
+    tmp_dest: Path | None = None
     try:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        remove_empty_extraction_dir(dest)
+        tmp_dest = Path(tempfile.mkdtemp(prefix=f".{dest.name}.", dir=dest.parent))
+
         if archive.suffix == ".zip":
-            extract_zip_safely(archive, dest)
+            extract_zip_safely(archive, tmp_dest)
         elif archive.name.endswith(".tar.gz") or archive.name.endswith(".tgz"):
             with tarfile.open(archive, "r:gz") as tf:
-                tf.extractall(dest, filter="data")
+                tf.extractall(tmp_dest, filter="data")
         elif archive.name.endswith(".tar.bz2"):
             with tarfile.open(archive, "r:bz2") as tf:
-                tf.extractall(dest, filter="data")
+                tf.extractall(tmp_dest, filter="data")
         elif archive.name.endswith(".tar"):
             with tarfile.open(archive, "r") as tf:
-                tf.extractall(dest, filter="data")
+                tf.extractall(tmp_dest, filter="data")
         else:
             # Single file (like .exe or raw binary)
-            shutil.copy(archive, dest / archive.name)
+            shutil.copy(archive, tmp_dest / archive.name)
+        tmp_dest.rename(dest)
         return True
     except Exception as e:
+        if tmp_dest is not None and tmp_dest.exists():
+            shutil.rmtree(tmp_dest)
         print(f"    Extraction failed: {e}")
         return False
 
@@ -428,7 +450,6 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
     # Extract (skip if already extracted)
     if not extract_dir.exists():
         print("    → Extracting archive...")
-        extract_dir.mkdir()
         if not extract_archive(archive_path, extract_dir):
             return Result(agent_id, "binary", False, "Extraction failed")
     else:
@@ -590,7 +611,6 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
     # Extract (skip if already extracted)
     if not extract_dir.exists():
         print("    → Extracting archive...")
-        extract_dir.mkdir()
         if not extract_archive(archive_path, extract_dir):
             return False, "Extraction failed"
 
