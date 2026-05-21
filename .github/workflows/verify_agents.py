@@ -10,15 +10,24 @@ import json
 import os
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 import tarfile
+import tempfile
 import urllib.request
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import NamedTuple
 
-from registry_utils import extract_npm_package_name, load_quarantine, should_skip_dir
+from registry_utils import (
+    extract_npm_package_name,
+    load_quarantine,
+    sanitize_agent_env,
+    should_skip_dir,
+    subprocess_group_kwargs,
+    terminate_process_group,
+)
 
 # Import auth client (only needed when --auth-check is used)
 try:
@@ -44,6 +53,28 @@ STARTUP_GRACE = 2  # seconds to wait before checking if process is alive
 DEFAULT_SANDBOX_DIR = ".sandbox"
 DEFAULT_AUTH_TIMEOUT = 120  # seconds for ACP handshake (includes npx download time)
 SYSTEM_COMMANDS = {"node", "python", "python3", "java", "ruby"}
+MAX_DOWNLOAD_BYTES = 1024 * 1024 * 1024
+AGENT_ENV_PASSTHROUGH = {
+    "CI",
+    "COMSPEC",
+    "NPM_CONFIG_CACHE",
+    "NODE_EXTRA_CA_CERTS",
+    "PATH",
+    "PATHEXT",
+    "PYTHON_KEYRING_BACKEND",
+    "PYTHON_KEYRING_DISABLED",
+    "REQUESTS_CA_BUNDLE",
+    "SSL_CERT_DIR",
+    "SSL_CERT_FILE",
+    "SystemRoot",
+    "TMP",
+    "TMPDIR",
+    "TEMP",
+    "UV_CACHE_DIR",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME",
+}
 NPX_INSTALL_RETRY_PATTERNS = (
     "shim not found",
     "please reinstall: npm install",
@@ -79,46 +110,158 @@ def download_file(url: str, dest: Path) -> bool:
             total = response.headers.get("Content-Length")
             if total:
                 total = int(total)
+                if total > MAX_DOWNLOAD_BYTES:
+                    raise ValueError(
+                        f"download is {total / 1024 / 1024:.1f} MB, "
+                        f"exceeding the {MAX_DOWNLOAD_BYTES / 1024 / 1024:.0f} MB limit"
+                    )
                 print(f"      Downloading {total / 1024 / 1024:.1f} MB...", end="", flush=True)
             else:
                 print("      Downloading...", end="", flush=True)
-            data = response.read()
-            dest.write_bytes(data)
-            print(f" done ({len(data) / 1024 / 1024:.1f} MB)")
+            downloaded = 0
+            with dest.open("wb") as output:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    downloaded += len(chunk)
+                    if downloaded > MAX_DOWNLOAD_BYTES:
+                        raise ValueError(
+                            f"download exceeded the {MAX_DOWNLOAD_BYTES / 1024 / 1024:.0f} MB limit"
+                        )
+                    output.write(chunk)
+            print(f" done ({downloaded / 1024 / 1024:.1f} MB)")
         return True
     except Exception as e:
+        dest.unlink(missing_ok=True)
         print(f"\n      Download failed: {e}")
         return False
 
 
+def is_safe_relative_path(path: str) -> bool:
+    """Return whether a registry-supplied path stays relative inside the sandbox."""
+    normalized = path.replace("\\", "/")
+    posix_path = PurePosixPath(normalized)
+    windows_path = PureWindowsPath(path)
+    return (
+        normalized not in {"", "."}
+        and not posix_path.is_absolute()
+        and not windows_path.is_absolute()
+        and not windows_path.drive
+        and ".." not in posix_path.parts
+    )
+
+
+def is_zip_symlink(info: zipfile.ZipInfo) -> bool:
+    """Detect POSIX symlink entries stored in zip metadata."""
+    return stat.S_IFMT(info.external_attr >> 16) == stat.S_IFLNK
+
+
+def extract_zip_safely(archive: Path, dest: Path) -> None:
+    """Extract a zip while rejecting traversal paths and symlinks."""
+    dest_root = dest.resolve()
+    with zipfile.ZipFile(archive) as zf:
+        members: list[tuple[zipfile.ZipInfo, Path]] = []
+        for info in zf.infolist():
+            normalized_name = info.filename.replace("\\", "/")
+            if not is_safe_relative_path(normalized_name):
+                raise ValueError(f"unsafe zip member path: {info.filename}")
+            if is_zip_symlink(info):
+                raise ValueError(f"zip member is a symlink: {info.filename}")
+
+            target = dest / normalized_name
+            if not target.resolve().is_relative_to(dest_root):
+                raise ValueError(f"zip member escapes destination: {info.filename}")
+            members.append((info, target))
+
+        for info, target in members:
+            if info.is_dir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with zf.open(info) as source, target.open("wb") as output:
+                shutil.copyfileobj(source, output)
+
+
+def remove_empty_extraction_dir(path: Path) -> None:
+    """Remove an empty extraction destination before replacing it atomically."""
+    if not path.exists():
+        return
+    if path.is_dir() and not any(path.iterdir()):
+        path.rmdir()
+        return
+    raise FileExistsError(f"extraction destination already exists: {path}")
+
+
 def extract_archive(archive: Path, dest: Path) -> bool:
     """Extract archive to destination."""
+    tmp_dest: Path | None = None
     try:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        remove_empty_extraction_dir(dest)
+        tmp_dest = Path(tempfile.mkdtemp(prefix=f".{dest.name}.", dir=dest.parent))
+
         if archive.suffix == ".zip":
-            with zipfile.ZipFile(archive) as zf:
-                zf.extractall(dest)
+            extract_zip_safely(archive, tmp_dest)
         elif archive.name.endswith(".tar.gz") or archive.name.endswith(".tgz"):
             with tarfile.open(archive, "r:gz") as tf:
-                tf.extractall(dest, filter="data")
+                tf.extractall(tmp_dest, filter="data")
         elif archive.name.endswith(".tar.bz2"):
             with tarfile.open(archive, "r:bz2") as tf:
-                tf.extractall(dest, filter="data")
+                tf.extractall(tmp_dest, filter="data")
         elif archive.name.endswith(".tar"):
             with tarfile.open(archive, "r") as tf:
-                tf.extractall(dest, filter="data")
+                tf.extractall(tmp_dest, filter="data")
         else:
             # Single file (like .exe or raw binary)
-            shutil.copy(archive, dest / archive.name)
+            shutil.copy(archive, tmp_dest / archive.name)
+        tmp_dest.rename(dest)
         return True
     except Exception as e:
+        if tmp_dest is not None and tmp_dest.exists():
+            shutil.rmtree(tmp_dest)
         print(f"    Extraction failed: {e}")
         return False
 
 
+def build_agent_process_env(
+    env: dict[str, str] | None,
+    home_dir: Path,
+    temp_dir: Path | None = None,
+    prepend_path: list[str] | None = None,
+) -> dict[str, str]:
+    """Build the limited environment exposed to third-party agent processes."""
+    full_env = {
+        name: value
+        for name in AGENT_ENV_PASSTHROUGH
+        if (value := os.environ.get(name)) not in (None, "")
+    }
+
+    home_dir.mkdir(parents=True, exist_ok=True)
+    full_env["HOME"] = str(home_dir)
+    full_env["TERM"] = "dumb"
+
+    if temp_dir is not None:
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        full_env.setdefault("TMPDIR", str(temp_dir))
+        full_env.setdefault("TEMP", str(temp_dir))
+        full_env.setdefault("TMP", str(temp_dir))
+
+    full_env.update(sanitize_agent_env(env))
+    full_env["HOME"] = str(home_dir)
+    full_env["TERM"] = "dumb"
+
+    if prepend_path:
+        base_path = full_env.get("PATH", os.environ.get("PATH", ""))
+        full_env["PATH"] = os.pathsep.join([*prepend_path, base_path])
+
+    return full_env
+
+
 def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int | None, str, str]:
     """Run a process with timeout, return (exit_code, stdout, stderr)."""
-    full_env = os.environ.copy()
-    full_env.update(env)
+    full_env = build_agent_process_env(env, cwd / "home", cwd / "tmp")
 
     try:
         proc = subprocess.Popen(
@@ -129,6 +272,7 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            **subprocess_group_kwargs(),
         )
 
         try:
@@ -136,11 +280,7 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
             return proc.returncode, stdout, stderr
         except subprocess.TimeoutExpired:
             # Process still running after timeout - this is often good (waiting for input)
-            proc.terminate()
-            try:
-                proc.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                proc.kill()
+            terminate_process_group(proc)
             return None, "", "(process was still running - terminated)"
 
     except FileNotFoundError as e:
@@ -151,7 +291,8 @@ def run_process(cmd: list[str], cwd: Path, env: dict, timeout: int) -> tuple[int
 
 def normalize_command_path(cmd: str) -> str:
     """Normalize command paths like ./tool to tool for lookup."""
-    return cmd[2:] if cmd.startswith("./") else cmd
+    normalized = cmd.replace("\\", "/")
+    return normalized[2:] if normalized.startswith("./") else normalized
 
 
 def ensure_executable(path: Path) -> None:
@@ -174,6 +315,9 @@ def resolve_binary_executable(extract_dir: Path, cmd: str) -> Path | None:
         system_cmd = shutil.which(target_cmd)
         return Path(system_cmd) if system_cmd else None
 
+    if not is_safe_relative_path(target_cmd):
+        return None
+
     for path in extract_dir.rglob(target_cmd):
         return path
 
@@ -182,6 +326,7 @@ def resolve_binary_executable(extract_dir: Path, cmd: str) -> Path | None:
         raw_file = files_in_extract[0]
         expected_path = extract_dir / target_cmd
         if raw_file != expected_path and not expected_path.exists():
+            expected_path.parent.mkdir(parents=True, exist_ok=True)
             raw_file.rename(expected_path)
         return expected_path
 
@@ -227,10 +372,16 @@ def prepare_npx_package(
     sandbox: Path,
     env: dict[str, str],
     timeout: float,
+    prepend_path: list[str] | None = None,
+    home_dir: Path | None = None,
 ) -> str | None:
     """Install an npm package into the sandbox so postinstall hooks can run."""
-    full_env = os.environ.copy()
-    full_env.update(env)
+    full_env = build_agent_process_env(
+        env,
+        home_dir or sandbox / "home",
+        sandbox / "tmp",
+        prepend_path,
+    )
 
     try:
         result = subprocess.run(
@@ -248,6 +399,7 @@ def prepare_npx_package(
             capture_output=True,
             text=True,
             timeout=timeout,
+            **subprocess_group_kwargs(),
         )
     except subprocess.TimeoutExpired:
         return f"npm install timed out after {timeout}s"
@@ -314,7 +466,6 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
     # Extract (skip if already extracted)
     if not extract_dir.exists():
         print("    → Extracting archive...")
-        extract_dir.mkdir()
         if not extract_archive(archive_path, extract_dir):
             return Result(agent_id, "binary", False, "Extraction failed")
     else:
@@ -476,7 +627,6 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
     # Extract (skip if already extracted)
     if not extract_dir.exists():
         print("    → Extracting archive...")
-        extract_dir.mkdir()
         if not extract_archive(archive_path, extract_dir):
             return False, "Extraction failed"
 
@@ -536,7 +686,7 @@ def build_agent_command(
         cmd = []
         cwd = sandbox
 
-    return cmd, cwd, env
+    return cmd, cwd, sanitize_agent_env(env)
 
 
 def _print_auth_diagnostics(result) -> None:
@@ -585,9 +735,6 @@ def verify_auth(
     # Create isolated environment with sandbox HOME
     auth_sandbox = sandbox / "auth-home"
     auth_sandbox.mkdir(exist_ok=True)
-    env = {
-        "HOME": str(auth_sandbox),
-    }
     auth_path_entries = [
         str(auth_sandbox / ".local" / "bin"),
         str(sandbox / "node_modules" / ".bin"),
@@ -601,14 +748,20 @@ def verify_auth(
             agent_id, dist_type, False, f"Cannot build command for {dist_type}", skipped=True
         )
 
-    env.update(agent_env)
-    env["PATH"] = os.pathsep.join(auth_path_entries + [env.get("PATH", os.environ.get("PATH", ""))])
+    env = sanitize_agent_env(agent_env)
 
     if verbose:
         print(f"    → Auth check: {' '.join(cmd[:3])}...")
 
     # Run auth check
-    result = run_auth_check(cmd, cwd, env, auth_timeout)
+    result = run_auth_check(
+        cmd,
+        cwd,
+        env,
+        auth_timeout,
+        home_dir=auth_sandbox,
+        prepend_path=auth_path_entries,
+    )
 
     if result.success:
         methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
@@ -623,7 +776,14 @@ def verify_auth(
         args = npx_dist.get("args", [])
 
         print("    Installing package into sandbox and retrying...")
-        install_error = prepare_npx_package(package, sandbox, env, auth_timeout)
+        install_error = prepare_npx_package(
+            package,
+            sandbox,
+            env,
+            auth_timeout,
+            prepend_path=auth_path_entries,
+            home_dir=auth_sandbox,
+        )
         if install_error is not None:
             return Result(agent_id, dist_type, False, install_error)
 
@@ -636,7 +796,14 @@ def verify_auth(
                 f"Installed package did not expose a runnable binary: {package}",
             )
 
-        result = run_auth_check(installed_cmd, sandbox, env, auth_timeout)
+        result = run_auth_check(
+            installed_cmd,
+            sandbox,
+            env,
+            auth_timeout,
+            home_dir=auth_sandbox,
+            prepend_path=auth_path_entries,
+        )
         if result.success:
             methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)
             return Result(agent_id, dist_type, True, f"Auth OK (installed): {methods_info}")
@@ -646,7 +813,14 @@ def verify_auth(
 
     # Retry once for transient failures
     print("    Retrying...")
-    result = run_auth_check(cmd, cwd, env, auth_timeout)
+    result = run_auth_check(
+        cmd,
+        cwd,
+        env,
+        auth_timeout,
+        home_dir=auth_sandbox,
+        prepend_path=auth_path_entries,
+    )
 
     if result.success:
         methods_info = ", ".join(f"{m.id}({m.type})" for m in result.auth_methods if m.type)

@@ -9,7 +9,7 @@ on:
       apply:
         description: "Apply updates and commit to main"
         required: false
-        default: true
+        default: false
         type: boolean
       agents:
         description: "Comma-separated agent IDs (leave empty for all)"
@@ -28,57 +28,54 @@ jobs:
       updates_json: ${{ steps.check.outputs.updates_json }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.14"
-
-      - &generate-token
-        # Generating a GitHub token, so that PRs and tags created by
-        # the action can trigger actions workflows.
-        name: Generate GitHub token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
-        id: generate-token
-        with:
-          # GitHub App ID secret name
-          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
-          # GitHub App private key secret name
-          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
 
       - name: Check for version updates
         id: check
         env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           INPUT_AGENTS: ${{ inputs.agents }}
         run: |
           set +e
 
-          ARGS="--json"
+          ARGS=(--json)
           if [ -n "$INPUT_AGENTS" ]; then
-            ARGS="$ARGS --agents $INPUT_AGENTS"
+            if [[ ! "$INPUT_AGENTS" =~ ^[a-z0-9-]+(,[a-z0-9-]+)*$ ]]; then
+              echo "Invalid agents input: $INPUT_AGENTS" >&2
+              exit 1
+            fi
+            ARGS+=(--agents "$INPUT_AGENTS")
           fi
 
-          OUTPUT=$(python .github/workflows/update_versions.py $ARGS)
+          OUTPUT=$(python .github/workflows/update_versions.py "${ARGS[@]}")
           EXIT_CODE=$?
 
           echo "$OUTPUT"
 
           # Save JSON output
-          echo "updates_json<<EOF" >> $GITHUB_OUTPUT
-          echo "$OUTPUT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          UPDATES_DELIMITER="$(uuidgen)"
+          {
+            echo "updates_json<<$UPDATES_DELIMITER"
+            printf '%s\n' "$OUTPUT"
+            echo "$UPDATES_DELIMITER"
+          } >> "$GITHUB_OUTPUT"
 
           # Check if updates are available (exit code 2)
-          if [ $EXIT_CODE -eq 2 ]; then
-            echo "has_updates=true" >> $GITHUB_OUTPUT
+          if [ "$EXIT_CODE" -eq 2 ]; then
+            echo "has_updates=true" >> "$GITHUB_OUTPUT"
           else
-            echo "has_updates=false" >> $GITHUB_OUTPUT
+            echo "has_updates=false" >> "$GITHUB_OUTPUT"
           fi
 
           # Fail on actual errors (exit code 1)
-          if [ $EXIT_CODE -eq 1 ]; then
+          if [ "$EXIT_CODE" -eq 1 ]; then
             exit 1
           fi
 
@@ -91,7 +88,7 @@ jobs:
       issues: write
     steps:
       - name: Create failure issue
-        uses: actions/github-script@v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const title = `Version check failed - ${new Date().toISOString().split('T')[0]}`;
@@ -128,27 +125,23 @@ jobs:
 
   apply-updates:
     needs: check-versions
-    if: needs.check-versions.outputs.has_updates == 'true' && (github.event_name == 'schedule' || inputs.apply == true || inputs.apply == 'true')
-    concurrency:
-      group: registry-main-write
-      cancel-in-progress: false
+    if: needs.check-versions.outputs.has_updates == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.apply == true || inputs.apply == 'true')
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
-      - *generate-token
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          token: ${{ steps.generate-token.outputs.token }}
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.14"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: "lts/*"
 
@@ -157,23 +150,187 @@ jobs:
 
       - name: Apply version updates
         env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           INPUT_AGENTS: ${{ inputs.agents }}
         run: |
-          ARGS="--apply"
+          ARGS=(--apply)
           if [ -n "$INPUT_AGENTS" ]; then
-            ARGS="$ARGS --agents $INPUT_AGENTS"
+            if [[ ! "$INPUT_AGENTS" =~ ^[a-z0-9-]+(,[a-z0-9-]+)*$ ]]; then
+              echo "Invalid agents input: $INPUT_AGENTS" >&2
+              exit 1
+            fi
+            ARGS+=(--agents "$INPUT_AGENTS")
           fi
 
-          python .github/workflows/update_versions.py $ARGS
+          python .github/workflows/update_versions.py "${ARGS[@]}"
+
+      - name: Stage updated agent manifests
+        env:
+          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          UPDATE_ARTIFACT_DIR: ${{ runner.temp }}/agent-updates
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import shutil
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          data = json.loads(os.environ["UPDATES_JSON"])
+          updates = data.get("updates", [])
+          expected_versions = {}
+          for update in updates:
+              agent_id = update.get("agent_id", "")
+              latest_version = update.get("latest_version", "")
+              if not re.fullmatch(r"[a-z][a-z0-9-]*", agent_id):
+                  print(f"Invalid agent id in update JSON: {agent_id!r}", file=sys.stderr)
+                  sys.exit(1)
+              expected_versions[f"{agent_id}/agent.json"] = latest_version
+
+          if not expected_versions:
+              print("No expected update files found", file=sys.stderr)
+              sys.exit(1)
+
+          status_lines = subprocess.check_output(
+              ["git", "status", "--porcelain=v1"],
+              text=True,
+          ).splitlines()
+          changed_paths = set()
+          for line in status_lines:
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              changed_paths.add(path)
+
+          expected_paths = set(expected_versions)
+          unexpected = sorted(changed_paths - expected_paths)
+          missing = sorted(expected_paths - changed_paths)
+          if unexpected or missing:
+              if unexpected:
+                  print("Unexpected changed paths:", file=sys.stderr)
+                  for path in unexpected:
+                      print(f"  {path}", file=sys.stderr)
+              if missing:
+                  print("Expected paths were not changed:", file=sys.stderr)
+                  for path in missing:
+                      print(f"  {path}", file=sys.stderr)
+              sys.exit(1)
+
+          artifact_dir = Path(os.environ["UPDATE_ARTIFACT_DIR"])
+          if artifact_dir.exists():
+              shutil.rmtree(artifact_dir)
+          artifact_dir.mkdir(parents=True)
+          base_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          (artifact_dir / "base-sha.txt").write_text(base_sha + "\n")
+
+          for rel_path, expected_version in sorted(expected_versions.items()):
+              source = Path(rel_path)
+              agent = json.loads(source.read_text())
+              actual_version = agent.get("version")
+              if actual_version != expected_version:
+                  print(
+                      f"{rel_path} has version {actual_version!r}, expected {expected_version!r}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+              destination = artifact_dir / rel_path
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+
+          (artifact_dir / "files.json").write_text(
+              json.dumps(sorted(expected_paths), indent=2) + "\n",
+          )
+          PY
 
       - name: Validate registry build
+        run: uv run --with jsonschema .github/workflows/build_registry.py
+
+      - name: Upload update artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: agent-updates
+          path: ${{ runner.temp }}/agent-updates/
+          if-no-files-found: error
+          retention-days: 1
+
+  verify-updates:
+    needs: [check-versions, apply-updates]
+    if: needs.apply-updates.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Download update artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: agent-updates
+          path: ${{ runner.temp }}/agent-updates
+
+      - name: Apply staged update manifests
+        env:
+          UPDATE_ARTIFACT_DIR: ${{ runner.temp }}/agent-updates
         run: |
-          pip install jsonschema
-          python .github/workflows/build_registry.py
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import shutil
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          artifact_dir = Path(os.environ["UPDATE_ARTIFACT_DIR"])
+          base_sha = (artifact_dir / "base-sha.txt").read_text().strip()
+          if not re.fullmatch(r"[0-9a-f]{40}", base_sha):
+              print(f"Invalid artifact base SHA: {base_sha!r}", file=sys.stderr)
+              sys.exit(1)
+          current_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if current_sha != base_sha:
+              print(
+                  f"Update artifact was generated from {base_sha}, "
+                  f"but this checkout is {current_sha}; refusing stale verification.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          files = json.loads((artifact_dir / "files.json").read_text())
+          for rel_path in files:
+              if not re.fullmatch(r"[a-z][a-z0-9-]*/agent\.json", rel_path):
+                  print(f"Unexpected artifact path: {rel_path}", file=sys.stderr)
+                  sys.exit(1)
+              source = artifact_dir / rel_path
+              if not source.is_file():
+                  print(f"Missing artifact file: {source}", file=sys.stderr)
+                  sys.exit(1)
+              destination = Path(rel_path)
+              shutil.copy2(source, destination)
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        with:
+          python-version: "3.14"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: "lts/*"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+
+      - name: Validate registry build
+        run: uv run --with jsonschema .github/workflows/build_registry.py
 
       - name: Verify agent auth support
-        timeout-minutes: 15
         env:
           UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
         run: |
@@ -188,6 +345,80 @@ jobs:
           ")
           echo "Verifying updated agents: $UPDATED_AGENTS"
           python3 .github/workflows/verify_agents.py --auth-check --agent "$UPDATED_AGENTS"
+
+  commit-updates:
+    needs: [check-versions, apply-updates, verify-updates]
+    if: needs.verify-updates.result == 'success'
+    concurrency:
+      group: registry-main-write
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Download update artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: agent-updates
+          path: ${{ runner.temp }}/agent-updates
+
+      - name: Apply staged update manifests
+        id: apply_artifact
+        env:
+          UPDATE_ARTIFACT_DIR: ${{ runner.temp }}/agent-updates
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import shutil
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          artifact_dir = Path(os.environ["UPDATE_ARTIFACT_DIR"])
+          base_sha = (artifact_dir / "base-sha.txt").read_text().strip()
+          if not re.fullmatch(r"[0-9a-f]{40}", base_sha):
+              print(f"Invalid artifact base SHA: {base_sha!r}", file=sys.stderr)
+              sys.exit(1)
+          current_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if current_sha != base_sha:
+              print(
+                  f"Update artifact was generated from {base_sha}, "
+                  f"but main is now {current_sha}; refusing to overwrite newer main.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          files = json.loads((artifact_dir / "files.json").read_text())
+          safe_files = []
+          for rel_path in files:
+              if not re.fullmatch(r"[a-z][a-z0-9-]*/agent\.json", rel_path):
+                  print(f"Unexpected artifact path: {rel_path}", file=sys.stderr)
+                  sys.exit(1)
+              source = artifact_dir / rel_path
+              if not source.is_file():
+                  print(f"Missing artifact file: {source}", file=sys.stderr)
+                  sys.exit(1)
+              destination = Path(rel_path)
+              shutil.copy2(source, destination)
+              safe_files.append(rel_path)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"files={' '.join(safe_files)}", file=output)
+          PY
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+
+      - name: Validate registry build
+        run: uv run --with jsonschema .github/workflows/build_registry.py
 
       - name: Generate commit message
         id: commit_msg
@@ -214,42 +445,66 @@ jobs:
               print(f\"- {u['agent_id']}: {u['current_version']} -> {u['latest_version']}\")
           ")
 
-          echo "summary=$SUMMARY" >> $GITHUB_OUTPUT
-          echo "details<<EOF" >> $GITHUB_OUTPUT
-          echo "$DETAILS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "summary=$SUMMARY" >> "$GITHUB_OUTPUT"
+          DETAILS_DELIMITER="$(uuidgen)"
+          {
+            echo "details<<$DETAILS_DELIMITER"
+            printf '%s\n' "$DETAILS"
+            echo "$DETAILS_DELIMITER"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Commit and push to main
+      - name: Commit updated manifests
+        id: commit
         env:
           COMMIT_SUMMARY: ${{ steps.commit_msg.outputs.summary }}
           COMMIT_DETAILS: ${{ steps.commit_msg.outputs.details }}
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          UPDATED_FILES: ${{ steps.apply_artifact.outputs.files }}
         run: |
           git config user.name "acp-release[bot]"
           git config user.email "2373403+acp-release[bot]@users.noreply.github.com"
 
-          git add -A
-          git commit -m "$(cat <<EOF
-          $COMMIT_SUMMARY
+          read -r -a FILES <<< "$UPDATED_FILES"
+          git add -- "${FILES[@]}"
 
-          $COMMIT_DETAILS
-          EOF
-          )"
-          git push origin main
+          if git diff --cached --quiet; then
+            echo "No staged update files to commit" >&2
+            exit 1
+          fi
+
+          git commit -m "$COMMIT_SUMMARY" -m "$COMMIT_DETAILS"
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # Generating a GitHub token, so that commits created by the
+      # action can trigger the registry publication workflow.
+      - name: Generate GitHub token
+        if: steps.commit.outputs.committed == 'true'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        id: generate-token
+        with:
+          # GitHub App ID secret name
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          # GitHub App private key secret name
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
+      - name: Push updates to main
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_APP_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_APP_TOKEN" | base64 | tr -d '\n')"
+          echo "::add-mask::$AUTH_HEADER"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${AUTH_HEADER}" push origin main
 
   notify-apply-failure:
-    needs: [check-versions, apply-updates]
-    if: always() && needs.apply-updates.result == 'failure'
+    needs: [check-versions, apply-updates, verify-updates, commit-updates]
+    if: always() && (needs.apply-updates.result == 'failure' || needs.verify-updates.result == 'failure' || needs.commit-updates.result == 'failure')
     runs-on: ubuntu-latest
     permissions:
       contents: read
       issues: write
     steps:
-      - *generate-token
       - name: Create failure issue
-        uses: actions/github-script@v9
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         with:
           script: |
             const title = `Version update failed - ${new Date().toISOString().split('T')[0]}`;
@@ -277,7 +532,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: title,
-                body: `The automated version update workflow failed while applying updates.\n\n**Run:** ${runUrl}\n\nThis could be due to:\n- Registry validation failure\n- Auth verification failure\n- Git push conflict\n- Network issues\n\nPlease investigate.`,
+                body: `The automated version update workflow failed while applying updates.\n\nThis could be due to:\n- Registry validation failure\n- Auth verification failure\n- Git push conflict\n- Network issues\n\n**Run:** ${runUrl}\n\nPlease investigate.`,
                 labels: ['version-update-failure', 'automated']
               });
             }

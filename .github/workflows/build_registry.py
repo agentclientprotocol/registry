@@ -3,11 +3,14 @@
 
 import argparse
 import copy
+import ipaddress
 import json
 import os
 import re
+import socket
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -54,22 +57,96 @@ SKIP_URL_VALIDATION = os.environ.get("SKIP_URL_VALIDATION", "").lower() in (
     "true",
     "yes",
 )
+MAX_URL_REDIRECTS = 5
 
 
-def url_exists(url: str, method: str = "HEAD", retries: int = 3) -> bool:
+class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Disable urllib's implicit redirects so each target can be validated first."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # noqa: ANN001
+        return None
+
+
+URL_OPENER = urllib.request.build_opener(NoRedirectHandler)
+
+
+class UrlSafetyResolutionError(Exception):
+    """Raised when URL safety DNS resolution fails before the request attempt."""
+
+
+def is_public_https_url(url: str, retry_dns_errors: bool = False) -> bool:
+    """Return whether URL validation may safely request this target."""
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        return False
+
+    hostname = parsed.hostname.strip().lower()
+    if hostname in {"localhost", "localhost.localdomain"} or hostname.endswith(".localhost"):
+        return False
+
+    try:
+        addresses = socket.getaddrinfo(hostname, parsed.port or 443, type=socket.SOCK_STREAM)
+    except OSError as exc:
+        if retry_dns_errors:
+            raise UrlSafetyResolutionError from exc
+        return False
+
+    for *_, sockaddr in addresses:
+        try:
+            ip = ipaddress.ip_address(sockaddr[0])
+        except ValueError:
+            return False
+        if not ip.is_global or ip.is_multicast:
+            return False
+
+    return bool(addresses)
+
+
+def url_exists(
+    url: str,
+    method: str = "HEAD",
+    retries: int = 3,
+    redirects_remaining: int = MAX_URL_REDIRECTS,
+) -> bool:
     """Check if a URL exists using HEAD or GET request with retries."""
     import time
 
     for attempt in range(retries):
         try:
+            if not is_public_https_url(url, retry_dns_errors=True):
+                return False
             req = urllib.request.Request(url, method=method)
             req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
-            with urllib.request.urlopen(req, timeout=15) as response:
+            with URL_OPENER.open(req, timeout=15) as response:
                 return response.status in (200, 301, 302)
+        except UrlSafetyResolutionError:
+            if attempt < retries - 1:
+                time.sleep(2**attempt)
+                continue
+            return False
         except urllib.error.HTTPError as e:
+            if e.code in (301, 302, 303, 307, 308):
+                if redirects_remaining <= 0:
+                    return False
+                location = e.headers.get("Location")
+                if not location:
+                    return False
+                next_url = urllib.parse.urljoin(url, location)
+                next_method = "GET" if e.code == 303 else method
+                return url_exists(
+                    next_url,
+                    method=next_method,
+                    retries=retries,
+                    redirects_remaining=redirects_remaining - 1,
+                )
             # Some servers don't support HEAD, try GET
             if method == "HEAD" and e.code in (403, 405):
-                return url_exists(url, method="GET", retries=retries - attempt)
+                return url_exists(
+                    url,
+                    method="GET",
+                    retries=retries - attempt,
+                    redirects_remaining=redirects_remaining,
+                )
             if attempt < retries - 1 and e.code in (429, 500, 502, 503, 504):
                 time.sleep(2**attempt)
                 continue

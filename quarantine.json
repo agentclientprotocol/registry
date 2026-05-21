@@ -2,7 +2,6 @@
   "agoragentic-acp": "Postinstall script",
   "deepagents": "Missing npm dependency",
   "junie": "Auto-update disabled",
-  "mistral-vibe": "missing windows build",
   "minion-code": "Python dependency issue",
   "qoder": "ACP initialize fails in qodercli 0.2.15/0.2.16",
   "vtcode": "Missing windows builds"
