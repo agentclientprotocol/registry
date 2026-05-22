@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cdn.agentclientprotocol.com/registry/v1/latest/registry-archive.schema.json",
+  "title": "ACP Agent Registry Archive",
+  "description": "Schema for the archive of all published ACP agent versions",
+  "type": "object",
+  "required": ["version", "agents"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Registry archive schema version"
+    },
+    "agents": {
+      "type": "array",
+      "description": "Agents grouped by id, each containing all published versions",
+      "items": {
+        "$ref": "#/definitions/archivedAgent"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "archivedAgent": {
+      "type": "object",
+      "required": ["id", "versions"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Unique agent identifier"
+        },
+        "icon": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical icon URL shared across all archived versions of the agent"
+        },
+        "versions": {
+          "type": "array",
+          "minItems": 1,
+          "description": "All archived published versions for this agent",
+          "items": {
+            "$ref": "agent.schema.json"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

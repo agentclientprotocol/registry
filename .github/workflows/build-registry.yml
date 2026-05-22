@@ -67,8 +67,18 @@ jobs:
         with:
           node-version: "lts/*"
 
+      - name: Prepare previous registry archive
+        run: |
+          mkdir -p .tmp
+          curl -fsSLo .tmp/previous-registry-archive.json \
+            https://cdn.agentclientprotocol.com/registry/v1/latest/registry-archive.json \
+            || cp .github/workflows/bootstrap/registry-archive.seed.json \
+              .tmp/previous-registry-archive.json
+
       - name: Validate and build
-        run: uv run --with jsonschema .github/workflows/build_registry.py
+        run: >-
+          uv run --with jsonschema .github/workflows/build_registry.py
+          --previous-archive .tmp/previous-registry-archive.json
 
       - name: List agents for auth matrix
         id: list-agents
@@ -233,6 +243,8 @@ jobs:
             --title "Registry $VERSION" \
             --notes "$RELEASE_NOTES" \
             dist/registry.json \
+            dist/registry-archive.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
+            dist/registry-archive.schema.json \
             dist/*.svg

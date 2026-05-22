@@ -15,6 +15,12 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from registry_archive import (
+    build_registry_archive,
+    load_registry_archive,
+    validate_registry_archive,
+    validate_registry_archive_sync,
+)
 from registry_utils import (
     extract_npm_package_name,
     extract_npm_package_version,
@@ -46,6 +52,7 @@ REJECTED_ARCHIVE_EXTENSIONS = (".dmg", ".pkg", ".deb", ".rpm", ".msi", ".appimag
 
 # Can be overridden via environment variable
 DEFAULT_BASE_URL = "https://cdn.agentclientprotocol.com/registry/v1/latest"
+DEFAULT_PREVIOUS_ARCHIVE = ".github/workflows/bootstrap/registry-archive.seed.json"
 
 # Icon requirements
 PREFERRED_ICON_SIZE = 16
@@ -407,17 +414,24 @@ def get_base_url():
     return os.environ.get("REGISTRY_BASE_URL", DEFAULT_BASE_URL)
 
 
-def load_schema(registry_dir: Path) -> dict | None:
-    """Load agent.schema.json if available."""
-    schema_path = registry_dir / "agent.schema.json"
-    if not schema_path.exists():
+def load_json_file(path: Path) -> dict | None:
+    """Load a JSON object from a file path."""
+    if not path.exists():
         return None
     try:
-        with open(schema_path) as f:
+        with open(path) as f:
             return json.load(f)
     except (json.JSONDecodeError, OSError) as e:
-        print(f"Warning: Could not load agent.schema.json: {e}")
+        print(f"Warning: Could not load {path.name}: {e}")
         return None
+
+
+def load_schema(registry_dir: Path, filename: str = "agent.schema.json") -> dict | None:
+    """Load a schema file if available."""
+    schema_path = registry_dir / filename
+    if not schema_path.exists():
+        return None
+    return load_json_file(schema_path)
 
 
 def validate_against_schema(agent: dict, schema: dict) -> list[str]:
@@ -594,17 +608,19 @@ def process_entry(
     return entry, []
 
 
-def build_registry(dry_run: bool = False):
+def build_registry(dry_run: bool = False, previous_archive_path: str | None = None):
     """Build registry.json from agent directories.
 
     Args:
         dry_run: If True, validate and report what would be built without writing to dist/.
+        previous_archive_path: Path to previous registry-archive.json used for incremental updates.
     """
     registry_dir = Path(__file__).parent.parent.parent
     base_url = get_base_url()
     agents = []
     seen_ids = {}
     has_errors = False
+    previous_archive = None
 
     # Load schema for validation
     schema = load_schema(registry_dir)
@@ -671,6 +687,32 @@ def build_registry(dry_run: bool = False):
     jetbrains_agents = [
         patch_agent_for_jetbrains(a) for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS
     ]
+    if previous_archive_path is None:
+        default_previous_archive_path = registry_dir / DEFAULT_PREVIOUS_ARCHIVE
+        if default_previous_archive_path.exists():
+            previous_archive_path = str(default_previous_archive_path)
+    if previous_archive_path is not None:
+        previous_archive_file = Path(previous_archive_path)
+        if not previous_archive_file.exists():
+            print(f"Error: Previous registry archive not found: {previous_archive_file}")
+            sys.exit(1)
+        previous_archive = load_registry_archive(previous_archive_file)
+
+    registry_archive = build_registry_archive(agents, previous_archive)
+    archive_errors = validate_registry_archive(registry_archive)
+    if archive_errors:
+        print("Error: Generated registry-archive.json is invalid:")
+        for error in archive_errors:
+            print(f"  - {error}")
+        sys.exit(1)
+    archive_sync_errors = validate_registry_archive_sync(agents, registry_archive)
+    if archive_sync_errors:
+        print("Error: registry-archive.json does not match the current registry snapshot:")
+        for error in archive_sync_errors:
+            print(f"  - {error}")
+        sys.exit(1)
+    archive_agent_count = len(registry_archive["agents"])
+    archive_version_count = sum(len(agent["versions"]) for agent in registry_archive["agents"])
 
     if dry_run:
         print(f"\nDry run: validated {len(agents)} agents successfully")
@@ -681,6 +723,10 @@ def build_registry(dry_run: bool = False):
         print(
             f"  registry-for-jetbrains.json would contain "
             f"{len(jetbrains_agents)} agents (excluded: {', '.join(sorted(JETBRAINS_EXCLUDE_IDS))})"
+        )
+        print(
+            f"  registry-archive.json would contain {archive_agent_count} agents and "
+            f"{archive_version_count} versions"
         )
         return
 
@@ -705,6 +751,12 @@ def build_registry(dry_run: bool = False):
         json.dump(jetbrains_registry, f, indent=2)
         f.write("\n")
 
+    # Write registry-archive.json
+    archive_output_path = dist_dir / "registry-archive.json"
+    with open(archive_output_path, "w") as f:
+        json.dump(registry_archive, f, indent=2)
+        f.write("\n")
+
     # Copy icons to dist
     for entry in agents:
         entry_id = entry["id"]
@@ -714,7 +766,11 @@ def build_registry(dry_run: bool = False):
             icon_dst.write_bytes(icon_src.read_bytes())
 
     # Copy schema files to dist
-    for schema_file in ("agent.schema.json", "registry.schema.json"):
+    for schema_file in (
+        "agent.schema.json",
+        "registry.schema.json",
+        "registry-archive.schema.json",
+    ):
         schema_src = registry_dir / schema_file
         if schema_src.exists():
             schema_dst = dist_dir / schema_file
@@ -729,6 +785,9 @@ def build_registry(dry_run: bool = False):
         f"  registry-for-jetbrains.json: {len(jetbrains_agents)} agents"
         f" (excluded: {', '.join(sorted(JETBRAINS_EXCLUDE_IDS))})"
     )
+    print(
+        f"  registry-archive.json: {archive_agent_count} agents, {archive_version_count} versions"
+    )
 
 
 if __name__ == "__main__":
@@ -738,5 +797,9 @@ if __name__ == "__main__":
         action="store_true",
         help="Validate all agents without writing to dist/",
     )
+    parser.add_argument(
+        "--previous-archive",
+        help="Path to previous registry-archive.json for incremental archive updates",
+    )
     args = parser.parse_args()
-    build_registry(dry_run=args.dry_run)
+    build_registry(dry_run=args.dry_run, previous_archive_path=args.previous_archive)
