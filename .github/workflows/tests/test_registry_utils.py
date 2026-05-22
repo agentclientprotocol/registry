@@ -58,6 +58,9 @@ class TestExtractPypiPackageName:
     def test_with_double_equals(self):
         assert extract_pypi_package_name("some-package==1.2.3") == "some-package"
 
+    def test_with_extra_and_double_equals(self):
+        assert extract_pypi_package_name("some-package[acp]==1.2.3") == "some-package"
+
     def test_with_at_version(self):
         assert extract_pypi_package_name("some-package@1.2.3") == "some-package"
 

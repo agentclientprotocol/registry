@@ -233,8 +233,9 @@ def extract_npm_package_version(package_spec: str) -> str | None:
 
 
 def extract_pypi_package_name(package_spec: str) -> str:
-    """Extract PyPI package name from spec like package==version."""
-    return re.split(r"[<>=!@]", package_spec)[0]
+    """Extract PyPI package name from spec like package[extra]==version."""
+    package_name = re.split(r"[<>=!@]", package_spec)[0]
+    return package_name.split("[", 1)[0].strip()
 
 
 def normalize_version(version: str) -> str:

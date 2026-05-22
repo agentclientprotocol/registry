@@ -6,6 +6,7 @@ import zipfile
 from pathlib import Path
 
 from verify_agents import (
+    build_agent_command,
     build_agent_process_env,
     build_installed_npx_command,
     ensure_executable,
@@ -238,6 +239,78 @@ def test_build_installed_npx_command_prefers_home_shim(tmp_path: Path):
     )
 
     assert command == [str(home_bin / "junie"), "--acp=true"]
+
+
+def test_build_installed_npx_command_uses_explicit_package_cmd(tmp_path: Path):
+    auth_home = tmp_path / "auth-home"
+    home_bin = auth_home / ".local" / "bin"
+    home_bin.mkdir(parents=True)
+    (home_bin / "example-acp").write_text("#!/bin/sh\n")
+
+    command = build_installed_npx_command(
+        "@example/agent@1.2.3",
+        ["--acp"],
+        tmp_path,
+        auth_home,
+        "example-acp",
+    )
+
+    assert command == [str(home_bin / "example-acp"), "--acp"]
+
+
+def test_build_agent_command_uses_uvx_package_cmd(tmp_path: Path):
+    agent = {
+        "id": "hermes-agent",
+        "distribution": {
+            "uvx": {
+                "package": "hermes-agent[acp]==0.14.0",
+                "cmd": "hermes-acp",
+                "args": ["--check"],
+            }
+        },
+    }
+
+    command, cwd, env = build_agent_command(agent, "uvx", tmp_path)
+
+    assert command == [
+        "uvx",
+        "--cache-dir",
+        str(tmp_path / "uv-cache"),
+        "--from",
+        "hermes-agent[acp]==0.14.0",
+        "hermes-acp",
+        "--check",
+    ]
+    assert cwd == tmp_path
+    assert env == {}
+
+
+def test_build_agent_command_uses_npx_package_cmd(tmp_path: Path):
+    agent = {
+        "id": "example-agent",
+        "distribution": {
+            "npx": {
+                "package": "@example/agent@1.2.3",
+                "cmd": "example-acp",
+                "args": ["--acp"],
+            }
+        },
+    }
+
+    command, cwd, env = build_agent_command(agent, "npx", tmp_path)
+
+    assert command == [
+        "npx",
+        "--prefix",
+        str(tmp_path),
+        "--yes",
+        "--package",
+        "@example/agent@1.2.3",
+        "example-acp",
+        "--acp",
+    ]
+    assert cwd == tmp_path
+    assert env == {}
 
 
 def test_should_retry_npx_auth_with_install_on_shim_error():

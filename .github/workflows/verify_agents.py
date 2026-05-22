@@ -420,9 +420,10 @@ def build_installed_npx_command(
     args: list[str],
     sandbox: Path,
     auth_home: Path,
+    package_cmd: str | None = None,
 ) -> list[str] | None:
     """Resolve the best command for an npm package installed into the sandbox."""
-    bin_name = npm_package_bin_name(package_spec, sandbox)
+    bin_name = package_cmd or npm_package_bin_name(package_spec, sandbox)
     candidates = [
         auth_home / ".local" / "bin" / bin_name,
         sandbox / "node_modules" / ".bin" / bin_name,
@@ -539,12 +540,17 @@ def verify_npx(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Resul
 
     npx_dist = agent["distribution"].get("npx", {})
     package = npx_dist.get("package", "")
+    package_cmd = npx_dist.get("cmd", "")
     args = npx_dist.get("args", [])
     env = npx_dist.get("env", {})
 
-    print(f"    → Running: npx {package} {' '.join(args)}")
+    if package_cmd:
+        print(f"    → Running: npx --package {package} {package_cmd} {' '.join(args)}")
+        cmd = ["npx", "--prefix", str(sandbox), "--yes", "--package", package, package_cmd] + args
+    else:
+        print(f"    → Running: npx {package} {' '.join(args)}")
+        cmd = ["npx", "--prefix", str(sandbox), "--yes", package] + args
 
-    cmd = ["npx", "--prefix", str(sandbox), "--yes", package] + args
     exit_code, stdout, stderr = run_process(cmd, sandbox, env, timeout)
 
     if exit_code is None:
@@ -569,15 +575,22 @@ def verify_uvx(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Resul
 
     uvx_dist = agent["distribution"].get("uvx", {})
     package = uvx_dist.get("package", "")
+    package_cmd = uvx_dist.get("cmd", "")
     args = uvx_dist.get("args", [])
     env = uvx_dist.get("env", {})
 
-    print(f"    → Running: uvx {package} {' '.join(args)}")
+    if package_cmd:
+        print(f"    → Running: uvx --from {package} {package_cmd} {' '.join(args)}")
+    else:
+        print(f"    → Running: uvx {package} {' '.join(args)}")
 
     cache_dir = sandbox / "uv-cache"
     cache_dir.mkdir(exist_ok=True)
 
-    cmd = ["uvx", "--cache-dir", str(cache_dir), package] + args
+    if package_cmd:
+        cmd = ["uvx", "--cache-dir", str(cache_dir), "--from", package, package_cmd] + args
+    else:
+        cmd = ["uvx", "--cache-dir", str(cache_dir), package] + args
     exit_code, stdout, stderr = run_process(cmd, sandbox, env, timeout)
 
     if exit_code is None:
@@ -653,18 +666,34 @@ def build_agent_command(
     if dist_type == "npx":
         npx_dist = distribution.get("npx", {})
         package = npx_dist.get("package", "")
+        package_cmd = npx_dist.get("cmd", "")
         args = npx_dist.get("args", [])
         env = npx_dist.get("env", {})
-        cmd = ["npx", "--prefix", str(sandbox), "--yes", package] + args
+        if package_cmd:
+            cmd = [
+                "npx",
+                "--prefix",
+                str(sandbox),
+                "--yes",
+                "--package",
+                package,
+                package_cmd,
+            ] + args
+        else:
+            cmd = ["npx", "--prefix", str(sandbox), "--yes", package] + args
         cwd = sandbox
     elif dist_type == "uvx":
         uvx_dist = distribution.get("uvx", {})
         package = uvx_dist.get("package", "")
+        package_cmd = uvx_dist.get("cmd", "")
         args = uvx_dist.get("args", [])
         env = uvx_dist.get("env", {})
         cache_dir = sandbox / "uv-cache"
         cache_dir.mkdir(exist_ok=True)
-        cmd = ["uvx", "--cache-dir", str(cache_dir), package] + args
+        if package_cmd:
+            cmd = ["uvx", "--cache-dir", str(cache_dir), "--from", package, package_cmd] + args
+        else:
+            cmd = ["uvx", "--cache-dir", str(cache_dir), package] + args
         cwd = sandbox
     elif dist_type == "binary":
         current_platform = get_current_platform()
@@ -773,6 +802,7 @@ def verify_auth(
     if dist_type == "npx" and should_retry_npx_auth_with_install(result.error, result.stderr_tail):
         npx_dist = agent["distribution"].get("npx", {})
         package = npx_dist.get("package", "")
+        package_cmd = npx_dist.get("cmd", "")
         args = npx_dist.get("args", [])
 
         print("    Installing package into sandbox and retrying...")
@@ -787,7 +817,9 @@ def verify_auth(
         if install_error is not None:
             return Result(agent_id, dist_type, False, install_error)
 
-        installed_cmd = build_installed_npx_command(package, args, sandbox, auth_sandbox)
+        installed_cmd = build_installed_npx_command(
+            package, args, sandbox, auth_sandbox, package_cmd
+        )
         if installed_cmd is None:
             return Result(
                 agent_id,

@@ -105,6 +105,7 @@ Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-
   "distribution": {
     "npx": {
       "package": "@your-scope/your-package@1.0.0",
+      "cmd": "your-command",
       "args": ["--acp"]
     }
   }
@@ -118,6 +119,7 @@ Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-
   "distribution": {
     "uvx": {
       "package": "your-package",
+      "cmd": "your-command",
       "args": ["serve", "--acp"]
     }
   }
@@ -133,6 +135,10 @@ Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-
 | `version`      | string | Semantic version                               |
 | `description`  | string | Brief description                              |
 | `distribution` | object | At least one distribution method               |
+
+For package distributions, `cmd` is optional. Use it when the executable that
+starts ACP is not the package manager's default command for the package. For
+example, uvx entries with `cmd` run as `uvx --from <package> <cmd> [args]`.
 
 ## Optional Fields
 
