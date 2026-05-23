@@ -1,0 +1,17 @@
+{
+  "id": "zot-acp",
+  "name": "zot ACP",
+  "version": "0.0.1",
+  "description": "ACP adapter for zot coding agent",
+  "repository": "https://github.com/patriceckhart/zot-acp",
+  "website": "https://www.zot.sh",
+  "authors": [
+    "Patric Eckhart <mail@patriceckhart.com>"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@patriceckhart/zot-acp@0.0.1"
+    }
+  }
+}
