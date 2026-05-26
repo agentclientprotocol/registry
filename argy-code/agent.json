@@ -1,7 +1,7 @@
 {
   "id": "argy-code",
   "name": "Argy Code",
-  "version": "1.12.3",
+  "version": "1.12.4",
   "description": "AI coding agent for the terminal. Implements ACP over stdio. Supports session management, real-time tool call streaming, file edits, permission delegation, and MCP servers. Authenticate with `argy auth login` or ARGY_PAT.",
   "repository": "https://github.com/demkada/argy-code",
   "authors": [
@@ -11,35 +11,35 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.3/argy-darwin-arm64.zip",
+        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.4/argy-darwin-arm64.zip",
         "cmd": "./argy",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.3/argy-darwin-x64.zip",
+        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.4/argy-darwin-x64.zip",
         "cmd": "./argy",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.3/argy-linux-arm64.tar.gz",
+        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.4/argy-linux-arm64.tar.gz",
         "cmd": "./argy",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.3/argy-linux-x64.tar.gz",
+        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.4/argy-linux-x64.tar.gz",
         "cmd": "./argy",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.3/argy-windows-x64.zip",
+        "archive": "https://github.com/demkada/argy-code/releases/download/v1.12.4/argy-windows-x64.zip",
         "cmd": "argy.exe",
         "args": [
           "acp"
@@ -47,7 +47,7 @@
       }
     },
     "npx": {
-      "package": "@argy-cloud/code@1.12.3",
+      "package": "@argy-cloud/code@1.12.4",
       "args": [
         "acp"
       ]
