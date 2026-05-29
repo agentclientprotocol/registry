@@ -1,7 +1,7 @@
 {
   "id": "grok-build",
   "name": "Grok Build",
-  "version": "0.1.210",
+  "version": "0.2.11",
   "description": "xAI's coding agent and CLI",
   "website": "https://docs.x.ai/build/overview",
   "authors": ["xAI"],
@@ -9,22 +9,32 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.1.210-macos-aarch64",
+        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.2.11-macos-aarch64",
+        "cmd": "./grok",
+        "args": ["agent", "stdio"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.2.11-macos-x86_64",
         "cmd": "./grok",
         "args": ["agent", "stdio"]
       },
       "linux-aarch64": {
-        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.1.210-linux-aarch64",
+        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.2.11-linux-aarch64",
         "cmd": "./grok",
         "args": ["agent", "stdio"]
       },
       "linux-x86_64": {
-        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.1.210-linux-x86_64",
+        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.2.11-linux-x86_64",
         "cmd": "./grok",
         "args": ["agent", "stdio"]
       },
+      "windows-aarch64": {
+        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.2.11-windows-aarch64.exe",
+        "cmd": "./grok.exe",
+        "args": ["agent", "stdio"]
+      },
       "windows-x86_64": {
-        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.1.210-windows-x86_64.exe",
+        "archive": "https://storage.googleapis.com/grok-build-public-artifacts/cli/grok-0.2.11-windows-x86_64.exe",
         "cmd": "./grok.exe",
         "args": ["agent", "stdio"]
       }
