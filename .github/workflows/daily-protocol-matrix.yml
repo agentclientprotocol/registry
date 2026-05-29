@@ -29,35 +29,32 @@ on:
         required: false
         default: false
         type: boolean
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   generate:
-    concurrency:
-      group: registry-main-write
-      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      report_date: ${{ steps.summary.outputs.report_date }}
+      agents_probed_this_run: ${{ steps.summary.outputs.agents_probed_this_run }}
+      agents_reused: ${{ steps.summary.outputs.agents_reused }}
+      initialize_success: ${{ steps.summary.outputs.initialize_success }}
+      session_new_auth_required: ${{ steps.summary.outputs.session_new_auth_required }}
 
     steps:
-      - name: Generate GitHub token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
-        id: generate-token
-        with:
-          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
-          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
-
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          token: ${{ steps.generate-token.outputs.token }}
+          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: "lts/*"
 
@@ -71,24 +68,55 @@ jobs:
           NPM_CONFIG_CACHE: ${{ runner.temp }}/npm-cache
           XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
           XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+          MATRIX_SANDBOX_DIR: ${{ runner.temp }}/matrix-sandbox
+          MATRIX_OUTPUT_DIR: ${{ runner.temp }}/protocol-matrix
+          DISPATCH_AGENTS: ${{ inputs.agents }}
+          DISPATCH_SKIP_AGENTS: ${{ inputs.skip_agents }}
+          DISPATCH_TABLE_MODE: ${{ inputs.table_mode }}
+          DISPATCH_CHANGED_ONLY: ${{ inputs.changed_only }}
         run: |
-          AGENTS_INPUT=""
-          SKIP_INPUT=""
-          TABLE_MODE="capabilities"
-          CHANGED_ONLY="false"
+          validate_agent_csv() {
+            local value="$1"
+            local label="$2"
+            if [[ -n "$value" && ! "$value" =~ ^[a-z0-9-]+(,[a-z0-9-]+)*$ ]]; then
+              echo "Invalid $label input: $value" >&2
+              exit 1
+            fi
+          }
 
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            AGENTS_INPUT="${{ inputs.agents }}"
-            SKIP_INPUT="${{ inputs.skip_agents }}"
-            TABLE_MODE="${{ inputs.table_mode }}"
-            CHANGED_ONLY="${{ inputs.changed_only }}"
+          AGENTS_INPUT="${DISPATCH_AGENTS:-}"
+          SKIP_INPUT="${DISPATCH_SKIP_AGENTS:-}"
+          TABLE_MODE="${DISPATCH_TABLE_MODE:-capabilities}"
+          CHANGED_ONLY="${DISPATCH_CHANGED_ONLY:-false}"
+
+          validate_agent_csv "$AGENTS_INPUT" "agents"
+          validate_agent_csv "$SKIP_INPUT" "skip_agents"
+
+          if [[ "$TABLE_MODE" != "capabilities" && "$TABLE_MODE" != "full" ]]; then
+            echo "Invalid table_mode input: $TABLE_MODE" >&2
+            exit 1
           fi
 
-          mkdir -p "$UV_CACHE_DIR" "$NPM_CONFIG_CACHE" "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME"
+          if [[ "$CHANGED_ONLY" != "true" && "$CHANGED_ONLY" != "false" ]]; then
+            echo "Invalid changed_only input: $CHANGED_ONLY" >&2
+            exit 1
+          fi
+
+          mkdir -p \
+            "$UV_CACHE_DIR" \
+            "$NPM_CONFIG_CACHE" \
+            "$XDG_CACHE_HOME" \
+            "$XDG_CONFIG_HOME" \
+            "$MATRIX_SANDBOX_DIR" \
+            "$MATRIX_OUTPUT_DIR"
+
+          if [[ -f .protocol-matrix/latest.json ]]; then
+            cp .protocol-matrix/latest.json "$MATRIX_OUTPUT_DIR/latest.json"
+          fi
 
           ARGS=(
-            --sandbox-dir .matrix-sandbox
-            --output-dir .protocol-matrix
+            --sandbox-dir "$MATRIX_SANDBOX_DIR"
+            --output-dir "$MATRIX_OUTPUT_DIR"
             --init-timeout 120
             --rpc-timeout 5
             --table-mode "$TABLE_MODE"
@@ -110,13 +138,15 @@ jobs:
 
       - name: Summarize matrix run
         id: summary
+        env:
+          MATRIX_OUTPUT_DIR: ${{ runner.temp }}/protocol-matrix
         run: |
           python3 - <<'PY'
           import json
           import os
           from pathlib import Path
 
-          data = json.loads(Path('.protocol-matrix/latest.json').read_text())
+          data = json.loads((Path(os.environ['MATRIX_OUTPUT_DIR']) / 'latest.json').read_text())
           summary = data.get('summary', {})
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
@@ -136,22 +166,19 @@ jobs:
               )
           PY
 
-      - name: Commit matrix update
-        id: commit
-        run: |
-          git config user.name "acp-release[bot]"
-          git config user.email "2373403+acp-release[bot]@users.noreply.github.com"
+      - name: Record matrix base SHA
+        env:
+          MATRIX_OUTPUT_DIR: ${{ runner.temp }}/protocol-matrix
+        run: git rev-parse HEAD > "$MATRIX_OUTPUT_DIR/base-sha.txt"
 
-          git add .protocol-matrix/
-
-          if git diff --cached --quiet; then
-            echo "committed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          git commit -m "docs: update protocol matrix for ${{ steps.summary.outputs.report_date }}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-          echo "committed=true" >> "$GITHUB_OUTPUT"
+      - name: Upload matrix artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: protocol-matrix
+          path: ${{ runner.temp }}/protocol-matrix/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 1
 
       - name: Write workflow summary
         run: |
@@ -163,5 +190,168 @@ jobs:
             echo "- Reused unchanged versions: `${{ steps.summary.outputs.agents_reused }}`"
             echo "- Initialize success: `${{ steps.summary.outputs.initialize_success }}`"
             echo "- `session/new` auth-required: `${{ steps.summary.outputs.session_new_auth_required }}`"
-            echo "- Committed update: `${{ steps.commit.outputs.committed }}`"
+            echo "- Matrix artifact uploaded: `true`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  commit:
+    needs: generate
+    if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: registry-main-write
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      committed: ${{ steps.commit.outputs.committed }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Prepare matrix artifact directory
+        run: rm -rf "$RUNNER_TEMP/protocol-matrix-artifact"
+
+      - name: Download matrix artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: protocol-matrix
+          path: ${{ runner.temp }}/protocol-matrix-artifact
+
+      - name: Validate matrix artifact
+        id: validate_artifact
+        env:
+          MATRIX_ARTIFACT_DIR: ${{ runner.temp }}/protocol-matrix-artifact
+          MATRIX_TARGET_DIR: .protocol-matrix
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import shutil
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          base = Path(os.environ["MATRIX_ARTIFACT_DIR"])
+          target = Path(os.environ["MATRIX_TARGET_DIR"])
+
+          if not (base / "latest.json").is_file() or not (base / "latest.md").is_file():
+              print("Matrix artifact is missing latest.json or latest.md", file=sys.stderr)
+              sys.exit(1)
+          if not (base / "base-sha.txt").is_file():
+              print("Matrix artifact is missing base-sha.txt", file=sys.stderr)
+              sys.exit(1)
+
+          base_sha = (base / "base-sha.txt").read_text().strip()
+          if not re.fullmatch(r"[0-9a-f]{40}", base_sha):
+              print(f"Invalid matrix artifact base SHA: {base_sha!r}", file=sys.stderr)
+              sys.exit(1)
+          current_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if current_sha != base_sha:
+              print(
+                  f"Matrix artifact was generated from {base_sha}, "
+                  f"but main is now {current_sha}; refusing stale matrix commit.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          data = json.loads((base / "latest.json").read_text())
+          report_date = data.get("date")
+          if not isinstance(report_date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", report_date):
+              print(f"Invalid matrix report date: {report_date!r}", file=sys.stderr)
+              sys.exit(1)
+
+          expected_files = {
+              "base-sha.txt",
+              "latest.json",
+              "latest.md",
+              f"snapshots/{report_date}.json",
+              f"snapshots/{report_date}.md",
+          }
+
+          for path in base.rglob("*"):
+              if path.is_symlink():
+                  print(f"Matrix artifact contains symlink: {path}", file=sys.stderr)
+                  sys.exit(1)
+              rel_path = path.relative_to(base).as_posix()
+              if path.is_dir():
+                  if rel_path != "snapshots":
+                      print(f"Unexpected matrix artifact directory: {rel_path}", file=sys.stderr)
+                      sys.exit(1)
+                  continue
+              if rel_path in expected_files:
+                  continue
+              print(f"Unexpected matrix artifact path: {rel_path}", file=sys.stderr)
+              sys.exit(1)
+
+          if not (base / "snapshots" / f"{report_date}.json").is_file():
+              print(f"Matrix artifact is missing JSON snapshot for {report_date}", file=sys.stderr)
+              sys.exit(1)
+          if not (base / "snapshots" / f"{report_date}.md").is_file():
+              print(f"Matrix artifact is missing Markdown snapshot for {report_date}", file=sys.stderr)
+              sys.exit(1)
+
+          for rel_path in [
+              "latest.json",
+              "latest.md",
+              f"snapshots/{report_date}.json",
+              f"snapshots/{report_date}.md",
+          ]:
+              destination = target / rel_path
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(base / rel_path, destination)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"report_date={report_date}", file=output)
+          PY
+
+      - name: Commit matrix update
+        id: commit
+        env:
+          REPORT_DATE: ${{ steps.validate_artifact.outputs.report_date }}
+        run: |
+          git config user.name "acp-release[bot]"
+          git config user.email "2373403+acp-release[bot]@users.noreply.github.com"
+
+          git add .protocol-matrix/
+
+          if git diff --cached --quiet; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "docs: update protocol matrix for $REPORT_DATE"
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Generate GitHub token
+        if: steps.commit.outputs.committed == 'true'
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
+      - name: Push matrix update
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_APP_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          AUTH_HEADER="$(printf 'x-access-token:%s' "$GH_APP_TOKEN" | base64 | tr -d '\n')"
+          echo "::add-mask::$AUTH_HEADER"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${AUTH_HEADER}" push origin "HEAD:main"
+
+      - name: Write commit summary
+        env:
+          REPORT_DATE: ${{ steps.validate_artifact.outputs.report_date }}
+          COMMITTED: ${{ steps.commit.outputs.committed }}
+        run: |
+          {
+            echo "## Protocol matrix commit"
+            echo
+            echo "- Date: `$REPORT_DATE`"
+            echo "- Committed update: `$COMMITTED`"
           } >> "$GITHUB_STEP_SUMMARY"
