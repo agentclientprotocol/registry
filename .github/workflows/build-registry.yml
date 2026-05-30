@@ -233,6 +233,7 @@ jobs:
             --title "Registry $VERSION" \
             --notes "$RELEASE_NOTES" \
             dist/registry.json \
+            dist/registry-for-jetbrains.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
             dist/*.svg
