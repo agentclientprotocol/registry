@@ -5,7 +5,9 @@
   "description": "Local-first coding agent. Runs entirely on your machine with Onde Inference SDK.",
   "repository": "https://github.com/getsigit/sigit",
   "website": "https://github.com/getsigit/sigit",
-  "authors": ["smbCloud"],
+  "authors": [
+    "smbCloud"
+  ],
   "license": "Apache-2.0",
   "distribution": {
     "binary": {
