@@ -5,7 +5,7 @@
   "description": "ACP/A2A adapter for self-hosted AI — bridges local LLM backends (Ollama, vLLM, llama.cpp, LM Studio, LocalAI, Jan, Tabby) to the Agent Client Protocol so air-gapped or on-prem models can be used from ACP clients (Zed, Neovim, etc.).",
   "repository": "https://github.com/BlakeHung/acp-bridge",
   "website": "https://github.com/BlakeHung/acp-bridge",
-  "authors": ["WCHungBlake <mars7823482@gmail.com>"],
+  "authors": ["Blake Labs"],
   "license": "MIT",
   "distribution": {
     "binary": {
