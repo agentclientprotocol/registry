@@ -32,6 +32,13 @@
           "acp"
         ]
       },
+      "windows-aarch64": {
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.46.0/kimi-1.46.0-aarch64-pc-windows-msvc.zip",
+        "cmd": "./kimi.exe",
+        "args": [
+          "acp"
+        ]
+      },
       "windows-x86_64": {
         "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.46.0/kimi-1.46.0-x86_64-pc-windows-msvc.zip",
         "cmd": "./kimi.exe",
