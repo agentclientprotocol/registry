@@ -19,7 +19,6 @@ from registry_utils import (
     extract_npm_package_name,
     extract_npm_package_version,
     extract_pypi_package_name,
-    load_quarantine,
     normalize_version,
     should_skip_dir,
 )
@@ -613,20 +612,8 @@ def build_registry(dry_run: bool = False):
         print("Warning: jsonschema not installed, skipping schema validation")
         print("  Install with: pip install jsonschema")
 
-    # Quarantined agents are known-broken at runtime; exclude them from the build.
-    quarantine = load_quarantine(registry_dir)
-    if quarantine:
-        print(f"Skipping {len(quarantine)} quarantined agent(s)")
-
     for entry_dir in sorted(registry_dir.iterdir()):
         if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
-            continue
-
-        # Skip quarantined agents entirely: a known-broken agent neither gets
-        # validated (so it can't fail the build) nor published to registry.json.
-        # Mirrors verify_agents.py and update_versions.py, which also skip them.
-        if entry_dir.name in quarantine:
-            print(f"  ⊘ Quarantined {entry_dir.name}: {quarantine[entry_dir.name]}")
             continue
 
         agent_json_path = entry_dir / "agent.json"
