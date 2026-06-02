@@ -272,3 +272,39 @@ To skip URL accessibility checks (useful for testing before publishing):
 ```bash
 SKIP_URL_VALIDATION=1 uv run --with jsonschema .github/workflows/build_registry.py
 ```
+
+## Quarantine
+
+Some agents have valid metadata but are temporarily broken at *runtime* — a
+failing postinstall step, a missing dependency, or an ACP `initialize` handshake
+that errors on the current release. Listing such an agent in
+[`quarantine.json`](quarantine.json) — a flat map of agent `id` → human-readable
+reason — keeps that known breakage from disrupting the registry's automation:
+
+```json
+{
+  "example-agent": "ACP initialize fails in example-cli 0.2.16",
+  "another-agent": "Missing npm dependency"
+}
+```
+
+A quarantined agent is:
+
+- **Excluded from the published registry** — it is skipped when `registry.json`
+  is built, so users don't fetch (and try to install) a known-broken agent.
+- **Skipped by the ACP authentication check** — it is left out of the auth
+  verification matrix, so its expected runtime failure doesn't block the rest of
+  the registry from publishing.
+- **Skipped by the hourly version updater** — no automatic version bumps while it
+  is parked (use this for cases like `"Auto-update disabled"`).
+
+Quarantine keeps the agent's directory and `agent.json` in the repo — it's a
+reversible maintenance state, not a deletion.
+
+**Lifting a quarantine:** once the upstream problem is fixed, remove the agent's
+entry from `quarantine.json` in a PR. The next build folds it back into the
+registry, version updates, and auth verification.
+
+**Removal vs. quarantine:** if an agent is permanently gone — project abandoned,
+package unpublished — delete its directory (`<id>/`) in a PR instead. Quarantine
+is for breakage you expect to be fixed; removal is for agents that won't return.
