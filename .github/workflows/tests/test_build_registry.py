@@ -4,7 +4,73 @@ import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from build_registry import validate_icon, validate_icon_monochrome
+from build_registry import is_public_https_url, url_exists, validate_icon, validate_icon_monochrome
+
+
+def socket_result(ip: str):
+    return [(None, None, None, None, (ip, 443))]
+
+
+class StubResponse:
+    status = 200
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        return None
+
+
+class TestUrlSafety:
+    def test_rejects_non_https_urls(self, monkeypatch):
+        monkeypatch.setattr("build_registry.socket.getaddrinfo", lambda *args, **kwargs: [])
+
+        assert not is_public_https_url("http://example.com/archive.tar.gz")
+
+    def test_rejects_private_addresses(self, monkeypatch):
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("127.0.0.1"),
+        )
+
+        assert not is_public_https_url("https://example.com/archive.tar.gz")
+
+    def test_rejects_shared_address_space(self, monkeypatch):
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("100.64.0.1"),
+        )
+
+        assert not is_public_https_url("https://example.com/archive.tar.gz")
+
+    def test_accepts_public_https_addresses(self, monkeypatch):
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("93.184.216.34"),
+        )
+
+        assert is_public_https_url("https://example.com/archive.tar.gz")
+
+    def test_url_exists_retries_transient_dns_failure(self, monkeypatch):
+        calls = 0
+
+        def fake_getaddrinfo(*args, **kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise OSError("temporary resolver failure")
+            return socket_result("93.184.216.34")
+
+        monkeypatch.setattr("build_registry.socket.getaddrinfo", fake_getaddrinfo)
+        monkeypatch.setattr(
+            "build_registry.URL_OPENER.open",
+            lambda *args, **kwargs: StubResponse(),
+        )
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
+
+        assert url_exists("https://example.com/archive.tar.gz")
+        assert calls == 2
+
 
 # --- validate_icon_monochrome ---
 
