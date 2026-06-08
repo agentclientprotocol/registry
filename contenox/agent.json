@@ -1,7 +1,7 @@
 {
   "id": "contenox",
   "name": "Contenox",
-  "version": "0.28.1",
+  "version": "0.28.5",
   "description": "Local runtime for packaged, auditable AI workflows.",
   "repository": "https://github.com/contenox/runtime",
   "website": "https://contenox.com",
@@ -10,21 +10,25 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.1/contenox-darwin-arm64.tar.gz",
+        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.5/contenox-darwin-arm64.tar.gz",
         "cmd": "./contenox",
         "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.1/contenox-linux-arm64.tar.gz",
+        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.5/contenox-linux-arm64.tar.gz",
         "cmd": "./contenox",
         "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.1/contenox-linux-amd64.tar.gz",
+        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.5/contenox-linux-amd64.tar.gz",
         "cmd": "./contenox",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/contenox/runtime/releases/download/v0.28.5/contenox-windows-amd64.zip",
+        "cmd": "./contenox.exe",
         "args": ["acp"]
       }
     }
   }
 }
-
