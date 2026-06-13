@@ -9,32 +9,32 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://downloads.cursor.com/lab/2026.06.12-01-15-52-7244546/darwin/arm64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.06.12-19-59-36-f6aba9a/darwin/arm64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "darwin-x86_64": {
-        "archive": "https://downloads.cursor.com/lab/2026.06.12-01-15-52-7244546/darwin/x64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.06.12-19-59-36-f6aba9a/darwin/x64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://downloads.cursor.com/lab/2026.06.12-01-15-52-7244546/linux/arm64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.06.12-19-59-36-f6aba9a/linux/arm64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://downloads.cursor.com/lab/2026.06.12-01-15-52-7244546/linux/x64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.06.12-19-59-36-f6aba9a/linux/x64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "windows-aarch64": {
-        "archive": "https://downloads.cursor.com/lab/2026.06.12-01-15-52-7244546/windows/arm64/agent-cli-package.zip",
+        "archive": "https://downloads.cursor.com/lab/2026.06.12-19-59-36-f6aba9a/windows/arm64/agent-cli-package.zip",
         "cmd": "./dist-package\\cursor-agent.cmd",
         "args": ["acp"]
       },
       "windows-x86_64": {
-        "archive": "https://downloads.cursor.com/lab/2026.06.12-01-15-52-7244546/windows/x64/agent-cli-package.zip",
+        "archive": "https://downloads.cursor.com/lab/2026.06.12-19-59-36-f6aba9a/windows/x64/agent-cli-package.zip",
         "cmd": "./dist-package\\cursor-agent.cmd",
         "args": ["acp"]
       }
