@@ -20,11 +20,11 @@
         "cmd": "./codex-acp"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.16.0/codex-acp-0.16.0-aarch64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.16.0/codex-acp-0.16.0-aarch64-unknown-linux-musl.tar.gz",
         "cmd": "./codex-acp"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.16.0/codex-acp-0.16.0-x86_64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/zed-industries/codex-acp/releases/download/v0.16.0/codex-acp-0.16.0-x86_64-unknown-linux-musl.tar.gz",
         "cmd": "./codex-acp"
       },
       "windows-aarch64": {
