@@ -1,0 +1,15 @@
+{
+  "id": "bezi",
+  "name": "Bezi",
+  "version": "0.1.3",
+  "description": "Game development agent that executes in your engine, across code, scenes, and assets",
+  "website": "https://bezi.com",
+  "authors": [
+    "Bezi <support@bezi.com>"
+  ],
+  "distribution": {
+    "npx": {
+      "package": "@bezihq/acp@0.1.3"
+    }
+  }
+}
