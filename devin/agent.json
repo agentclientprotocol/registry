@@ -30,12 +30,12 @@
       },
       "windows-aarch64": {
         "archive": "https://static.devin.ai/cli/2026.5.26-8/devin-2026.5.26-8-aarch64-pc-windows.zip",
-        "cmd": ".\\bin\\devin.exe",
+        "cmd": "./bin\\devin.exe",
         "args": ["acp"]
       },
       "windows-x86_64": {
         "archive": "https://static.devin.ai/cli/2026.5.26-8/devin-2026.5.26-8-x86_64-pc-windows.zip",
-        "cmd": ".\\bin\\devin.exe",
+        "cmd": "./bin\\devin.exe",
         "args": ["acp"]
       }
     }
