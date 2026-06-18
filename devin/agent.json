@@ -1,43 +1,57 @@
 {
   "id": "devin",
   "name": "Devin",
-  "version": "2026.7.16",
+  "version": "2026.7.19",
   "description": "Devin CLI coding agent by Cognition",
   "website": "https://docs.devin.ai/cli",
-  "authors": ["Cognition"],
+  "authors": [
+    "Cognition"
+  ],
   "license": "proprietary",
   "repository": "https://github.com/CognitionAI/devin-cli",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://static.devin.ai/cli/2026.7.16/devin-2026.7.16-aarch64-apple-darwin.tar.gz",
+        "archive": "https://static.devin.ai/cli/2026.7.19/devin-2026.7.19-aarch64-apple-darwin.tar.gz",
         "cmd": "./bin/devin",
-        "args": ["acp"]
+        "args": [
+          "acp"
+        ]
       },
       "darwin-x86_64": {
-        "archive": "https://static.devin.ai/cli/2026.7.16/devin-2026.7.16-x86_64-apple-darwin.tar.gz",
+        "archive": "https://static.devin.ai/cli/2026.7.19/devin-2026.7.19-x86_64-apple-darwin.tar.gz",
         "cmd": "./bin/devin",
-        "args": ["acp"]
+        "args": [
+          "acp"
+        ]
       },
       "linux-aarch64": {
-        "archive": "https://static.devin.ai/cli/2026.7.16/devin-2026.7.16-aarch64-unknown-linux.tar.gz",
+        "archive": "https://static.devin.ai/cli/2026.7.19/devin-2026.7.19-aarch64-unknown-linux.tar.gz",
         "cmd": "./bin/devin",
-        "args": ["acp"]
+        "args": [
+          "acp"
+        ]
       },
       "linux-x86_64": {
-        "archive": "https://static.devin.ai/cli/2026.7.16/devin-2026.7.16-x86_64-unknown-linux.tar.gz",
+        "archive": "https://static.devin.ai/cli/2026.7.19/devin-2026.7.19-x86_64-unknown-linux.tar.gz",
         "cmd": "./bin/devin",
-        "args": ["acp"]
+        "args": [
+          "acp"
+        ]
       },
       "windows-aarch64": {
-        "archive": "https://static.devin.ai/cli/2026.7.16/devin-2026.7.16-aarch64-pc-windows.zip",
+        "archive": "https://static.devin.ai/cli/2026.7.19/devin-2026.7.19-aarch64-pc-windows.zip",
         "cmd": "./bin\\devin.exe",
-        "args": ["acp"]
+        "args": [
+          "acp"
+        ]
       },
       "windows-x86_64": {
-        "archive": "https://static.devin.ai/cli/2026.7.16/devin-2026.7.16-x86_64-pc-windows.zip",
+        "archive": "https://static.devin.ai/cli/2026.7.19/devin-2026.7.19-x86_64-pc-windows.zip",
         "cmd": "./bin\\devin.exe",
-        "args": ["acp"]
+        "args": [
+          "acp"
+        ]
       }
     }
   }
