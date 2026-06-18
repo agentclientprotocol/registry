@@ -1,5 +1,6 @@
 {
   "agoragentic-acp": "Postinstall script",
+  "codebuddy-code": "npx cannot determine executable to run",
   "crow-cli": "ACP initialize fails in crow-cli 0.1.25",
   "deepagents": "Missing npm dependency",
   "junie": "Auto-update disabled",
