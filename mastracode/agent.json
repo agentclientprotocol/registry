@@ -1,0 +1,20 @@
+{
+  "id": "mastracode",
+  "name": "Mastra Code",
+  "version": "0.25.0",
+  "description": "Interactive CLI coding agent built on the Mastra agent framework",
+  "repository": "https://github.com/mastra-ai/mastra",
+  "website": "https://mastra.ai",
+  "authors": [
+    "Mastra"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "mastracode@0.25.0",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
