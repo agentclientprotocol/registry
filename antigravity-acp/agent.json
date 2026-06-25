@@ -1,0 +1,41 @@
+{
+  "id": "antigravity-acp",
+  "name": "Antigravity",
+  "version": "1.0.0",
+  "description": "An Agent Client Protocol (ACP) server for Google Antigravity's `agy` CLI tool.",
+  "repository": "https://github.com/shubzkothekar/antigravity-acp",
+  "website": "https://github.com/shubzkothekar/antigravity-acp#readme",
+  "authors": ["Shubham Kothekar"],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/shubzkothekar/antigravity-acp/releases/download/v1.0.0/agy-acp-darwin-arm64",
+        "cmd": "./agy-acp-darwin-arm64"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/shubzkothekar/antigravity-acp/releases/download/v1.0.0/agy-acp-darwin-x64",
+        "cmd": "./agy-acp-darwin-x64"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/shubzkothekar/antigravity-acp/releases/download/v1.0.0/agy-acp-linux-arm64",
+        "cmd": "./agy-acp-linux-arm64"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/shubzkothekar/antigravity-acp/releases/download/v1.0.0/agy-acp-linux-x64",
+        "cmd": "./agy-acp-linux-x64"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/shubzkothekar/antigravity-acp/releases/download/v1.0.0/agy-acp-windows-arm64.exe",
+        "cmd": "./agy-acp-windows-arm64.exe"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/shubzkothekar/antigravity-acp/releases/download/v1.0.0/agy-acp-windows-x64.exe",
+        "cmd": "./agy-acp-windows-x64.exe"
+      }
+    },
+    "npx": {
+      "package": "antigravity-acp@1.0.0"
+    }
+  }
+}
