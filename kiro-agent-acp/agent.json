@@ -1,0 +1,16 @@
+{
+  "id": "kiro-agent-acp",
+  "name": "Kiro",
+  "version": "0.1.0",
+  "description": "ACP adapter for Kiro CLI with model, agent, and thinking level selection",
+  "repository": "https://github.com/todouu/kiro-agent-acp",
+  "authors": ["todouu"],
+  "license": "Apache-2.0",
+  "icon": "icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "kiro-agent-acp@latest",
+      "args": []
+    }
+  }
+}
