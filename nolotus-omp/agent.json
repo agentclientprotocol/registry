@@ -1,0 +1,20 @@
+{
+  "id": "nolotus-omp",
+  "name": "Oh My Pi (nolotus)",
+  "version": "16.3.6",
+  "description": "ACP adapter for Oh My Pi (oh-my-pi / omp), a batteries-included terminal AI coding agent. Published as a registry entry that delegates to the official @oh-my-pi/pi-coding-agent npm package's `omp acp` subcommand.",
+  "repository": "https://github.com/can1357/oh-my-pi",
+  "website": "https://omp.sh",
+  "authors": [
+    "nolotus <nolotus@users.noreply.github.com>",
+    "Can Bölük <can.boluk89@gmail.com>"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@oh-my-pi/pi-coding-agent@16.3.6",
+      "args": ["acp"],
+      "env": {}
+    }
+  }
+}
