@@ -8,12 +8,14 @@ from pathlib import Path
 from verify_agents import (
     build_agent_process_env,
     build_installed_npx_command,
+    compute_archive_sha256,
     ensure_executable,
     extract_archive,
     npm_package_bin_name,
     prepare_npx_package,
     resolve_binary_executable,
     run_process,
+    sha256_matches,
     should_retry_npx_auth_with_install,
 )
 
@@ -245,3 +247,26 @@ def test_should_retry_npx_auth_with_install_on_shim_error():
         "Timeout after 120s waiting for initialize response",
         "[Junie] Shim not found at /tmp/home/.local/bin/junie\nPlease reinstall: npm install",
     )
+
+
+def test_sha256_matches_computed_digest(tmp_path: Path):
+    archive = tmp_path / "payload.bin"
+    archive.write_bytes(b"hello world")
+    expected = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"
+
+    assert sha256_matches(compute_archive_sha256(archive), expected)
+
+
+def test_sha256_matches_computed_digest_case_insensitive(tmp_path: Path):
+    archive = tmp_path / "payload.bin"
+    archive.write_bytes(b"hello world")
+    expected = "B94D27B9934D3E08A52E52D7DA7DABFAC484EFE37A5380EE9088F7ACE2EFCDE9"
+
+    assert sha256_matches(compute_archive_sha256(archive), expected)
+
+
+def test_sha256_does_not_match_wrong_expected(tmp_path: Path):
+    archive = tmp_path / "payload.bin"
+    archive.write_bytes(b"hello world")
+
+    assert not sha256_matches(compute_archive_sha256(archive), "0" * 64)
