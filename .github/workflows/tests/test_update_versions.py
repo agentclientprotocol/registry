@@ -1,12 +1,19 @@
 """Tests for update_versions.py."""
 
+import json
 import urllib.error
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from update_versions import check_agent_version, is_prerelease, make_request
+from update_versions import (
+    VersionUpdate,
+    apply_update,
+    check_agent_version,
+    is_prerelease,
+    make_request,
+)
 
 
 class TestMakeRequestServerErrors:
@@ -266,3 +273,88 @@ class TestCheckAgentVersionMultiSourceResolution:
         assert update is None
         assert error is not None
         assert error.error == "Version mismatch across distributions: binary=7.2.1, npx=7.2.4"
+
+
+class TestApplyUpdateSha256Refresh:
+    """apply_update refreshes sha256 fields when the archive URL changes."""
+
+    def _write_agent(self, tmp_path: Path, sha256: str | None) -> Path:
+        target: dict = {
+            "archive": "https://github.com/owner/repo/releases/download/v1.0.0/agent-linux.tar.gz",
+            "cmd": "./agent",
+        }
+        if sha256 is not None:
+            target["sha256"] = sha256
+        agent_data = {
+            "id": "demo",
+            "name": "Demo",
+            "version": "1.0.0",
+            "description": "",
+            "repository": "https://github.com/owner/repo",
+            "distribution": {"binary": {"linux-x86_64": target}},
+        }
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(agent_data))
+        return agent_path
+
+    def _update(self, agent_path: Path) -> VersionUpdate:
+        return VersionUpdate(
+            agent_id="demo",
+            agent_path=agent_path,
+            current_version="1.0.0",
+            latest_version="2.0.0",
+            distribution_type="binary",
+            source_url="https://github.com/owner/repo",
+            repository="https://github.com/owner/repo",
+        )
+
+    @patch("update_versions.get_github_release_digests")
+    def test_refreshes_sha256_from_asset_digest(self, mock_digests, tmp_path: Path):
+        new_digest = "a" * 64
+        mock_digests.return_value = {"agent-linux.tar.gz": new_digest}
+
+        agent_path = self._write_agent(tmp_path, sha256="0" * 64)
+
+        assert apply_update(self._update(agent_path)) is True
+
+        updated = json.loads(agent_path.read_text())
+        target = updated["distribution"]["binary"]["linux-x86_64"]
+        assert target["sha256"] == new_digest
+        assert "v2.0.0" in target["archive"]
+        mock_digests.assert_called_once_with("https://github.com/owner/repo", "2.0.0")
+
+    @patch("update_versions.get_github_release_digests")
+    def test_adds_sha256_when_absent_and_digest_available(self, mock_digests, tmp_path: Path):
+        new_digest = "a" * 64
+        mock_digests.return_value = {"agent-linux.tar.gz": new_digest}
+
+        agent_path = self._write_agent(tmp_path, sha256=None)
+
+        assert apply_update(self._update(agent_path)) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["distribution"]["binary"]["linux-x86_64"]["sha256"] == new_digest
+
+    @patch("update_versions.get_github_release_digests", return_value={})
+    def test_warns_and_leaves_target_untouched_when_no_digest(
+        self, _mock_digests, tmp_path: Path, capsys
+    ):
+        agent_path = self._write_agent(tmp_path, sha256=None)
+
+        assert apply_update(self._update(agent_path)) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert "sha256" not in updated["distribution"]["binary"]["linux-x86_64"]
+        assert "no release digest for demo" in capsys.readouterr().err
+
+    @patch("update_versions.get_github_release_digests")
+    def test_skips_digest_lookup_for_non_github_repo(self, mock_digests, tmp_path: Path, capsys):
+        agent_path = self._write_agent(tmp_path, sha256=None)
+        update = self._update(agent_path)._replace(
+            repository="https://cursor.com/docs/cli/acp",
+        )
+
+        assert apply_update(update) is True
+
+        mock_digests.assert_not_called()
+        assert "no release digest" not in capsys.readouterr().err
