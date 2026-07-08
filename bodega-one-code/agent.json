@@ -1,7 +1,7 @@
 {
   "id": "bodega-one-code",
   "name": "Bodega One Code",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local-first AI coding agent — runs fully offline against local models (Ollama, llama.cpp) or BYOK cloud providers, with a hard air-gap mode and verified edits",
   "repository": "https://github.com/BodegaoneAI/bodegaone-cli-releases",
   "website": "https://bodegaone.ai",
@@ -10,27 +10,27 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.0/bodega-darwin-arm64.tar.gz",
+        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.1/bodega-darwin-arm64.tar.gz",
         "cmd": "./bin/bodega",
         "args": ["serve", "--acp"]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.0/bodega-darwin-amd64.tar.gz",
+        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.1/bodega-darwin-amd64.tar.gz",
         "cmd": "./bin/bodega",
         "args": ["serve", "--acp"]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.0/bodega-linux-arm64.tar.gz",
+        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.1/bodega-linux-arm64.tar.gz",
         "cmd": "./bin/bodega",
         "args": ["serve", "--acp"]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.0/bodega-linux-amd64.tar.gz",
+        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.1/bodega-linux-amd64.tar.gz",
         "cmd": "./bin/bodega",
         "args": ["serve", "--acp"]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.0/bodega-windows-amd64.zip",
+        "archive": "https://github.com/BodegaoneAI/bodegaone-cli-releases/releases/download/v0.1.1/bodega-windows-amd64.zip",
         "cmd": "bin/bodega.exe",
         "args": ["serve", "--acp"]
       }
