@@ -93,6 +93,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 - `distribution`: at least one of `binary`, `npx`, `uvx`
 - `binary` distribution: builds for all operating systems (darwin, linux, windows) are recommended; missing OS families produce a warning
 - `binary` archives must use supported formats (`.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries); installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are rejected
+- `binary` archives should pin the archive SHA-256 checksum with `sha256` field
 - `icon.svg`: must be SVG format, 16x16, monochrome using `currentColor` (enables theming)
 - **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages)
 

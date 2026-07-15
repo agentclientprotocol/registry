@@ -26,6 +26,7 @@ Each agent has the following structure:
     "binary": {
       "darwin-aarch64": {
         "archive": "https://...",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "cmd": "./executable",
         "args": ["serve"],
         "env": {}
@@ -52,6 +53,8 @@ Each agent has the following structure:
 | `uvx`    | PyPI packages via uv          | `uvx <package> [args]` |
 
 **Supported archive formats for binary distribution:** `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are not supported.
+
+**Archive integrity check:** Each binary distribution may include a `sha256` with the SHA-256 digest of the archive (64 lowercase or uppercase hex characters).
 
 ## Icons
 

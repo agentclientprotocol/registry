@@ -66,6 +66,7 @@ For standalone executables. At least one platform is required; providing builds 
     "binary": {
       "darwin-aarch64": {
         "archive": "https://github.com/.../darwin-arm64.tar.gz",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "cmd": "./your-binary",
         "args": ["acp"]
       },
@@ -187,6 +188,7 @@ Entries are validated against the [JSON Schema](agent.schema.json).
 
 - At least one distribution method required (`binary`, `npx`, or `uvx`)
 - Binary distributions require `archive` and `cmd` fields per platform
+- Binary distributions should pin the archive SHA-256 checksum with `sha256` field
 - Package distributions (`npx`, `uvx`) require `package` field
 
 **Platforms** (for binary):

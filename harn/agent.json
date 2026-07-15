@@ -1,0 +1,61 @@
+{
+  "id": "harn",
+  "name": "Harn",
+  "version": "0.10.18",
+  "description": "Harn runs .harn agent pipelines as a native ACP coding agent over stdio.",
+  "repository": "https://github.com/burin-labs/harn",
+  "website": "https://harnlang.com",
+  "authors": [
+    "Burin Labs"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/burin-labs/harn/releases/download/v0.10.18/harn-aarch64-apple-darwin.tar.gz",
+        "cmd": "./harn",
+        "args": [
+          "serve",
+          "acp"
+        ],
+        "sha256": "d76e1c63a01c6b9af09714484f3b8fa2efa6bf308ce91dc3ba58d8be3db5a394"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/burin-labs/harn/releases/download/v0.10.18/harn-x86_64-apple-darwin.tar.gz",
+        "cmd": "./harn",
+        "args": [
+          "serve",
+          "acp"
+        ],
+        "sha256": "1c371bd99de8b57954a05c59054a6d9fd13c1510990068be0e52f43d5c769115"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/burin-labs/harn/releases/download/v0.10.18/harn-aarch64-unknown-linux-gnu.tar.gz",
+        "cmd": "./harn",
+        "args": [
+          "serve",
+          "acp"
+        ],
+        "sha256": "9ab8465b71086bfa41fabd42598c3ba12b43eb2dfa5b70a7f95c01634061c7bf"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/burin-labs/harn/releases/download/v0.10.18/harn-x86_64-unknown-linux-gnu.tar.gz",
+        "cmd": "./harn",
+        "args": [
+          "serve",
+          "acp"
+        ],
+        "sha256": "eeb9d716a993202a53d90a358aa49e5e12891b3a419cc414d01eb8c849b00506"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/burin-labs/harn/releases/download/v0.10.18/harn-x86_64-pc-windows-msvc.zip",
+        "cmd": "harn.exe",
+        "args": [
+          "serve",
+          "acp"
+        ],
+        "sha256": "1f8347e3b12616e1b1393e1cb112a9b86f5d389430553506c2667c0fcf234fe6"
+      }
+    }
+  }
+}
