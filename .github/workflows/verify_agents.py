@@ -6,6 +6,7 @@ Supports optional ACP auth verification via --auth-check flag.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -136,6 +137,22 @@ def download_file(url: str, dest: Path) -> bool:
         dest.unlink(missing_ok=True)
         print(f"\n      Download failed: {e}")
         return False
+
+
+def compute_archive_sha256(archive: Path) -> str:
+    hasher = hashlib.sha256()
+    with archive.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+
+def sha256_matches(actual: str, expected: str) -> bool:
+    return actual.lower() == expected.lower()
+
+
+def sha256_mismatch_message(expected: str, actual: str) -> str:
+    return f"SHA-256 mismatch: expected {expected.lower()}, got {actual.lower()}"
 
 
 def is_safe_relative_path(path: str) -> bool:
@@ -447,6 +464,7 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
 
     target = binary_dist[current_platform]
     archive_url = target["archive"]
+    expected_sha256 = target.get("sha256")
     cmd = target["cmd"]
     args = target.get("args", [])
     env = target.get("env", {})
@@ -462,6 +480,18 @@ def verify_binary(agent: dict, sandbox: Path, timeout: int, verbose: bool) -> Re
             return Result(agent_id, "binary", False, "Download failed")
     else:
         print(f"    → Using cached archive: {archive_name}")
+
+    if expected_sha256:
+        print("    → Verifying SHA-256...")
+        actual_sha256 = compute_archive_sha256(archive_path)
+        if not sha256_matches(actual_sha256, expected_sha256):
+            archive_path.unlink(missing_ok=True)
+            return Result(
+                agent_id,
+                "binary",
+                False,
+                sha256_mismatch_message(expected_sha256, actual_sha256),
+            )
 
     # Extract (skip if already extracted)
     if not extract_dir.exists():
@@ -613,6 +643,7 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
 
     target = binary_dist[current_platform]
     archive_url = target["archive"]
+    expected_sha256 = target.get("sha256")
 
     # Download (skip if already exists)
     archive_name = archive_url.split("/")[-1]
@@ -623,6 +654,13 @@ def prepare_binary(agent: dict, sandbox: Path) -> tuple[bool, str]:
         print(f"    → Downloading from: {archive_url[:80]}...")
         if not download_file(archive_url, archive_path):
             return False, "Download failed"
+
+    if expected_sha256:
+        print("    → Verifying SHA-256...")
+        actual_sha256 = compute_archive_sha256(archive_path)
+        if not sha256_matches(actual_sha256, expected_sha256):
+            archive_path.unlink(missing_ok=True)
+            return False, sha256_mismatch_message(expected_sha256, actual_sha256)
 
     # Extract (skip if already extracted)
     if not extract_dir.exists():
