@@ -95,6 +95,11 @@
           "format": "uri",
           "description": "URL to download archive (.zip, .tar.gz, .tgz, .tar.bz2, .tbz2, or raw binary). Installer formats (.dmg, .pkg, .deb, .rpm) are not supported."
         },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$",
+          "description": "Optional SHA-256 checksum of the archive (hex-encoded, 64 characters)"
+        },
         "cmd": {
           "type": "string",
           "description": "Command to execute after extraction"
