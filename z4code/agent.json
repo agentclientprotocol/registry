@@ -1,0 +1,19 @@
+{
+  "id": "z4code",
+  "name": "z4code",
+  "version": "0.6.0",
+  "description": "Local-model coding agent for Zed",
+  "repository": "https://github.com/zeta4lab/z4code",
+  "authors": ["zeta4lab"],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.0/z4code-aarch64-apple-darwin.zip",
+        "sha256": "404b2461a7b72d2393bf380867916e86c441b8f0003f6b504f7802e8bd511693",
+        "cmd": "./z4code",
+        "args": ["acp"]
+      }
+    }
+  }
+}
