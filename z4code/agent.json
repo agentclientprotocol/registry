@@ -3,7 +3,8 @@
   "name": "z4code",
   "version": "0.6.0",
   "description": "Local-model coding agent for Zed",
-  "repository": "https://github.com/zeta4lab/z4code",
+  "repository": "https://github.com/zeta4lab/z4code-releases",
+  "website": "https://zeta4.net",
   "authors": ["zeta4lab"],
   "license": "Apache-2.0",
   "distribution": {
