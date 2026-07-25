@@ -14,6 +14,24 @@
         "sha256": "404b2461a7b72d2393bf380867916e86c441b8f0003f6b504f7802e8bd511693",
         "cmd": "./z4code",
         "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.0/z4code-x86_64-unknown-linux-gnu.zip",
+        "sha256": "1ae68d9750f8d7aa1656d5020f833a83bcebb999be25112945edc5531d7864c6",
+        "cmd": "./z4code",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.0/z4code-aarch64-unknown-linux-gnu.zip",
+        "sha256": "4d9da953894724b81fe3f139461cc81146e9497bb681aaece8233d5313f5e2eb",
+        "cmd": "./z4code",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.0/z4code-x86_64-pc-windows-msvc.zip",
+        "sha256": "1ed3776209e153377ac417eda2ccdd60ada001659bff5ac236ae4d8c083c8122",
+        "cmd": "./z4code.exe",
+        "args": ["acp"]
       }
     }
   }
