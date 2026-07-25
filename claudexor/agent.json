@@ -1,0 +1,21 @@
+{
+  "id": "claudexor",
+  "name": "Claudexor",
+  "version": "3.1.1",
+  "description": "Local-first control plane for orchestrating multiple AI coding agents",
+  "repository": "https://github.com/razzant/claudexor",
+  "website": "https://razzant.github.io/claudexor/",
+  "authors": [
+    "Anton Razzhigaev"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "claudexor@3.1.1",
+      "args": [
+        "acp",
+        "serve"
+      ]
+    }
+  }
+}
