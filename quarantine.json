@@ -3,7 +3,6 @@
   "codebuddy-code": "npx cannot determine executable to run",
   "crow-cli": "ACP initialize fails in crow-cli 0.1.25",
   "deepagents": "Missing npm dependency",
-  "junie": "Auto-update disabled",
   "minion-code": "Python dependency issue",
   "qoder": "ACP initialize fails in qodercli 0.2.15/0.2.16",
   "vtcode": "Missing windows builds"
