@@ -2,11 +2,11 @@
   "id": "sigit",
   "name": "siGit Code",
   "version": "1.5.1",
-  "description": "Local-first coding agent. Runs entirely on your machine with optional on-device LLM inference via Onde.",
+  "description": "Local-first, privacy-first coding agent for developers. Runs entirely on your machine with on-device LLM inference or on the cloud, if you need to, via the Onde Inference SDK.",
   "repository": "https://github.com/getsigit/sigit",
-  "website": "https://github.com/getsigit/sigit",
+  "website": "https://sigit.si",
   "authors": [
-    "smbCloud"
+    "siGit Code Team <support@sigit.si>"
   ],
   "license": "Apache-2.0",
   "distribution": {
