@@ -1,0 +1,16 @@
+{
+  "id": "letta-acp",
+  "name": "Letta",
+  "version": "0.1.8",
+  "description": "Stateful coding agent with persistent memory, exposed over ACP.",
+  "repository": "https://github.com/letta-ai/letta-acp",
+  "authors": [
+    "Letta"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "@letta-ai/letta-acp@0.1.8"
+    }
+  }
+}
