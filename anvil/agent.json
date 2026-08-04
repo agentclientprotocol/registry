@@ -1,0 +1,17 @@
+{
+  "id": "anvil",
+  "name": "Anvil",
+  "version": "0.24.4",
+  "description": "Portable Rust ACP server with model routing, tools, permissions, sandboxing, sessions, and MCP integration",
+  "repository": "https://github.com/BrokkAi/anvil",
+  "website": "https://anvil.brokk.ai",
+  "authors": [
+    "Brokk AI"
+  ],
+  "license": "LGPL-3.0-only",
+  "distribution": {
+    "npx": {
+      "package": "@brokkai/anvil@0.24.4"
+    }
+  }
+}
