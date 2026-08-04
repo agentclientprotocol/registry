@@ -1,0 +1,49 @@
+{
+  "id": "waveloom",
+  "name": "Waveloom",
+  "version": "0.6.0",
+  "description": "Terminal coding agent (Go, ACP v1) that writes, refactors, debugs and explores code in your terminal",
+  "repository": "https://github.com/Menfre01/waveloom",
+  "authors": ["menfre <menfre@proton.me>"],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Menfre01/waveloom/releases/download/v0.6.0/waveloom_darwin_arm64.tar.gz",
+        "sha256": "c748d2bd93ac7a0df70a195ff133785d521545c08e0d86e73f55b226b29edf11",
+        "cmd": "./waveloom",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Menfre01/waveloom/releases/download/v0.6.0/waveloom_darwin_amd64.tar.gz",
+        "sha256": "55a51a30aa7f4971598ce62d263efc5fd620dfc89c70805c3099c337b3dc5a20",
+        "cmd": "./waveloom",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/Menfre01/waveloom/releases/download/v0.6.0/waveloom_linux_arm64.tar.gz",
+        "sha256": "7e6a4b7a88cdcee5afb87a9e0a374209023952ba11bc9fc01896b64ee26aad05",
+        "cmd": "./waveloom",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Menfre01/waveloom/releases/download/v0.6.0/waveloom_linux_amd64.tar.gz",
+        "sha256": "40d9ef224e16d659ae1d15f3a8c5095158b15159f32067f703fda3a5341a1d9d",
+        "cmd": "./waveloom",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/Menfre01/waveloom/releases/download/v0.6.0/waveloom_windows_amd64.zip",
+        "sha256": "73ecf4e23d8c0a55677cb6310d19721dca8ab297f5c2b388fedddff76ccc859a",
+        "cmd": "waveloom.exe",
+        "args": ["acp"]
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/Menfre01/waveloom/releases/download/v0.6.0/waveloom_windows_arm64.zip",
+        "sha256": "de4351ad19f80f62cf3e67bcf160fe1be1ab8f1e6cabc58f2ec143d45884d50b",
+        "cmd": "waveloom.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
