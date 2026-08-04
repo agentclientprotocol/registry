@@ -2,7 +2,7 @@
   "id": "waveloom",
   "name": "Waveloom",
   "version": "0.6.0",
-  "description": "Terminal coding agent (Go, ACP v1) that writes, refactors, debugs and explores code in your terminal",
+  "description": "DeepSeek-native terminal code agent engineered for cache economics — prefix-cache keeps context cache-hot across turns, maximizing cache hits and minimizing token cost",
   "repository": "https://github.com/Menfre01/waveloom",
   "authors": ["menfre <menfre@proton.me>"],
   "license": "Apache-2.0",
