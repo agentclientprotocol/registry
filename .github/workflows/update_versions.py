@@ -43,6 +43,7 @@ class VersionUpdate(NamedTuple):
     latest_version: str
     distribution_type: str  # 'npx', 'uvx', 'binary', or combined like 'binary+npx'
     source_url: str  # URL where version was fetched from
+    repository: str  # Agent's `repository` field (empty when unset)
 
 
 class UpdateError(NamedTuple):
@@ -188,31 +189,63 @@ def get_pypi_versions(package_name: str) -> set[str] | None:
     return None
 
 
-def get_github_latest_release(repo_url: str) -> tuple[str | None, list[str]]:
-    """Get latest release version and asset names from GitHub repo.
+def _is_github_repo(repo_url: str) -> bool:
+    return "github.com" in repo_url
 
-    Returns: (version, [asset_names])
-    """
-    # Extract owner/repo from URL
+
+def _github_owner_repo(repo_url: str) -> tuple[str, str] | None:
+    """Extract (owner, repo) from a GitHub repository URL, stripping any `.git`."""
     match = re.search(r"github\.com/([^/]+)/([^/]+)", repo_url)
     if not match:
-        return None, []
-
+        return None
     owner, repo = match.groups()
     if repo.endswith(".git"):
         repo = repo[:-4]
+    return owner, repo
 
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
-    data = make_request(api_url)
 
+def _parse_release_digests(data: dict) -> dict[str, str]:
+    """Extract {asset_name: hex_sha256} from a GitHub release payload."""
+    digests: dict[str, str] = {}
+    for a in data.get("assets", []):
+        if not isinstance(a, dict):
+            continue
+        name = a.get("name")
+        digest = a.get("digest", "")
+        if name and isinstance(digest, str) and digest.startswith("sha256:"):
+            digests[name] = digest.removeprefix("sha256:")
+    return digests
+
+
+def get_github_latest_version(repo_url: str) -> str | None:
+    parsed = _github_owner_repo(repo_url)
+    if not parsed:
+        return None
+    owner, repo = parsed
+    data = make_request(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
     if isinstance(data, dict):
         tag = data.get("tag_name", "")
-        # Strip 'v' prefix if present
-        version = normalize_release_version(tag.lstrip("v") if tag else None)
-        assets = [a["name"] for a in data.get("assets", [])]
-        return version, assets
+        return normalize_release_version(tag.lstrip("v") if tag else None)
+    return None
 
-    return None, []
+
+def get_github_release_digests(repo_url: str, version: str) -> dict[str, str]:
+    """Return {asset_filename: hex_sha256} for the release tagged `version`.
+
+    Keys are asset filenames exactly as GitHub returns them (last path segment of
+    the asset's `browser_download_url`). Values are lowercase hex with the
+    `sha256:` prefix stripped.
+    """
+    parsed = _github_owner_repo(repo_url)
+    if not parsed:
+        return {}
+    owner, repo = parsed
+    # Tries `v{version}` first (the common tag convention), then bare `{version}`.
+    for tag in (f"v{version}", version):
+        data = make_request(f"https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}")
+        if isinstance(data, dict):
+            return _parse_release_digests(data)
+    return {}
 
 
 def get_github_release_versions(repo_url: str) -> set[str] | None:
@@ -241,7 +274,7 @@ def get_github_release_versions(repo_url: str) -> set[str] | None:
         if versions:
             return versions
 
-    latest, _assets = get_github_latest_release(repo_url)
+    latest = get_github_latest_version(repo_url)
     if latest:
         return {latest}
 
@@ -324,7 +357,7 @@ def check_agent_version(
             return None, UpdateError(agent_id, f"Could not fetch PyPI versions for {package_name}")
         source_versions["uvx"] = (versions, f"https://pypi.org/pypi/{package_name}/json")
 
-    if "binary" in distribution and repository and "github.com" in repository:
+    if "binary" in distribution and _is_github_repo(repository):
         versions = get_github_release_versions(repository)
         if not versions:
             return None, UpdateError(
@@ -365,6 +398,7 @@ def check_agent_version(
         latest_version=latest_version,
         distribution_type=dist_types,
         source_url=primary_source_url,
+        repository=repository,
     ), None
 
 
@@ -402,7 +436,10 @@ def apply_update(update: VersionUpdate) -> bool:
         old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
         new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
 
-        for _platform, target in distribution["binary"].items():
+        is_github_repo = _is_github_repo(update.repository)
+        asset_digests: dict[str, str] | None = None
+
+        for platform_name, target in distribution["binary"].items():
             if "archive" in target:
                 original_url = target["archive"]
                 url = original_url
@@ -423,6 +460,17 @@ def apply_update(update: VersionUpdate) -> bool:
                     url = url.replace(f"-{old_short}-", f"-{new_short}-")
                 target["archive"] = url
 
+                if is_github_repo:
+                    if asset_digests is None:
+                        asset_digests = get_github_release_digests(update.repository, new_version)
+                    digest = asset_digests.get(url.rsplit("/", 1)[-1])
+                    if digest:
+                        target["sha256"] = digest
+                    else:
+                        print(
+                            f"WARN: no release digest for {update.agent_id} ({platform_name})",
+                            file=sys.stderr,
+                        )
     # Write back
     try:
         with open(update.agent_path, "w") as f:
