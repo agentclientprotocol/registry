@@ -1,0 +1,18 @@
+{
+  "id": "kiro-gateway",
+  "name": "Kiro Gateway",
+  "version": "2.3.2",
+  "description": "ACP-compliant bridge for Kiro — routes completions through kiro-cli with OpenAI, Anthropic, and native ACP interfaces",
+  "repository": "https://github.com/ankitcharolia/kiro-gateway",
+  "website": "https://github.com/ankitcharolia/kiro-gateway",
+  "authors": [
+    "Ankit Charolia <ankitcharolia@gmail.com>"
+  ],
+  "license": "AGPL-3.0-only",
+  "distribution": {
+    "uvx": {
+      "package": "kiro-gateway",
+      "args": ["acp"]
+    }
+  }
+}
