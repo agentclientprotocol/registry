@@ -1,7 +1,7 @@
 {
   "id": "kiro-gateway",
   "name": "Kiro Gateway",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "ACP-compliant bridge for Kiro — routes completions through kiro-cli with OpenAI, Anthropic, and native ACP interfaces",
   "repository": "https://github.com/ankitcharolia/kiro-gateway",
   "website": "https://github.com/ankitcharolia/kiro-gateway",
