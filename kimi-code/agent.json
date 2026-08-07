@@ -1,7 +1,7 @@
 {
   "id": "kimi-code",
   "name": "Kimi Code",
-  "version": "0.31.0",
+  "version": "0.34.0",
   "description": "Moonshot AI's next-gen coding agent",
   "repository": "https://github.com/MoonshotAI/kimi-code",
   "website": "https://moonshotai.github.io/kimi-code/",
@@ -12,40 +12,40 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.31.0/kimi-code-darwin-arm64.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.34.0/kimi-code-darwin-arm64.zip",
         "cmd": "./kimi",
         "args": ["acp"],
-        "sha256": "e9d465b038283cbb718f2421eba657fad30976820b3035dfa6f8b305b1f1609f"
+        "sha256": "5b89d2298f05bbe100ae8b14dfca1df56bedc1ed83ff2a76f8efb94802f1692d"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.31.0/kimi-code-darwin-x64.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.34.0/kimi-code-darwin-x64.zip",
         "cmd": "./kimi",
         "args": ["acp"],
-        "sha256": "daef1a00a978f90fb7f4e3cb41f20ddc7ccce1f57e49559a8c2865de786b5d8d"
+        "sha256": "7cc4897cc9508e0a71f3f21d6633194db404907c1c6e7fb7b55a35792d18fdf7"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.31.0/kimi-code-linux-arm64.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.34.0/kimi-code-linux-arm64.zip",
         "cmd": "./kimi",
         "args": ["acp"],
-        "sha256": "9a13d74f47835aa2a8af6967dfb4fcf98abfea1a63f1cf25f8ada4b53c829168"
+        "sha256": "381755bfdc45bd96072f9c6c84f871cd52efb7560e7ea9c4e4d32ed3f89f65fd"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.31.0/kimi-code-linux-x64.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.34.0/kimi-code-linux-x64.zip",
         "cmd": "./kimi",
         "args": ["acp"],
-        "sha256": "e1dfe9887f6b00aef48debcf0d8d1756880412d86c3f60fcaa86aea9e278bd1f"
+        "sha256": "885587f20a51d94dca18fc9bff11246542c017fb7ac459a9693bbaa3ca67b199"
       },
       "windows-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.31.0/kimi-code-win32-arm64.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.34.0/kimi-code-win32-arm64.zip",
         "cmd": "./kimi.exe",
         "args": ["acp"],
-        "sha256": "38c85d5f4f19efaf0167f805df8ce44b781c7992f66abedac36a2edee748e475"
+        "sha256": "6a44c456058898e7eea18b0bfbe7f893c706661d39e3d5d9ba6384a39e95a79a"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.31.0/kimi-code-win32-x64.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-code/releases/download/%40moonshot-ai/kimi-code%400.34.0/kimi-code-win32-x64.zip",
         "cmd": "./kimi.exe",
         "args": ["acp"],
-        "sha256": "afd8018c3b3d9a2dcfa80d9f8fb8dfe7a1b71089b4873c63c4b1aed12e2c8ea2"
+        "sha256": "13cae7d4e7f09a29892922b46bd82322b835acc1ae40cbf15e42081178eaca4f"
       }
     }
   }
