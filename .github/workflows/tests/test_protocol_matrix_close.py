@@ -239,6 +239,72 @@ class CloseCapabilityTests(unittest.TestCase):
                     "not_probed",
                 )
 
+    def test_probe_agent_does_not_close_without_a_valid_session_id(self):
+        agent = {
+            "id": "agent-1",
+            "name": "Agent One",
+            "version": "1.2.3",
+            "distribution": {"npx": {"package": "agent-one"}},
+        }
+
+        for session_result in ({}, {"sessionId": ""}, {"sessionId": 42}):
+            with self.subTest(session_result=session_result):
+                calls = []
+
+                def request_with_timeout(
+                    proc,
+                    request_id,
+                    method,
+                    params,
+                    timeout,
+                    *,
+                    calls=calls,
+                    session_result=session_result,
+                ):
+                    calls.append((request_id, method, params, timeout))
+                    if method == "initialize":
+                        return ProbeOutcome(status="success"), {
+                            "result": {
+                                "protocolVersion": 1,
+                                "agentCapabilities": {"sessionCapabilities": {"close": {}}},
+                            }
+                        }
+                    if method == "session/new":
+                        return ProbeOutcome(status="success"), {"result": session_result}
+                    return ProbeOutcome(status="success"), {"result": {}}
+
+                fake_process = SimpleNamespace(returncode=0)
+                with (
+                    tempfile.TemporaryDirectory() as temp_dir,
+                    patch("protocol_matrix.ensure_distribution_runtime", return_value=None),
+                    patch(
+                        "protocol_matrix.build_agent_command",
+                        return_value=(["fake-agent"], None, {}),
+                    ),
+                    patch("protocol_matrix.build_agent_process_env", return_value={}),
+                    patch("protocol_matrix.subprocess.Popen", return_value=fake_process),
+                    patch(
+                        "protocol_matrix.request_with_timeout",
+                        side_effect=request_with_timeout,
+                    ),
+                    patch("protocol_matrix.stop_process"),
+                    patch("protocol_matrix.collect_stderr_tail", return_value=None),
+                ):
+                    record = probe_agent(
+                        agent=agent,
+                        sandbox_base=Path(temp_dir),
+                        init_timeout=5.0,
+                        rpc_timeout=1.0,
+                    )
+
+                methods = [method for _, method, _, _ in calls]
+                self.assertNotIn("session/close", methods)
+                self.assertEqual(record["sessionNew"]["status"], "success")
+                self.assertEqual(
+                    record["methodProbes"]["session/close"]["status"],
+                    "not_probed",
+                )
+
     def test_probe_agent_does_not_close_when_capability_is_omitted_or_null(self):
         agent = {
             "id": "agent-1",
@@ -437,6 +503,30 @@ class CloseCapabilityTests(unittest.TestCase):
         )
 
         self.assertEqual(outcomes["session/close"].status, "invalid_response")
+
+    def test_close_response_rejects_result_and_error(self):
+        def request(request_id, method, params, timeout):
+            if method == "session/close":
+                return ProbeOutcome(status="success"), {
+                    "result": {},
+                    "error": {"code": -32602, "message": "Invalid params"},
+                }
+            return ProbeOutcome(status="success"), {"result": {}}
+
+        _, outcomes, _ = run_method_probes(
+            request=request,
+            request_id=70,
+            probe_session_id="legacy-fallback",
+            close_session_id="created-session",
+            cwd="/tmp/workspace",
+            timeout=1.0,
+            close_advertised=True,
+        )
+
+        close_outcome = outcomes["session/close"]
+        self.assertEqual(close_outcome.status, "invalid_response")
+        self.assertIn("exactly one", close_outcome.message or "")
+        self.assertFalse(probe_indicates_support("session/close", close_outcome.status))
 
 
 class ProbeSchemaTests(unittest.TestCase):

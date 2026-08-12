@@ -614,6 +614,11 @@ def normalize_close_outcome(
     message: dict[str, Any] | None,
 ) -> ProbeOutcome:
     """Require a successful close response to contain an object result."""
+    if message is not None and "result" in message and "error" in message:
+        return ProbeOutcome(
+            status="invalid_response",
+            message="session/close response must contain exactly one of result or error",
+        )
     if outcome.status != "success":
         return outcome
     if message is None or not isinstance(message.get("result"), dict):
