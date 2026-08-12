@@ -1,0 +1,19 @@
+{
+  "id": "minimax-code",
+  "name": "MiniMax Code",
+  "version": "0.1.2",
+  "description": "MiniMax Code is an AI coding agent with Agent Client Protocol support.",
+  "website": "https://agent.minimax.io",
+  "authors": [
+    "MiniMax"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@minimax-ai/code@0.1.2",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
