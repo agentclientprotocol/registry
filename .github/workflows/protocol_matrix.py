@@ -286,7 +286,7 @@ def build_initialize_params() -> dict[str, Any]:
 
 def response_exposes_models(message: dict[str, Any] | None) -> bool:
     """Return whether a successful response includes session model state."""
-    if not message or "result" not in message:
+    if not message or "result" not in message or "error" in message:
         return False
 
     result = message["result"]
@@ -295,6 +295,12 @@ def response_exposes_models(message: dict[str, Any] | None) -> bool:
 
 def classify_rpc_response(message: dict[str, Any]) -> ProbeOutcome:
     """Convert a JSON-RPC response payload into a normalized probe outcome."""
+    if ("result" in message) == ("error" in message):
+        return ProbeOutcome(
+            status="invalid_response",
+            message="JSON-RPC response must contain exactly one of result or error",
+        )
+
     if "result" in message:
         return ProbeOutcome(status="success")
 

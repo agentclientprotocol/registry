@@ -225,6 +225,12 @@ def test_response_exposes_models_only_when_present():
         }
     )
     assert not response_exposes_models({"result": {"sessionId": "sess-123"}})
+    assert not response_exposes_models(
+        {
+            "result": {"models": {"currentModelId": "model-a"}},
+            "error": {"code": -32602, "message": "Invalid params"},
+        }
+    )
     assert not response_exposes_models({"error": {"code": -32601, "message": "Method not found"}})
 
 
@@ -243,6 +249,17 @@ def test_classify_rpc_response_auth_required():
 def test_classify_rpc_response_success():
     outcome = classify_rpc_response({"result": {"ok": True}})
     assert outcome.status == "success"
+
+
+def test_classify_rpc_response_rejects_result_and_error():
+    outcome = classify_rpc_response(
+        {
+            "result": {"sessionId": "ambiguous-session"},
+            "error": {"code": -32602, "message": "Invalid params"},
+        }
+    )
+    assert outcome.status == "invalid_response"
+    assert "exactly one" in (outcome.message or "")
 
 
 def test_request_with_timeout_reports_exited_process():

@@ -12,6 +12,7 @@ from protocol_matrix import (
     PROBE_SCHEMA_VERSION,
     ProbeOutcome,
     build_snapshot,
+    classify_rpc_response,
     close_capability_advertised,
     feature_cell,
     main,
@@ -304,6 +305,65 @@ class CloseCapabilityTests(unittest.TestCase):
                     record["methodProbes"]["session/close"]["status"],
                     "not_probed",
                 )
+
+    def test_probe_agent_does_not_close_after_ambiguous_session_new_response(self):
+        calls = []
+
+        def request_with_timeout(proc, request_id, method, params, timeout):
+            calls.append((request_id, method, params, timeout))
+            if method == "initialize":
+                return ProbeOutcome(status="success"), {
+                    "result": {
+                        "protocolVersion": 1,
+                        "agentCapabilities": {"sessionCapabilities": {"close": {}}},
+                    }
+                }
+            if method == "session/new":
+                message = {
+                    "result": {"sessionId": "ambiguous-session"},
+                    "error": {"code": -32602, "message": "Invalid params"},
+                }
+                return classify_rpc_response(message), message
+            return ProbeOutcome(status="success"), {"result": {}}
+
+        fake_process = SimpleNamespace(returncode=0)
+        agent = {
+            "id": "agent-1",
+            "name": "Agent One",
+            "version": "1.2.3",
+            "distribution": {"npx": {"package": "agent-one"}},
+        }
+
+        with (
+            tempfile.TemporaryDirectory() as temp_dir,
+            patch("protocol_matrix.ensure_distribution_runtime", return_value=None),
+            patch(
+                "protocol_matrix.build_agent_command",
+                return_value=(["fake-agent"], None, {}),
+            ),
+            patch("protocol_matrix.build_agent_process_env", return_value={}),
+            patch("protocol_matrix.subprocess.Popen", return_value=fake_process),
+            patch(
+                "protocol_matrix.request_with_timeout",
+                side_effect=request_with_timeout,
+            ),
+            patch("protocol_matrix.stop_process"),
+            patch("protocol_matrix.collect_stderr_tail", return_value=None),
+        ):
+            record = probe_agent(
+                agent=agent,
+                sandbox_base=Path(temp_dir),
+                init_timeout=5.0,
+                rpc_timeout=1.0,
+            )
+
+        methods = [method for _, method, _, _ in calls]
+        self.assertNotIn("session/close", methods)
+        self.assertEqual(record["sessionNew"]["status"], "invalid_response")
+        self.assertEqual(
+            record["methodProbes"]["session/close"]["status"],
+            "not_probed",
+        )
 
     def test_probe_agent_does_not_close_when_capability_is_omitted_or_null(self):
         agent = {
