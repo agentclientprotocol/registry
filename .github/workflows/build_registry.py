@@ -648,10 +648,16 @@ def build_registry(dry_run: bool = False):
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp"}
 
+    JETBRAINS_CLAUDE_ACP_VERSION = "0.66.0"
+
     def patch_agent_for_jetbrains(agent):
         patched = copy.deepcopy(agent)
         if patched["id"] == "claude-acp":
             assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
+            patched["version"] = JETBRAINS_CLAUDE_ACP_VERSION
+            patched["distribution"]["npx"]["package"] = (
+                f"@agentclientprotocol/claude-agent-acp@{JETBRAINS_CLAUDE_ACP_VERSION}"
+            )
             patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
         if patched["id"] in JETBRAINS_BUNDLED_IDS:
             patched["bundled"] = True
