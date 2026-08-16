@@ -1,7 +1,7 @@
 {
   "id": "deepseek-acp",
   "name": "DeepSeek Harness",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Unofficial ACP adapter for DeepSeek Harness",
   "repository": "https://github.com/xintaofei/deepseek-acp",
   "authors": [
@@ -10,7 +10,7 @@
   "license": "MIT",
   "distribution": {
     "npx": {
-      "package": "deepseek-acp@0.2.0"
+      "package": "deepseek-acp@0.3.0"
     }
   }
 }
