@@ -1,0 +1,19 @@
+{
+  "id": "mcode",
+  "name": "MiniMax Code",
+  "version": "0.1.3",
+  "description": "MiniMax's terminal coding agent",
+  "website": "https://platform.minimax.io",
+  "authors": [
+    "MiniMax"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@minimax-ai/code@0.1.3",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
