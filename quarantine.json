@@ -6,5 +6,6 @@
   "minion-code": "Python dependency issue",
   "qoder": "ACP initialize fails in qodercli 0.2.15/0.2.16",
   "vtcode": "Missing windows builds",
-  "fast-agent": "Timeout after 120s waiting for initialize response"
+  "fast-agent": "Timeout after 120s waiting for initialize response",
+  "mistral-vibe": "Binary archive URL not accessible"
 }
