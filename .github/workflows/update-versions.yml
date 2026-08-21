@@ -146,7 +146,7 @@ jobs:
           node-version: "lts/*"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
 
       - name: Apply version updates
         env:
@@ -325,7 +325,7 @@ jobs:
           node-version: "lts/*"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
 
       - name: Validate registry build
         run: uv run --with jsonschema .github/workflows/build_registry.py
@@ -415,7 +415,7 @@ jobs:
           PY
 
       - name: Install uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
 
       - name: Validate registry build
         run: uv run --with jsonschema .github/workflows/build_registry.py
