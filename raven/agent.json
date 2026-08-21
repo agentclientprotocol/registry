@@ -1,0 +1,40 @@
+{
+  "id": "raven",
+  "name": "Raven",
+  "version": "0.4.0",
+  "description": "Privacy-first local coding-agent harness for Ollama / OpenAI-compatible endpoints",
+  "repository": "https://github.com/raythurman2386/raven",
+  "authors": [
+    "Raymond Thurman"
+  ],
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.0/raven-0.4.0-aarch64-apple-darwin.tar.gz",
+        "sha256": "d68494fb3f93008cfa237d5454cde5808f67e6cbca90aa3875534a8b082f1527",
+        "cmd": "./raven",
+        "args": ["--acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.0/raven-0.4.0-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "40bd9151350e51dab63016c428a74edb7953d58a8b3bfcba9887d6a2eeff5b31",
+        "cmd": "./raven",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.0/raven-0.4.0-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "89147ce624f4b64f7332b7694ccb108ff0e8a16cd41cda28923d4482c254bfa0",
+        "cmd": "./raven",
+        "args": ["--acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.0/raven-0.4.0-x86_64-pc-windows-msvc.exe.zip",
+        "sha256": "92f2d690c043c5cfc346f2564f759d5ae216ab353ff5664c8809bdd896b0f157",
+        "cmd": "raven.exe",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
