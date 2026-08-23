@@ -1,7 +1,7 @@
 {
   "id": "poolside",
   "name": "Poolside",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Poolside's coding agent",
   "repository": "https://github.com/poolsideai/pool",
   "website": "https://poolside.ai",
@@ -12,52 +12,52 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://downloads.poolside.ai/pool/v1.0.15/pool-darwin-arm64.tar.gz",
+        "archive": "https://downloads.poolside.ai/pool/v1.0.16/pool-darwin-arm64.tar.gz",
         "cmd": "./pool-darwin-arm64",
         "args": [
           "acp"
         ],
-        "sha256": "42d971d91611ed22cf2023f05bae53a4d746c015203923b392fe9b170ccb0b71"
+        "sha256": "0932af3eb2b57a863acacb664ec8b2b1d3a76c2570a788b086001608cc585f74"
       },
       "darwin-x86_64": {
-        "archive": "https://downloads.poolside.ai/pool/v1.0.15/pool-darwin-amd64.tar.gz",
+        "archive": "https://downloads.poolside.ai/pool/v1.0.16/pool-darwin-amd64.tar.gz",
         "cmd": "./pool-darwin-amd64",
         "args": [
           "acp"
         ],
-        "sha256": "508490724fb63a7ff846e9d6f303d9ab9da875f0b18b26308d85cb03c8f43d6b"
+        "sha256": "6d75fae2d7de6c35b6b467b5f682935e3ecde8ff611cb620c56b7bd607e0afde"
       },
       "linux-aarch64": {
-        "archive": "https://downloads.poolside.ai/pool/v1.0.15/pool-linux-arm64.tar.gz",
+        "archive": "https://downloads.poolside.ai/pool/v1.0.16/pool-linux-arm64.tar.gz",
         "cmd": "./pool-linux-arm64",
         "args": [
           "acp"
         ],
-        "sha256": "df3ffd537d46943ae61513b7981df07bc5df79217fc5390b956d06bc81ac8198"
+        "sha256": "466343b66b03ee4e66476fcc69be1eb5bf8e9155a4ab73e0e72a232d1f8d2a12"
       },
       "linux-x86_64": {
-        "archive": "https://downloads.poolside.ai/pool/v1.0.15/pool-linux-amd64.tar.gz",
+        "archive": "https://downloads.poolside.ai/pool/v1.0.16/pool-linux-amd64.tar.gz",
         "cmd": "./pool-linux-amd64",
         "args": [
           "acp"
         ],
-        "sha256": "d7d7194bfe0e1e62fc3daa1b6ede8f2d4371691c663bed980eea4f5a7a659e08"
+        "sha256": "e86aa8c9feef003540673ab494e91bfadc273218d531c43d662cafb69e464146"
       },
       "windows-aarch64": {
-        "archive": "https://downloads.poolside.ai/pool/v1.0.15/pool-windows-arm64.tar.gz",
+        "archive": "https://downloads.poolside.ai/pool/v1.0.16/pool-windows-arm64.tar.gz",
         "cmd": "./pool-windows-arm64.exe",
         "args": [
           "acp"
         ],
-        "sha256": "b6e7b204ac6e928fb05a409bfe9327f74945d75f684e4a0e43568cc159647316"
+        "sha256": "8dc7d014ced3e9d3ced240bbc7dabaf696bf59f118bd271d9f4e8561e415d75b"
       },
       "windows-x86_64": {
-        "archive": "https://downloads.poolside.ai/pool/v1.0.15/pool-windows-amd64.tar.gz",
+        "archive": "https://downloads.poolside.ai/pool/v1.0.16/pool-windows-amd64.tar.gz",
         "cmd": "./pool-windows-amd64.exe",
         "args": [
           "acp"
         ],
-        "sha256": "296a828390cbc4ff6d6a61410cfd3e25d86ecdf6152b479ab26402ead2c78d4d"
+        "sha256": "3e324f1a4b5855ba5363232c06461ec9d6d2ae1a341c827221e79779f8f2bc6f"
       }
     }
   }
