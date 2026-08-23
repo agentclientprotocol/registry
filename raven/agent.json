@@ -1,7 +1,7 @@
 {
   "id": "raven",
   "name": "Raven",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Privacy-first local coding-agent harness for Ollama / OpenAI-compatible endpoints",
   "repository": "https://github.com/raythurman2386/raven",
   "authors": [
@@ -12,26 +12,26 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.1/raven-0.4.1-aarch64-apple-darwin.tar.gz",
-        "sha256": "b28757ec30a8e3a1aaccfcab0a1686d625cf3ae6d8c326bda50c5736918d04e2",
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.5.0/raven-0.5.0-aarch64-apple-darwin.tar.gz",
+        "sha256": "4ac3c457b14a1c008486ae1c7601841997e25f3f95dd202ba7387c7627c29ce9",
         "cmd": "./raven",
         "args": ["--acp"]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.1/raven-0.4.1-aarch64-unknown-linux-gnu.tar.gz",
-        "sha256": "64ed04cec4bbe483bd614374659b17b8b0452ee505a5abcd35ca1d9bf248817d",
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.5.0/raven-0.5.0-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "89527dcf5f58450589b1836141bc0e1540bc6bef7beb14fb7a3ef05e35e5c0d0",
         "cmd": "./raven",
         "args": ["--acp"]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.1/raven-0.4.1-x86_64-unknown-linux-gnu.tar.gz",
-        "sha256": "c0097adf5df10d1fe2f5dbf80d870ce6bfdf86b949e34ed2bef9cedc152100f9",
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.5.0/raven-0.5.0-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "397edc21824a80d5d81c9736d9250ef4a93875e014aa46e116069186fc820357",
         "cmd": "./raven",
         "args": ["--acp"]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.4.1/raven-0.4.1-x86_64-pc-windows-msvc.exe.zip",
-        "sha256": "2305fe256deda1ee6319153e2fdeaf1f8bab4b0f916d6c0e200c638086137b4f",
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.5.0/raven-0.5.0-x86_64-pc-windows-msvc.exe.zip",
+        "sha256": "7250ba29123eece5fdf998691081a9622df230039af7260070e378a087f2c091",
         "cmd": "raven.exe",
         "args": ["--acp"]
       }
