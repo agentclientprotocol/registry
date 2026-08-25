@@ -1,0 +1,44 @@
+{
+    "id": "elph",
+    "name": "Elph",
+    "version": "0.1.0",
+    "description": "Minimalist opinionated AI agent harness: extensible TUI and mouse support.",
+    "repository": "https://github.com/riipandi/elph",
+    "website": "https://elph.space",
+    "authors": ["Aris Ripandi"],
+    "license": "Apache-2.0",
+    "distribution": {
+        "binary": {
+            "darwin-aarch64": {
+                "archive": "https://github.com/riipandi/elph/releases/download/v0.1.0/elph-macos-aarch64.tar.gz",
+                "sha256": "30ed7f3cc6fc2d1b1201cf64d60e62fc87f3408616a5c1894801bf80fa9fb2e1",
+                "cmd": "./elph",
+                "args": ["acp", "--stdio"]
+            },
+            "darwin-x86_64": {
+                "archive": "https://github.com/riipandi/elph/releases/download/v0.1.0/elph-macos-x86_64.tar.gz",
+                "sha256": "c1dd5eb2f7fd8bab6ea53bd9e841c7d2f940f5589aab924c3f07be1d29d5fe8c",
+                "cmd": "./elph",
+                "args": ["acp", "--stdio"]
+            },
+            "linux-aarch64": {
+                "archive": "https://github.com/riipandi/elph/releases/download/v0.1.0/elph-linux-arm64.tar.gz",
+                "sha256": "4e3c0b459862e81e50fb985852ec8ff526fbe2911141803dbf255c9d23d42854",
+                "cmd": "./elph",
+                "args": ["acp", "--stdio"]
+            },
+            "linux-x86_64": {
+                "archive": "https://github.com/riipandi/elph/releases/download/v0.1.0/elph-linux-x86_64.tar.gz",
+                "sha256": "9dcae21b7ad6242a9b10f08e9aca52dbb83525d75f8372f8306700145c722e84",
+                "cmd": "./elph",
+                "args": ["acp", "--stdio"]
+            },
+            "windows-x86_64": {
+                "archive": "https://github.com/riipandi/elph/releases/download/v0.1.0/elph-windows-x86_64.zip",
+                "sha256": "eef4c9fe6425c13851e334c3a305ea944f7d3ed7fb4f9954ac34410379008601",
+                "cmd": "elph.exe",
+                "args": ["acp", "--stdio"]
+            }
+        }
+    }
+}
