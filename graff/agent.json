@@ -1,0 +1,50 @@
+{
+  "id": "graff",
+  "name": "graff",
+  "version": "0.0.280",
+  "description": "Codegraff harness as an ACP agent (graff acp)",
+  "repository": "https://github.com/justrach/codegraff",
+  "website": "https://codegraff.com",
+  "authors": ["Rach Pradhan"],
+  "license": "AGPL-3.0-only",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.280/graff-aarch64-macos.tar.gz",
+        "cmd": "./graff-aarch64-macos/graff",
+        "args": ["acp"],
+        "sha256": "3fb1d4860338f14445955cab070f187ea9af8fe31cada19a00c2b29cc95c910b"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.280/graff-x86_64-macos.tar.gz",
+        "cmd": "./graff-x86_64-macos/graff",
+        "args": ["acp"],
+        "sha256": "3d250cfe44a32367dee1dc55ca9f3eef987cda5b886c68fa3bcc771a07394d45"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.280/graff-aarch64-linux.tar.gz",
+        "cmd": "./graff-aarch64-linux/graff",
+        "args": ["acp"],
+        "sha256": "fbbf9d37f29eb25b74a95da0b2f523a2c754c776a78d089d96d4fdbcf48e43f5"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.280/graff-x86_64-linux.tar.gz",
+        "cmd": "./graff-x86_64-linux/graff",
+        "args": ["acp"],
+        "sha256": "7a2412724aa6f0c7bf4a2c5248b0619c331a5a20ffc5a17f0ed95a8f291c1bcd"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.280/graff-aarch64-windows.tar.gz",
+        "cmd": "./graff-aarch64-windows/graff.exe",
+        "args": ["acp"],
+        "sha256": "ad96fea65acfb650dfa934b0918c3a103bc5d037f63a087c817174b2578ba8f3"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.280/graff-x86_64-windows.tar.gz",
+        "cmd": "./graff-x86_64-windows/graff.exe",
+        "args": ["acp"],
+        "sha256": "25f94952cb0bcfd3d4503cf88379ded5287f8f111aa5a51715a439dd096ec0f1"
+      }
+    }
+  }
+}
