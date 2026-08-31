@@ -10,6 +10,7 @@
     "JetBrains"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/agentclientprotocol/claude-agent-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "@agentclientprotocol/claude-agent-acp@0.70.0"

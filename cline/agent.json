@@ -9,6 +9,7 @@
     "Cline Bot Inc."
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/cline/cline/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "npx": {

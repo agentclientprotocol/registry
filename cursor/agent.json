@@ -6,6 +6,7 @@
   "website": "https://cursor.com/docs/cli/acp",
   "authors": ["Cursor"],
   "license": "proprietary",
+  "license_url": "https://cursor.com/terms-of-service",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

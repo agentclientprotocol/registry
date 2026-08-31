@@ -9,6 +9,7 @@
     "Anomaly"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/anomalyco/opencode/blob/dev/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "binary": {

@@ -10,6 +10,7 @@
     "Zed Industries"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/agentclientprotocol/codex-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "@agentclientprotocol/codex-acp@1.7.0"

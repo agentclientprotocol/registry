@@ -9,6 +9,7 @@
     "Google"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/google-gemini/gemini-cli/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "@google/gemini-cli@0.57.0",

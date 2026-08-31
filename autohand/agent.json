@@ -7,6 +7,7 @@
   "website": "https://www.autohand.ai/cli/",
   "authors": ["Autohand AI"],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/autohandai/autohand-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "@autohandai/autohand-acp@0.2.1"

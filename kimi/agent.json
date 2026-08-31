@@ -9,6 +9,7 @@
     "Moonshot AI"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/MoonshotAI/kimi-cli/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

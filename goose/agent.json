@@ -9,6 +9,7 @@
     "Block"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/block/goose/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

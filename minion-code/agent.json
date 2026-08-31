@@ -8,6 +8,7 @@
     "femto"
   ],
   "license": "AGPL-3.0",
+  "license_url": "https://github.com/femto/minion-code/blob/main/LICENSE",
   "distribution": {
     "uvx": {
       "package": "minion-code@0.1.44",
