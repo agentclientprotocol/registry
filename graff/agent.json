@@ -1,7 +1,7 @@
 {
   "id": "graff",
   "name": "graff",
-  "version": "0.0.282",
+  "version": "0.0.283",
   "description": "Codegraff harness as an ACP agent (graff acp)",
   "repository": "https://github.com/justrach/codegraff",
   "website": "https://codegraff.com",
@@ -10,40 +10,40 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.282/graff-aarch64-macos.tar.gz",
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.283/graff-aarch64-macos.tar.gz",
         "cmd": "./graff-aarch64-macos/graff",
         "args": ["acp"],
-        "sha256": "28babc2cb01335da78830b99644de1afd5e8a5f61188a8a2c8e4ba505cf3f3cf"
+        "sha256": "c4d5b498c69cd36d32dbb6abe80537a5f6169889a9da1ae56e3498f7977d9724"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.282/graff-x86_64-macos.tar.gz",
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.283/graff-x86_64-macos.tar.gz",
         "cmd": "./graff-x86_64-macos/graff",
         "args": ["acp"],
-        "sha256": "90227b18003febd149f5027d386ef40c77406288bd0e74d77911fef385d971e2"
+        "sha256": "ccc498f13f829a6599894330c22d95e20ca31dec604123d33c9ac91fef6968c6"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.282/graff-aarch64-linux.tar.gz",
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.283/graff-aarch64-linux.tar.gz",
         "cmd": "./graff-aarch64-linux/graff",
         "args": ["acp"],
-        "sha256": "2ee552e365da3fa7b23a76f9a6725d3f7aff6bf940e454bae2807643a1e36703"
+        "sha256": "4ae47ea3f0ff5741902e8c746786aafa796f979b595a7efd1267eeaea42352ef"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.282/graff-x86_64-linux.tar.gz",
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.283/graff-x86_64-linux.tar.gz",
         "cmd": "./graff-x86_64-linux/graff",
         "args": ["acp"],
-        "sha256": "4d6a99ad7e5e7c63f40be987f37abf41dad6ac88f492879f78a5834eebd7fde1"
+        "sha256": "52d4d557ce73322cd3a30f4caccc03ea406ff1854eb14c41fba6e027cca2376d"
       },
       "windows-aarch64": {
-        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.282/graff-aarch64-windows.tar.gz",
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.283/graff-aarch64-windows.tar.gz",
         "cmd": "./graff-aarch64-windows/graff.exe",
         "args": ["acp"],
-        "sha256": "3de9d4920de59b808cc6e7f19e573d6512252792cf70c612e585313a371d6220"
+        "sha256": "65a4cc38fe208f923b527a76bde1503aa741e48f43c20356384f0944c9d2f952"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.282/graff-x86_64-windows.tar.gz",
+        "archive": "https://github.com/justrach/codegraff/releases/download/v0.0.283/graff-x86_64-windows.tar.gz",
         "cmd": "./graff-x86_64-windows/graff.exe",
         "args": ["acp"],
-        "sha256": "ac3450b8dd3f584af66fb00c3745e05093389cf78eb152b6cb5ecac180a19e41"
+        "sha256": "27fad987641dfa12012ba977befd726304e85d46ba84656684f4e4e0951ac7cd"
       }
     }
   }
