@@ -9,6 +9,7 @@
     "Kilo Code"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/Kilo-Org/kilocode/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "binary": {

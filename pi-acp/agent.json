@@ -8,6 +8,7 @@
     "Sergii Kozak <svkozak@gmail.com>"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/svkozak/pi-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "pi-acp@0.0.33"

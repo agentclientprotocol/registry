@@ -9,6 +9,7 @@
     "Alibaba Qwen Team"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/QwenLM/qwen-code/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "@qwen-code/qwen-code@0.22.3",

@@ -9,6 +9,7 @@
     "Compass AI"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/Compass-Agentic-Platform/nova/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "npx": {

@@ -9,6 +9,7 @@
     "GitHub"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/github/copilot-language-server-release/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "@github/copilot-language-server@1.539.0",

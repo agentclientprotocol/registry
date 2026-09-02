@@ -7,6 +7,7 @@
   "website": "https://github.com/vinhnx/VTCode/blob/main/docs/guides/zed-acp.md",
   "authors": ["vinhnx"],
   "license": "MIT",
+  "license_url": "https://github.com/vinhnx/VTCode/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
