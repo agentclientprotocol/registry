@@ -1,0 +1,36 @@
+{
+  "id": "hermes-agent",
+  "name": "Hermes Agent",
+  "version": "0.18.2",
+  "description": "Nous Research's personal AI agent — memory, skills, browser, web, multi-agent delegation. ACP adapter for Zed, VS Code, JetBrains.",
+  "repository": "https://github.com/NousResearch/hermes-agent",
+  "website": "https://hermes-agent.nousresearch.com/docs",
+  "authors": [
+    "Nous Research"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "linux-aarch64": {
+        "archive": "https://github.com/gad0n3/hermes-acp-launcher/releases/download/v0.1.0/hermes-acp-launcher.tar.gz",
+        "cmd": "./hermes-acp",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/gad0n3/hermes-acp-launcher/releases/download/v0.1.0/hermes-acp-launcher.tar.gz",
+        "cmd": "./hermes-acp",
+        "args": ["acp"]
+      },
+      "darwin-aarch64": {
+        "archive": "https://github.com/gad0n3/hermes-acp-launcher/releases/download/v0.1.0/hermes-acp-launcher.tar.gz",
+        "cmd": "./hermes-acp",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/gad0n3/hermes-acp-launcher/releases/download/v0.1.0/hermes-acp-launcher.tar.gz",
+        "cmd": "./hermes-acp",
+        "args": ["acp"]
+      }
+    }
+  }
+}
