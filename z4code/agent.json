@@ -1,0 +1,38 @@
+{
+  "id": "z4code",
+  "name": "z4code",
+  "version": "0.6.5",
+  "description": "Local-model coding agent for Zed",
+  "repository": "https://github.com/zeta4lab/z4code-releases",
+  "website": "https://zeta4.net",
+  "authors": ["zeta4lab"],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.5/z4code-aarch64-apple-darwin.zip",
+        "sha256": "97794df953b88e7a02b41d8ddf21e6e7f351cbc0adb6733910bcd610d3c87f52",
+        "cmd": "./z4code",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.5/z4code-x86_64-unknown-linux-gnu.zip",
+        "sha256": "fc5fbc2f5678a4995d08b2207e9125c44e345e2abc0eb3b26ab798139996e299",
+        "cmd": "./z4code",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.5/z4code-aarch64-unknown-linux-gnu.zip",
+        "sha256": "fc7e30ff01ba05e58c4515dc5af7d75eda2a4491dcf66eb8aa10380b22446bc9",
+        "cmd": "./z4code",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/zeta4lab/z4code-releases/releases/download/0.6.5/z4code-x86_64-pc-windows-msvc.zip",
+        "sha256": "f671cc5359fda4937c3e40ec9cc9547facb30397fa8330d82788ac1517035a44",
+        "cmd": "./z4code.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
