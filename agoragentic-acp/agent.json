@@ -7,6 +7,7 @@
   "website": "https://agoragentic.com",
   "authors": ["ACRE / Agoragentic"],
   "license": "MIT",
+  "license_url": "https://github.com/rhein1/agoragentic-integrations/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "agoragentic-mcp@1.3.0",

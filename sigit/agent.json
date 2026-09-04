@@ -9,6 +9,7 @@
     "smbCloud"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/getsigit/sigit/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
