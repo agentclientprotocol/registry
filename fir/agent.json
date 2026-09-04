@@ -1,0 +1,52 @@
+{
+  "id": "fir",
+  "name": "fir",
+  "version": "0.98.2",
+  "description": "A fast, portable AI coding agent. Single <20 MB static binary with no runtime dependencies, multi-provider model support, MCP, skills and extensions.",
+  "repository": "https://github.com/kfet/fir",
+  "website": "https://github.com/kfet/fir",
+  "authors": [
+    "Kalin Fetvadjiev"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/kfet/fir/releases/download/v0.98.2/fir-darwin-arm64",
+        "sha256": "90d051b8973817b0a124e9dd3a504003a58fa49efb1c4c87c7dd0d98c9806681",
+        "cmd": "./fir-darwin-arm64",
+        "args": [
+          "--mode",
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/kfet/fir/releases/download/v0.98.2/fir-darwin-amd64",
+        "sha256": "244b6cc29397a382edea82783d3310cc04f7d25eec8bcbb9106f2255b5c53c26",
+        "cmd": "./fir-darwin-amd64",
+        "args": [
+          "--mode",
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/kfet/fir/releases/download/v0.98.2/fir-linux-arm64",
+        "sha256": "206a32051b98d5a08783006e353b68475f32de5d772b6e2e7efc93d4d942a0dc",
+        "cmd": "./fir-linux-arm64",
+        "args": [
+          "--mode",
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/kfet/fir/releases/download/v0.98.2/fir-linux-amd64",
+        "sha256": "5089f7adeadf5d34c73b52ba7caac526ed2fd080a55909af522d69d4045f9074",
+        "cmd": "./fir-linux-amd64",
+        "args": [
+          "--mode",
+          "acp"
+        ]
+      }
+    }
+  }
+}
