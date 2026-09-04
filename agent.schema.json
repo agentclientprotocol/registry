@@ -135,6 +135,11 @@
           "minLength": 1,
           "description": "Package name (with optional version)"
         },
+        "cmd": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Executable command to run from the package. When omitted, the package manager default command is used."
+        },
         "args": {
           "type": "array",
           "items": {

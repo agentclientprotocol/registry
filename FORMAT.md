@@ -34,10 +34,12 @@ Each agent has the following structure:
     },
     "npx": {
       "package": "@scope/package",
+      "cmd": "package-command",
       "args": ["--acp"]
     },
     "uvx": {
       "package": "package-name",
+      "cmd": "package-command",
       "args": ["serve"]
     }
   }
@@ -49,8 +51,8 @@ Each agent has the following structure:
 | Type     | Description                   | Command                |
 | -------- | ----------------------------- | ---------------------- |
 | `binary` | Platform-specific executables | Download, extract, run |
-| `npx`    | npm packages                  | `npx <package> [args]` |
-| `uvx`    | PyPI packages via uv          | `uvx <package> [args]` |
+| `npx`    | npm packages                  | `npx <package> [args]`, or `npx --package <package> <cmd> [args]` when `cmd` is set |
+| `uvx`    | PyPI packages via uv          | `uvx <package> [args]`, or `uvx --from <package> <cmd> [args]` when `cmd` is set |
 
 **Supported archive formats for binary distribution:** `.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries. Installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are not supported.
 
