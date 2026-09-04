@@ -1,0 +1,38 @@
+{
+  "id": "spettro",
+  "name": "Spettro",
+  "version": "2.6.2",
+  "description": "Terminal-first multi-agent coding assistant written in Go, with configurable orchestrator/worker agent roles.",
+  "repository": "https://github.com/Aploide/spettro",
+  "website": "https://spettro.app",
+  "authors": ["Carlo Esposito"],
+  "license": "GPL-3.0-only",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Aploide/spettro/releases/download/v2.6.2/spettro_v2.6.2_darwin_arm64.tar.gz",
+        "sha256": "1ee2bdd9b19d1af1133affde032f3213bd99d5223780efd8f008eb952fb9e4b8",
+        "cmd": "./spettro",
+        "args": ["--acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Aploide/spettro/releases/download/v2.6.2/spettro_v2.6.2_darwin_amd64.tar.gz",
+        "sha256": "354a0473c6cd4b49b8009f4b598265e30c3c802c237cd49335774228a22f2c47",
+        "cmd": "./spettro",
+        "args": ["--acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/Aploide/spettro/releases/download/v2.6.2/spettro_v2.6.2_linux_arm64.tar.gz",
+        "sha256": "2428f4a8c3d060e3d3a46c63af8b0f3c7a96b090e0acc76e747570dedaee1e22",
+        "cmd": "./spettro",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Aploide/spettro/releases/download/v2.6.2/spettro_v2.6.2_linux_amd64.tar.gz",
+        "sha256": "7009fbabae2ac94e27b47feec8af6e79660714269e0d052f422df83ea986f9c6",
+        "cmd": "./spettro",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
