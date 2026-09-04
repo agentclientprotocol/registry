@@ -10,7 +10,10 @@ import pytest
 from update_versions import (
     VersionUpdate,
     apply_update,
+    check_agent_preview_version,
     check_agent_version,
+    get_highest_preview_version,
+    get_npm_versions,
     is_prerelease,
     make_request,
 )
@@ -306,6 +309,7 @@ class TestApplyUpdateSha256Refresh:
             distribution_type="binary",
             source_url="https://github.com/owner/repo",
             repository="https://github.com/owner/repo",
+            channel="stable",
         )
 
     @patch("update_versions.get_github_release_digests")
@@ -358,3 +362,235 @@ class TestApplyUpdateSha256Refresh:
 
         mock_digests.assert_not_called()
         assert "no release digest" not in capsys.readouterr().err
+
+
+# --- preview channel ---
+
+
+def preview_agent_data(version: str, preview_version: str | None) -> dict:
+    agent_data: dict = {
+        "id": "codex-acp",
+        "name": "Codex",
+        "version": version,
+        "description": "",
+        "repository": "https://github.com/agentclientprotocol/codex-acp",
+        "distribution": {"npx": {"package": f"@acp/codex-acp@{version}"}},
+    }
+    if preview_version is not None:
+        agent_data["preview"] = {
+            "version": preview_version,
+            "distribution": {"npx": {"package": f"@acp/codex-acp@{preview_version}"}},
+        }
+    return agent_data
+
+
+class TestGetHighestPreviewVersion:
+    def test_picks_highest_preview_by_semver(self):
+        versions = {"1.8.0", "1.9.0-preview.2", "1.9.0-preview.10", "1.10.0"}
+
+        assert get_highest_preview_version(versions) == "1.9.0-preview.10"
+
+    def test_none_when_no_previews_published(self):
+        assert get_highest_preview_version({"1.8.0", "1.9.0"}) is None
+
+    def test_ignores_other_prerelease_shapes(self):
+        assert get_highest_preview_version({"1.9.0-rc.1", "0.1.17rc0"}) is None
+
+
+class TestCheckAgentPreviewVersion:
+    @patch("update_versions.get_npm_versions")
+    def test_bumps_preview_and_leaves_stable_alone(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1", "1.9.0-preview.2"}
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
+
+        stable_update, stable_error = check_agent_version(Path("codex-acp/agent.json"), agent_data)
+        preview_update, preview_error = check_agent_preview_version(
+            Path("codex-acp/agent.json"), agent_data
+        )
+
+        assert (stable_update, stable_error) == (None, None)
+        assert preview_error is None
+        assert preview_update is not None
+        assert preview_update.channel == "preview"
+        assert preview_update.current_version == "1.9.0-preview.1"
+        assert preview_update.latest_version == "1.9.0-preview.2"
+
+    @patch("update_versions.get_npm_versions")
+    def test_stable_release_overtakes_the_preview_line(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.9.1", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.9.1", "1.9.0-preview.1")
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "1.9.1"
+
+    @patch("update_versions.get_npm_versions")
+    def test_next_preview_line_outranks_stable(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.9.1", "1.10.0-preview.1"}
+        agent_data = preview_agent_data("1.9.1", "1.9.1")
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "1.10.0-preview.1"
+
+    @patch("update_versions.get_npm_versions")
+    def test_no_update_when_already_at_the_candidate(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.2"}
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.2")
+
+        assert check_agent_preview_version(Path("codex-acp/agent.json"), agent_data) == (None, None)
+
+    @patch("update_versions.get_npm_versions")
+    def test_no_preview_block_yields_no_preview_update(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.2"}
+        agent_data = preview_agent_data("1.8.0", None)
+
+        assert check_agent_preview_version(Path("codex-acp/agent.json"), agent_data) == (None, None)
+
+    @patch("update_versions.get_npm_versions")
+    def test_no_ordering_error_when_preview_is_behind_stable(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.9.1", "1.9.0-preview.1")
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is None
+
+    @patch("update_versions.get_github_release_versions")
+    @patch("update_versions.get_npm_versions")
+    def test_only_preview_declared_distributions_participate(
+        self, mock_npm_versions, mock_gh_release_versions
+    ):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.8.0", "1.8.0")
+        agent_data["distribution"]["binary"] = {
+            "darwin-aarch64": {
+                "archive": "https://github.com/owner/repo/releases/download/v1.8.0/a.tar.gz",
+                "cmd": "./a",
+            }
+        }
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "1.9.0-preview.1"
+        assert update.distribution_type == "npx"
+        mock_gh_release_versions.assert_not_called()
+
+    @patch("update_versions.get_npm_versions")
+    def test_one_fetch_is_shared_across_channels(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.8.0", "1.8.0")
+        cache: dict = {}
+
+        check_agent_version(Path("codex-acp/agent.json"), agent_data, cache)
+        check_agent_preview_version(Path("codex-acp/agent.json"), agent_data, cache)
+
+        mock_npm_versions.assert_called_once_with("@acp/codex-acp")
+
+
+class TestApplyUpdateChannels:
+    def _write(self, tmp_path: Path) -> Path:
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(preview_agent_data("1.8.0", "1.9.0-preview.1"), indent=2))
+        return agent_path
+
+    def _update(self, agent_path: Path, channel: str, latest: str) -> VersionUpdate:
+        return VersionUpdate(
+            agent_id="codex-acp",
+            agent_path=agent_path,
+            current_version="1.9.0-preview.1" if channel == "preview" else "1.8.0",
+            latest_version=latest,
+            distribution_type="npx",
+            source_url="https://registry.npmjs.org/@acp/codex-acp",
+            repository="https://github.com/agentclientprotocol/codex-acp",
+            channel=channel,
+        )
+
+    def test_preview_update_touches_only_the_preview_block(self, tmp_path: Path):
+        agent_path = self._write(tmp_path)
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.0-preview.2")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["version"] == "1.8.0"
+        assert updated["distribution"]["npx"]["package"] == "@acp/codex-acp@1.8.0"
+        assert updated["preview"]["version"] == "1.9.0-preview.2"
+        preview_dist = updated["preview"]["distribution"]
+        assert preview_dist["npx"]["package"] == "@acp/codex-acp@1.9.0-preview.2"
+
+    def test_preview_update_can_pin_a_plain_release(self, tmp_path: Path):
+        agent_path = self._write(tmp_path)
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.1")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["preview"]["version"] == "1.9.1"
+        assert updated["preview"]["distribution"]["npx"]["package"] == "@acp/codex-acp@1.9.1"
+
+    def test_stable_update_leaves_the_preview_block_untouched(self, tmp_path: Path):
+        agent_path = self._write(tmp_path)
+        before = json.loads(agent_path.read_text())["preview"]
+
+        assert apply_update(self._update(agent_path, "stable", "1.8.1")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["version"] == "1.8.1"
+        assert updated["distribution"]["npx"]["package"] == "@acp/codex-acp@1.8.1"
+        assert updated["preview"] == before
+
+    def test_preview_update_fails_without_a_preview_block(self, tmp_path: Path, capsys):
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(preview_agent_data("1.8.0", None), indent=2))
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.0-preview.2")) is False
+        assert "no 'preview' block" in capsys.readouterr().err
+
+    def test_uvx_preview_spec_is_rewritten(self, tmp_path: Path):
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
+        agent_data["preview"]["distribution"] = {"uvx": {"package": "codex-acp==1.9.0-preview.1"}}
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(agent_data, indent=2))
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.0-preview.2")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["preview"]["distribution"]["uvx"]["package"] == "codex-acp==1.9.0-preview.2"
+
+
+class TestNpmDistTagsFallback:
+    """A preview published without `--tag preview` must not surface as stable."""
+
+    @patch("update_versions.make_request")
+    def test_prerelease_dist_tag_is_not_returned(self, mock_request):
+        mock_request.return_value = {"dist-tags": {"latest": "1.9.0-preview.1"}}
+
+        assert get_npm_versions("@acp/codex-acp") is None
+
+    @patch("update_versions.make_request")
+    def test_stable_dist_tag_is_returned(self, mock_request):
+        mock_request.return_value = {"dist-tags": {"latest": "1.9.0"}}
+
+        assert get_npm_versions("@acp/codex-acp") == {"1.9.0"}
+
+    @patch("update_versions.make_request")
+    def test_versions_map_includes_previews(self, mock_request):
+        mock_request.return_value = {
+            "versions": {"1.8.0": {}, "1.9.0-preview.1": {}},
+            "dist-tags": {"latest": "1.8.0"},
+        }
+
+        assert get_npm_versions("@acp/codex-acp") == {"1.8.0", "1.9.0-preview.1"}
+
+    @patch("update_versions.get_npm_versions")
+    def test_stable_channel_ignores_published_previews(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
+
+        assert check_agent_version(Path("codex-acp/agent.json"), agent_data) == (None, None)

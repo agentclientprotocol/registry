@@ -45,7 +45,7 @@ jobs:
 
       - name: Run tests
         working-directory: .github/workflows
-        run: uv run --with pytest pytest tests/ -v
+        run: uv run --with pytest --with jsonschema pytest tests/ -v
 
   build:
     name: Build & Validate
@@ -234,6 +234,7 @@ jobs:
             --notes "$RELEASE_NOTES" \
             dist/registry.json \
             dist/registry-for-jetbrains.json \
+            dist/registry-for-jetbrains-preview.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
             dist/*.svg
