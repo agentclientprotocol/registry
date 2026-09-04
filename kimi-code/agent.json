@@ -1,0 +1,18 @@
+{
+  "id": "kimi-code",
+  "name": "Kimi Code",
+  "version": "0.38.0",
+  "description": "Moonshot AI's next-gen coding agent",
+  "repository": "https://github.com/MoonshotAI/kimi-code",
+  "website": "https://moonshotai.github.io/kimi-code/",
+  "authors": [
+    "Moonshot AI"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@moonshot-ai/kimi-code@0.38.0",
+      "args": ["acp"]
+    }
+  }
+}
