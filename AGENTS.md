@@ -78,7 +78,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 1. Scans directories for `agent.json` files
 2. Validates against `agent.schema.json` (JSON Schema)
 3. Validates icons (16x16 SVG, monochrome with `currentColor`)
-4. Aggregates into `dist/registry.json`
+4. Aggregates into three views: `dist/registry.json`, `dist/registry-for-jetbrains.json` and `dist/registry-for-jetbrains-preview.json`
 5. Copies icons to `dist/<id>.svg`
 
 **CI/CD** (`.github/workflows/build-registry.yml`):
@@ -95,9 +95,34 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 - `binary` archives must use supported formats (`.zip`, `.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, or raw binaries); installer formats (`.dmg`, `.pkg`, `.deb`, `.rpm`, `.msi`, `.appimage`) are rejected
 - `binary` archives should pin the archive SHA-256 checksum with `sha256` field
 - `icon.svg`: must be SVG format, 16x16, monochrome using `currentColor` (enables theming)
-- **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages)
+- `preview` (optional): exactly `version` + `distribution`; `version` matches `X.Y.Z-preview.N` or a plain `X.Y.Z`; `distribution` is `npx`/`uvx` only. Checked offline only — see [Preview Channel](#preview-channel)
+- **URL validation**: All distribution URLs must be accessible (binary archives, npm/PyPI packages). Preview distributions are exempt
 
 Set `SKIP_URL_VALIDATION=1` to bypass URL checks during local development.
+
+## Preview Channel
+
+An agent may declare an optional `preview` block in its `agent.json`, holding **exactly two** fields — `version` and `distribution`:
+
+```json
+  "preview": {
+    "version": "1.9.0-preview.1",
+    "distribution": {
+      "npx": { "package": "@agentclientprotocol/codex-acp@1.9.0-preview.1" }
+    }
+  }
+```
+
+See [FORMAT.md](FORMAT.md#preview-channel) for the full contract. Key points when working in this repo:
+
+- **Three build outputs.** `registry.json` and `registry-for-jetbrains.json` always carry the **stable** `version`/`distribution` with the `preview` key stripped. `registry-for-jetbrains-preview.json` is a complete, drop-in replacement for the JetBrains registry where a previewed agent appears as an ordinary entry with `version` and `distribution` substituted by the preview values (and still no `preview` key). Agents without a `preview` block appear there at their stable version.
+- **Version scheme `X.Y.Z-preview.N`.** Valid semver; `1.9.0-preview.N` ranks below `1.9.0`, and `preview.10` ranks above `preview.2`. The root `version` must stay a plain `X.Y.Z` release.
+- **Highest of both channels wins.** `preview.version` means "the newest version we know about", so it may legitimately hold a plain release. A `preview.version` at or below the stable `version` is **not** an error — the build simply serves the stable entry, and the hourly checker rewrites the block on the next run. Never add an ordering constraint between the channels.
+- **Preview is deliberately unverified.** Preview distributions are never launched (`verify_agents.py` and `protocol_matrix.py` stay stable-only), their URLs are never probed, and they add no CI jobs. The only preview-specific check is offline: the package spec's pinned version must equal `preview.version`.
+- **`binary` preview distributions are not supported** — the schema restricts `preview.distribution` to `npx`/`uvx`.
+- **Wrapper-repo prerequisite:** preview artifacts must be published as `npm publish --tag preview`. Publishing a prerelease without `--tag preview` moves `dist-tags.latest` onto it, which the stable checker's fallback path guards against but should not be relied on.
+
+Shared helpers live in `.github/workflows/registry_utils.py`: `semver_sort_key`, `resolve_preview_entry` (the single definition of "what a preview entry is") and `strip_preview`.
 
 ## Updating Agent Versions
 
@@ -110,7 +135,7 @@ Agent versions are automatically updated via `.github/workflows/update-versions.
 - **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases only — non-GitHub `repository` URLs are skipped)
 
 ```bash
-# Dry run - check for available updates
+# Dry run - check for available updates (both channels)
 uv run .github/workflows/update_versions.py
 
 # Apply updates locally
@@ -118,7 +143,12 @@ uv run .github/workflows/update_versions.py --apply
 
 # Check specific agents only
 uv run .github/workflows/update_versions.py --agents gemini,github-copilot
+
+# Check a single release channel
+uv run .github/workflows/update_versions.py --channels preview
 ```
+
+Both channels are checked from a single fetch per distribution source. Stable updates rewrite the root `version` and distribution specs; preview updates rewrite only `preview.version` and the preview specs. Each entry in the `--json` payload carries a `channel` field, and only `stable` bumps are auth-verified.
 
 The workflow can also be triggered manually via GitHub Actions with options to apply updates and filter by agent IDs.
 

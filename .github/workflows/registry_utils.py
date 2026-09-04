@@ -1,6 +1,7 @@
 """Shared utilities for ACP registry scripts."""
 
 import contextlib
+import copy
 import json
 import os
 import re
@@ -99,6 +100,12 @@ AGENT_ENV_RESERVED_NAMES_NORMALIZED = {name.upper() for name in AGENT_ENV_RESERV
 AGENT_ENV_RESERVED_PREFIXES_NORMALIZED = tuple(
     prefix.upper() for prefix in AGENT_ENV_RESERVED_PREFIXES
 )
+
+# Preview channel version scheme: X.Y.Z-preview.N
+PREVIEW_VERSION_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)-preview\.(\d+)$")
+
+# Version part of a uvx package spec (`pkg==1.2.3`, `pkg@1.2.3-preview.4`, ...)
+UVX_VERSION_PATTERN = r"[\d.]+(?:-preview\.\d+)?"
 
 
 def should_skip_dir(name: str) -> bool:
@@ -243,6 +250,79 @@ def normalize_version(version: str) -> str:
     while len(parts) < 3:
         parts.append("0")
     return ".".join(parts[:3])
+
+
+def normalize_release_version(version: str | None) -> str | None:
+    """Normalize comparable release versions to a consistent dotted form."""
+    if not version:
+        return None
+    if re.fullmatch(r"\d+", version):
+        return f"{version}.0.0"
+    if re.fullmatch(r"\d+\.\d+", version):
+        return f"{version}.0"
+    return version
+
+
+def version_tuple(version: str) -> tuple[int, ...]:
+    """Return a sortable key for numeric dotted release versions."""
+    normalized = normalize_release_version(version)
+    if not normalized or not re.fullmatch(r"\d+(?:\.\d+)*", normalized):
+        raise ValueError(f"Unsupported version format: {version}")
+    return tuple(int(part) for part in normalized.split("."))
+
+
+def parse_preview_version(version: str) -> tuple[tuple[int, int, int], int] | None:
+    """Parse `X.Y.Z-preview.N` into ((X, Y, Z), N); return None for any other shape."""
+    match = PREVIEW_VERSION_RE.match(version or "")
+    if not match:
+        return None
+    major, minor, patch, counter = (int(part) for part in match.groups())
+    return (major, minor, patch), counter
+
+
+def is_preview_version(version: str) -> bool:
+    """Return whether a version string is an `X.Y.Z-preview.N` prerelease."""
+    return parse_preview_version(version) is not None
+
+
+def semver_sort_key(version: str) -> tuple:
+    """Return a total order over `X.Y.Z` and `X.Y.Z-preview.N` version strings.
+
+    A release ranks above its own prereleases (semver 11.3) and prerelease
+    counters compare numerically (semver 11.4.1).
+    """
+    parsed = parse_preview_version(version)
+    if parsed is None:
+        return (version_tuple(version), 1, 0)
+    release, counter = parsed
+    return (release, 0, counter)
+
+
+def strip_preview(agent: dict) -> dict:
+    """Return a deep copy of an agent entry with the `preview` block removed."""
+    entry = copy.deepcopy(agent)
+    entry.pop("preview", None)
+    return entry
+
+
+def resolve_preview_entry(agent: dict) -> dict:
+    """Return the preview-channel view of an agent entry; the highest channel wins.
+
+    Falls back to the stable entry when there is no `preview` block or when the
+    stable `version` is at or above `preview.version`. Otherwise `version` and
+    `distribution` are replaced wholesale by the preview values and the
+    `preview` key is dropped, so the result is an ordinary agent entry.
+    """
+    preview = agent.get("preview")
+    if not preview:
+        return strip_preview(agent)
+    if semver_sort_key(agent["version"]) >= semver_sort_key(preview["version"]):
+        return strip_preview(agent)
+    entry = copy.deepcopy(agent)
+    entry["version"] = preview["version"]
+    entry["distribution"] = copy.deepcopy(preview["distribution"])
+    entry.pop("preview")
+    return entry
 
 
 def load_quarantine(registry_dir: Path) -> dict[str, str]:

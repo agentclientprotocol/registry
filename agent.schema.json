@@ -18,8 +18,8 @@
     },
     "version": {
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+",
-      "description": "Semantic version"
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the stable release channel"
     },
     "description": {
       "type": "string",
@@ -71,9 +71,39 @@
         }
       },
       "additionalProperties": false
+    },
+    "preview": {
+      "$ref": "#/definitions/previewChannel"
     }
   },
   "definitions": {
+    "previewChannel": {
+      "type": "object",
+      "description": "Optional preview (unstable) release channel. Holds only the version and the artifact locations; all other metadata is shared with the stable entry.",
+      "required": ["version", "distribution"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-preview\\.[0-9]+)?$",
+          "description": "Newest known version for the preview channel: X.Y.Z-preview.N, or a plain X.Y.Z release when the stable channel is ahead of the preview line"
+        },
+        "distribution": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Preview artifact locations. Only package-based distributions are supported.",
+          "properties": {
+            "npx": {
+              "$ref": "#/definitions/packageDistribution"
+            },
+            "uvx": {
+              "$ref": "#/definitions/packageDistribution"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "binaryDistribution": {
       "type": "object",
       "minProperties": 1,
