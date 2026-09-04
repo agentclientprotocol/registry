@@ -56,6 +56,10 @@
       "type": "string",
       "description": "Icon URL (set automatically by the build from the required icon.svg file)"
     },
+    "icon_data": {
+      "type": "string",
+      "description": "Icon as a base64-encoded data URI (set automatically by the build from the required icon.svg file)"
+    },
     "distribution": {
       "type": "object",
       "minProperties": 1,
