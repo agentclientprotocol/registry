@@ -1,7 +1,7 @@
 {
   "id": "cortex-code",
   "name": "Cortex Code",
-  "version": "1.0.73",
+  "version": "1.1.27",
   "description": "Snowflake's Cortex Code coding agent",
   "repository": "https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code",
   "authors": ["Snowflake"],
@@ -9,33 +9,33 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.73%2B180523.e6179a031de9/coco-1.0.73%2B180523.e6179a031de9-darwin-arm64.tar.gz",
-        "cmd": "./coco-1.0.73+180523.e6179a031de9-darwin-arm64/cortex",
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.1.27%2B200623.07dcb388081e/coco-1.1.27%2B200623.07dcb388081e-darwin-arm64.tar.gz",
+        "cmd": "./coco-1.1.27+200623.07dcb388081e-darwin-arm64/cortex",
         "args": ["acp", "serve"]
       },
       "darwin-x86_64": {
-        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.73%2B180523.e6179a031de9/coco-1.0.73%2B180523.e6179a031de9-darwin-amd64.tar.gz",
-        "cmd": "./coco-1.0.73+180523.e6179a031de9-darwin-amd64/cortex",
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.1.27%2B200623.07dcb388081e/coco-1.1.27%2B200623.07dcb388081e-darwin-amd64.tar.gz",
+        "cmd": "./coco-1.1.27+200623.07dcb388081e-darwin-amd64/cortex",
         "args": ["acp", "serve"]
       },
       "linux-x86_64": {
-        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.73%2B180523.e6179a031de9/coco-1.0.73%2B180523.e6179a031de9-linux-amd64.tar.gz",
-        "cmd": "./coco-1.0.73+180523.e6179a031de9-linux-amd64/cortex",
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.1.27%2B200623.07dcb388081e/coco-1.1.27%2B200623.07dcb388081e-linux-amd64.tar.gz",
+        "cmd": "./coco-1.1.27+200623.07dcb388081e-linux-amd64/cortex",
         "args": ["acp", "serve"]
       },
       "linux-aarch64": {
-        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.73%2B180523.e6179a031de9/coco-1.0.73%2B180523.e6179a031de9-linux-arm64.tar.gz",
-        "cmd": "./coco-1.0.73+180523.e6179a031de9-linux-arm64/cortex",
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.1.27%2B200623.07dcb388081e/coco-1.1.27%2B200623.07dcb388081e-linux-arm64.tar.gz",
+        "cmd": "./coco-1.1.27+200623.07dcb388081e-linux-arm64/cortex",
         "args": ["acp", "serve"]
       },
       "windows-x86_64": {
-        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.73%2B180523.e6179a031de9/coco-1.0.73%2B180523.e6179a031de9-windows-amd64.tar.gz",
-        "cmd": "./coco-1.0.73+180523.e6179a031de9-windows-amd64/cortex.exe",
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.1.27%2B200623.07dcb388081e/coco-1.1.27%2B200623.07dcb388081e-windows-amd64.tar.gz",
+        "cmd": "./coco-1.1.27+200623.07dcb388081e-windows-amd64/cortex.exe",
         "args": ["acp", "serve"]
       },
       "windows-aarch64": {
-        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.0.73%2B180523.e6179a031de9/coco-1.0.73%2B180523.e6179a031de9-windows-arm64.tar.gz",
-        "cmd": "./coco-1.0.73+180523.e6179a031de9-windows-arm64/cortex.exe",
+        "archive": "https://sfc-repo.snowflakecomputing.com/cortex-code-cli/a4643c4278/1.1.27%2B200623.07dcb388081e/coco-1.1.27%2B200623.07dcb388081e-windows-arm64.tar.gz",
+        "cmd": "./coco-1.1.27+200623.07dcb388081e-windows-arm64/cortex.exe",
         "args": ["acp", "serve"]
       }
     }
