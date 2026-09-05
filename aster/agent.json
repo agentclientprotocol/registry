@@ -1,0 +1,43 @@
+{
+  "id": "aster",
+  "name": "Aster",
+  "version": "0.4.1",
+  "description": "Terminal coding agent that reviews changes, edits files, and runs commands with any OpenAI-compatible provider, served over ACP on stdio.",
+  "repository": "https://github.com/Zfinix/aster",
+  "website": "https://github.com/Zfinix/aster",
+  "authors": [
+    "chiziaruhoma"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/Zfinix/aster/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.4.1/aster-0.4.1-aarch64-apple-darwin.tar.gz",
+        "sha256": "935db3fcb35dfe4ee641b3727937005f97902c6a2eb1ba433cdb0d159658c9f6",
+        "cmd": "./aster-0.4.1-aarch64-apple-darwin/aster",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.4.1/aster-0.4.1-x86_64-apple-darwin.tar.gz",
+        "cmd": "./aster-0.4.1-x86_64-apple-darwin/aster",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.4.1/aster-0.4.1-aarch64-unknown-linux-gnu.tar.gz",
+        "cmd": "./aster-0.4.1-aarch64-unknown-linux-gnu/aster",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.4.1/aster-0.4.1-x86_64-unknown-linux-gnu.tar.gz",
+        "cmd": "./aster-0.4.1-x86_64-unknown-linux-gnu/aster",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.4.1/aster-0.4.1-x86_64-pc-windows-msvc.zip",
+        "cmd": "aster-0.4.1-x86_64-pc-windows-msvc/aster.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
