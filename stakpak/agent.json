@@ -9,6 +9,7 @@
     "Stakpak Team <contact@stakpak.dev>"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/stakpak/agent/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "binary": {
