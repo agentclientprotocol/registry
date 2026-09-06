@@ -1,0 +1,20 @@
+{
+  "id": "nova-ai",
+  "name": "Nova AI",
+  "version": "1.1.0",
+  "description": "ACP agent for DataLab Rotterdam's Nova AI, with tool calling, permissions, and session persistence for editors/IDEs",
+  "repository": "https://github.com/Datalab-Rotterdam/nova-ai-cli",
+  "authors": [
+    "DataLab Rotterdam"
+  ],
+  "license": "Apache-2.0",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "@datalabrotterdam/nova-ai-cli@1.1.0",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
