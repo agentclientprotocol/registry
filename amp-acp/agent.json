@@ -8,6 +8,7 @@
     "tao12345666333"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/tao12345666333/amp-acp/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "binary": {

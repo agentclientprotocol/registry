@@ -47,6 +47,11 @@
       "type": "string",
       "description": "SPDX license identifier or 'proprietary'"
     },
+    "license_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the license text or terms of service"
+    },
     "icon": {
       "type": "string",
       "description": "Icon URL (set automatically by the build from the required icon.svg file)"

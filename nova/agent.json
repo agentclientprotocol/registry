@@ -1,7 +1,7 @@
 {
   "id": "nova",
   "name": "Nova",
-  "version": "1.1.32",
+  "version": "1.1.37",
   "description": "Nova by Compass AI - a fully-fledged software engineer at your command",
   "repository": "https://github.com/Compass-Agentic-Platform/nova",
   "website": "https://www.compassap.ai/portfolio/nova.html",
@@ -9,10 +9,11 @@
     "Compass AI"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/Compass-Agentic-Platform/nova/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "@compass-ai/nova@1.1.32",
+      "package": "@compass-ai/nova@1.1.37",
       "args": [
         "acp"
       ]

@@ -9,6 +9,7 @@
     "Corust AI <support@corust.ai>"
   ],
   "license": "GPL-3.0-or-later",
+  "license_url": "https://github.com/Corust-ai/corust-agent-release/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

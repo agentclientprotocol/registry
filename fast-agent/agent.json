@@ -1,7 +1,7 @@
 {
   "id": "fast-agent",
   "name": "fast-agent",
-  "version": "0.9.30",
+  "version": "0.10.1",
   "description": "Code and build agents with comprehensive multi-provider support",
   "repository": "https://github.com/evalstate/fast-agent",
   "website": "https://fast-agent.ai",
@@ -9,12 +9,16 @@
     "enquiries@fast-agent.ai"
   ],
   "license": "Apache 2.0",
+  "license_url": "https://github.com/evalstate/fast-agent/blob/main/LICENSE",
   "distribution": {
     "uvx": {
-      "package": "fast-agent-acp==0.9.30",
+      "package": "fast-agent-acp==0.10.1",
       "args": [
         "-x"
-      ]
+      ],
+      "env": {
+        "FAST_AGENT_MODEL": "codexplan"
+      }
     }
   }
 }
