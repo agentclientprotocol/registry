@@ -8,6 +8,7 @@
     "Tencent Cloud"
   ],
   "license": "Proprietary",
+  "license_url": "https://www.codebuddy.cn/agreement/",
   "distribution": {
     "npx": {
       "package": "@tencent-ai/codebuddy-code@2.147.0",

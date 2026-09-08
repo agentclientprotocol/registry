@@ -9,6 +9,7 @@
     "GitHub"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/github/copilot-cli/blob/main/LICENSE.md",
   "distribution": {
     "npx": {
       "package": "@github/copilot@1.0.83",

@@ -5,6 +5,15 @@
   "description": "Schema for ACP agent registry entries",
   "type": "object",
   "required": ["id", "name", "version", "description", "distribution"],
+  "if": {
+    "properties": {
+      "id": { "const": "dimcode" }
+    },
+    "required": ["id"]
+  },
+  "else": {
+    "required": ["license_url"]
+  },
   "properties": {
     "id": {
       "type": "string",

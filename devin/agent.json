@@ -8,6 +8,7 @@
     "Cognition"
   ],
   "license": "proprietary",
+  "license_url": "https://cognition.com/legal/platform-terms-of-service",
   "repository": "https://github.com/CognitionAI/devin-cli",
   "distribution": {
     "binary": {

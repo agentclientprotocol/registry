@@ -8,6 +8,7 @@
     "xAI"
   ],
   "license": "proprietary",
+  "license_url": "https://x.ai/legal/terms-of-service",
   "distribution": {
     "npx": {
       "package": "@xai-official/grok@1.0.24",

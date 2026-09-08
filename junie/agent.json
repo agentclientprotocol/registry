@@ -9,6 +9,7 @@
     "JetBrains"
   ],
   "license": "proprietary",
+  "license_url": "https://www.jetbrains.com/legal/docs/terms/jetbrains-ai-service/",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

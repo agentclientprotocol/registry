@@ -31,7 +31,7 @@ except ImportError:
     HAS_JSONSCHEMA = False
 
 REGISTRY_VERSION = "1.0.0"
-REQUIRED_FIELDS = {"id", "name", "version", "description", "distribution"}
+REQUIRED_FIELDS = {"id", "name", "version", "description", "license_url", "distribution"}
 VALID_DISTRIBUTION_TYPES = {"binary", "npx", "uvx"}
 VALID_PLATFORMS = {
     "darwin-aarch64",
@@ -451,6 +451,10 @@ def validate_agent(agent: dict, agent_dir: str, schema: dict | None = None) -> l
 
     # Check required fields
     missing = REQUIRED_FIELDS - set(agent.keys())
+    # ignored dimcode
+    # as it's present at the moment of license_url mandatory requirement introduction
+    if agent.get("id") == "dimcode":
+        missing.discard("license_url")
     if missing:
         errors.append(f"Missing required fields: {', '.join(sorted(missing))}")
 

@@ -8,6 +8,7 @@
     "Factory AI"
   ],
   "license": "proprietary",
+  "license_url": "https://factory.ai/legal/terms",
   "distribution": {
     "npx": {
       "package": "droid@0.213.0",

@@ -21,6 +21,7 @@ Each agent has the following structure:
   "website": "https://example.com/docs",
   "authors": ["Author Name"],
   "license": "MIT",
+  "license_url": "https://github.com/your-org/your-repo/blob/main/LICENSE",
   "icon": "https://.../entry-id.svg",
   "distribution": {
     "binary": {
@@ -43,6 +44,8 @@ Each agent has the following structure:
   }
 }
 ```
+
+The `license_url` field is required and must link to the agent's license text or terms of service. DimCode (`id: dimcode`) is exempt from this requirement.
 
 ## Distribution Types
 

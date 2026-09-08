@@ -9,6 +9,7 @@
     "Kimchi"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/getkimchi/kimchi/blob/master/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
