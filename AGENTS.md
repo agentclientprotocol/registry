@@ -22,7 +22,7 @@ python .github/workflows/build_registry.py
 .github/workflows/scripts/run-workflows-tests.sh
 
 # Run workflow tests natively on the host (CI-style debugging only)
-cd .github/workflows && uv run --with pytest pytest tests/ -v
+cd .github/workflows && uv run --with pytest --with jsonschema pytest tests/ -v
 
 # Lint check
 cd .github/workflows && uv run --with ruff ruff check .

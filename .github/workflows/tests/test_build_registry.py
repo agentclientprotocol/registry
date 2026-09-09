@@ -339,6 +339,7 @@ def agent_manifest(agent_id: str, version: str, preview: dict | None = None, **e
         "name": agent_id,
         "version": version,
         "description": f"{agent_id} test agent",
+        "license_url": f"https://example.com/{agent_id}/license",
         "distribution": {"npx": {"package": f"@acp/{agent_id}@{version}"}},
     }
     manifest.update(extra)
