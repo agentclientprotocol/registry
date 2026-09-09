@@ -1,0 +1,18 @@
+{
+  "id": "dsh-acp-interactive",
+  "name": "DeepSeek Harness Interactive",
+  "version": "1.0.9",
+  "description": "Community-maintained (unofficial) ACP adapter for DeepSeek Harness: an editor-facing server composed from the published @deepseek-ai/dsh-* plugins for Zed and other ACP clients. Not affiliated with DeepSeek.",
+  "repository": "https://github.com/ClickPM/dsh-acp-interactive",
+  "website": "https://github.com/ClickPM/dsh-acp-interactive#readme",
+  "authors": [
+    "ClickPM"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/ClickPM/dsh-acp-interactive/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "deepseekharness-acp-interactive@1.0.9"
+    }
+  }
+}
