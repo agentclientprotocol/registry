@@ -1,0 +1,21 @@
+{
+  "id": "felan",
+  "name": "Felan Code",
+  "version": "0.24.4",
+  "description": "Open-source, model-portable coding agent built for cost-efficient, verifiable software work",
+  "repository": "https://github.com/felan-ai/felan",
+  "website": "https://github.com/felan-ai/felan/blob/main/docs/user-guide/local-cli.md#native-acp-v1",
+  "authors": [
+    "Felan contributors"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/felan-ai/felan/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@felan-ai/felan@0.24.4",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
