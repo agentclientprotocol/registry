@@ -1,7 +1,7 @@
 {
   "id": "grok-build",
   "name": "Grok Build",
-  "version": "1.0.24",
+  "version": "1.0.26",
   "description": "xAI's coding agent and CLI",
   "website": "https://x.ai/cli",
   "authors": [
@@ -11,7 +11,7 @@
   "license_url": "https://x.ai/legal/terms-of-service",
   "distribution": {
     "npx": {
-      "package": "@xai-official/grok@1.0.24",
+      "package": "@xai-official/grok@1.0.26",
       "args": [
         "agent",
         "stdio"
