@@ -1,0 +1,20 @@
+{
+  "id": "codex-acp-bridge",
+  "name": "Codex ACP Bridge",
+  "version": "1.8.1",
+  "description": "ACP bridge for running the local Codex CLI with native sessions, models, tools, and authentication",
+  "repository": "https://github.com/normahq/codex-acp-bridge",
+  "website": "https://github.com/normahq/codex-acp-bridge",
+  "authors": [
+    "Alexey Samoylov"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@normahq/codex-acp-bridge@1.8.1",
+      "args": [
+        "--defer-backend"
+      ]
+    }
+  }
+}
