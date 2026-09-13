@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 120 120" aria-label="Oh My Pi">
+  <g transform="translate(0 15)">
+    <path fill="currentColor" fill-rule="evenodd" d="M10 5h100a5 5 0 0 1 5 5v13a5 5 0 0 1-5 5H10a5 5 0 0 1-5-5V10a5 5 0 0 1 5-5Zm10 23a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v52a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4V28Zm49 0a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v23h1a5 5 0 0 1 5 5v16a5 5 0 0 1-5 5H69a5 5 0 0 1-5-5V56a5 5 0 0 1 5-5V28Zm6 31a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V59Zm9 0a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V59ZM18 10a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm84 0a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/>
+  </g>
+</svg>
