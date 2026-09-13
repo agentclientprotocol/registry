@@ -1,0 +1,25 @@
+{
+  "id": "lenso",
+  "name": "Lenso Agent",
+  "version": "0.1.0",
+  "description": "A local coding Agent with replaceable Lenso Plugins",
+  "repository": "https://github.com/LioRael/lenso-agent",
+  "authors": [
+    "Lenso contributors"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/LioRael/lenso-agent/releases/download/v0.1.0/lenso-agent-acp-v0.1.0-darwin-aarch64.tar.gz",
+        "sha256": "138da6c4ef38b7a51e1faee3e8cac5969be5efbe29fd52f0b02aaf41b5e414dc",
+        "cmd": "./lenso-agent-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/LioRael/lenso-agent/releases/download/v0.1.0/lenso-agent-acp-v0.1.0-linux-x86_64.tar.gz",
+        "sha256": "7aeee7255bcd5a868ad6d734762f6594ae28b4115ff1f8f12cd81ca36845b901",
+        "cmd": "./lenso-agent-acp"
+      }
+    }
+  }
+}
