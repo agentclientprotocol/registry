@@ -1,0 +1,32 @@
+{
+  "id": "kiro",
+  "name": "Kiro CLI",
+  "version": "2.20.1",
+  "description": "An agentic coding assistant with spec-driven development, MCP, and Agent Skills",
+  "repository": "https://github.com/kirodotdev/Kiro",
+  "website": "https://kiro.dev/docs/cli/acp/",
+  "authors": [
+    "Kiro"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "binary": {
+      "linux-x86_64": {
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.20.1/kirocli-x86_64-linux.tar.gz",
+        "sha256": "db3d20a96d7ceddc414d3e689762ac7d62277f5463da2bcd6167e4055320bd0c",
+        "cmd": "./kirocli/bin/kiro-cli",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.20.1/kirocli-aarch64-linux.tar.gz",
+        "sha256": "e999055bd515db2cca4ebe1bf3a5f6fe1dc10c5e40c180c790ea51c0efddd860",
+        "cmd": "./kirocli/bin/kiro-cli",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
