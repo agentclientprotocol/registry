@@ -1,0 +1,22 @@
+{
+  "id": "deel",
+  "name": "deel",
+  "version": "1.15.1",
+  "description": "A coding agent for local models and private gateways. Zero dependencies, no telemetry.",
+  "repository": "https://github.com/jysvai/deel-local-cli",
+  "website": "https://github.com/jysvai/deel-local-cli",
+  "authors": [
+    "yunseok"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/jysvai/deel-local-cli/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "deel-local-cli@1.15.1",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
