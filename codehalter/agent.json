@@ -1,0 +1,37 @@
+{
+  "id": "codehalter",
+  "name": "codehalter",
+  "version": "25.0.0",
+  "description": "ACP-only coding agent that runs in a devcontainer sandbox against any OpenAI-compatible LLM (llama.cpp, Ollama, vLLM, ...)",
+  "repository": "https://github.com/tbocek/codehalter",
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "authors": [
+    "Thomas Bocek"
+  ],
+  "website": "https://tbocek.github.io/codehalter/",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/tbocek/codehalter/releases/download/v25/codehalter-darwin-arm64",
+        "cmd": "./codehalter-darwin-arm64"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/tbocek/codehalter/releases/download/v25/codehalter-darwin-amd64",
+        "cmd": "./codehalter-darwin-amd64"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/tbocek/codehalter/releases/download/v25/codehalter-linux-arm64",
+        "cmd": "./codehalter-linux-arm64"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/tbocek/codehalter/releases/download/v25/codehalter-linux-amd64",
+        "cmd": "./codehalter-linux-amd64"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/tbocek/codehalter/releases/download/v25/codehalter-windows-amd64.exe",
+        "cmd": "./codehalter-windows-amd64.exe"
+      }
+    }
+  }
+}
