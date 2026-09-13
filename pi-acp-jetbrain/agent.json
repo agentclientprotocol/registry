@@ -1,0 +1,14 @@
+{
+  "id": "pi-acp-jetbrain",
+  "name": "pi-acp-jetbrain",
+  "version": "0.0.36",
+  "description": "Run the pi coding agent inside JetBrains IDEs over the Agent Client Protocol",
+  "repository": "https://github.com/ryan-brosas/pi-acp-jetbrain",
+  "authors": ["Sergii Kozak"],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "pi-acp-jetbrain@0.0.36"
+    }
+  }
+}
