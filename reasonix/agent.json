@@ -1,0 +1,20 @@
+{
+  "id": "reasonix",
+  "name": "Reasonix",
+  "version": "1.20.0",
+  "description": "Cache-first DeepSeek coding agent for the terminal",
+  "repository": "https://github.com/esengine/DeepSeek-Reasonix",
+  "website": "https://esengine.github.io/DeepSeek-Reasonix/",
+  "authors": [
+    "Reasonix Contributors"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "reasonix@1.20.0",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
