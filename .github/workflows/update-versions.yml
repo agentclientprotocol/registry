@@ -180,14 +180,20 @@ jobs:
 
           data = json.loads(os.environ["UPDATES_JSON"])
           updates = data.get("updates", [])
+          # path -> {channel -> version}: both channels of one agent live in the
+          # same file, so a path-only key would let one channel mask the other.
           expected_versions = {}
           for update in updates:
               agent_id = update.get("agent_id", "")
+              channel = update.get("channel", "stable")
               latest_version = update.get("latest_version", "")
               if not re.fullmatch(r"[a-z][a-z0-9-]*", agent_id):
                   print(f"Invalid agent id in update JSON: {agent_id!r}", file=sys.stderr)
                   sys.exit(1)
-              expected_versions[f"{agent_id}/agent.json"] = latest_version
+              if channel not in ("stable", "preview"):
+                  print(f"Invalid channel in update JSON: {channel!r}", file=sys.stderr)
+                  sys.exit(1)
+              expected_versions.setdefault(f"{agent_id}/agent.json", {})[channel] = latest_version
 
           if not expected_versions:
               print("No expected update files found", file=sys.stderr)
@@ -225,16 +231,21 @@ jobs:
           base_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
           (artifact_dir / "base-sha.txt").write_text(base_sha + "\n")
 
-          for rel_path, expected_version in sorted(expected_versions.items()):
+          for rel_path, channel_versions in sorted(expected_versions.items()):
               source = Path(rel_path)
               agent = json.loads(source.read_text())
-              actual_version = agent.get("version")
-              if actual_version != expected_version:
-                  print(
-                      f"{rel_path} has version {actual_version!r}, expected {expected_version!r}",
-                      file=sys.stderr,
-                  )
-                  sys.exit(1)
+              for channel, expected_version in sorted(channel_versions.items()):
+                  if channel == "preview":
+                      actual_version = (agent.get("preview") or {}).get("version")
+                  else:
+                      actual_version = agent.get("version")
+                  if actual_version != expected_version:
+                      print(
+                          f"{rel_path} has {channel} version {actual_version!r}, "
+                          f"expected {expected_version!r}",
+                          file=sys.stderr,
+                      )
+                      sys.exit(1)
               destination = artifact_dir / rel_path
               destination.parent.mkdir(parents=True, exist_ok=True)
               shutil.copy2(source, destination)
@@ -334,15 +345,22 @@ jobs:
         env:
           UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
         run: |
+          # The preview channel is explicitly unverified: preview distributions
+          # are never launched, so only stable bumps are auth-checked here.
           UPDATED_AGENTS=$(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
           data = json.load(sys.stdin)
-          ids = [u['agent_id'] for u in data.get('updates', [])]
-          if not ids:
-              print('ERROR: No agent IDs found in updates JSON', file=sys.stderr)
-              sys.exit(1)
+          ids = sorted({
+              u['agent_id']
+              for u in data.get('updates', [])
+              if u.get('channel', 'stable') == 'stable'
+          })
           print(','.join(ids))
           ")
+          if [ -z "$UPDATED_AGENTS" ]; then
+            echo "No stable agent updates in this run; skipping auth verification"
+            exit 0
+          fi
           echo "Verifying updated agents: $UPDATED_AGENTS"
           python3 .github/workflows/verify_agents.py --auth-check --agent "$UPDATED_AGENTS"
 
@@ -432,9 +450,11 @@ jobs:
           updates = data.get('updates', [])
           if len(updates) == 1:
               u = updates[0]
-              print(f\"Update {u['agent_id']} to {u['latest_version']}\")
+              channel = u.get('channel', 'stable')
+              suffix = '' if channel == 'stable' else ' (' + channel + ')'
+              print('Update ' + u['agent_id'] + suffix + ' to ' + u['latest_version'])
           else:
-              print(f\"Update {len(updates)} agents to latest versions\")
+              print('Update ' + str(len(updates)) + ' agents to latest versions')
           ")
 
           # Generate details
@@ -442,7 +462,9 @@ jobs:
           import sys, json
           data = json.load(sys.stdin)
           for u in data.get('updates', []):
-              print(f\"- {u['agent_id']}: {u['current_version']} -> {u['latest_version']}\")
+              channel = u.get('channel', 'stable')
+              suffix = '' if channel == 'stable' else ' (' + channel + ')'
+              print('- ' + u['agent_id'] + suffix + ': ' + u['current_version'] + ' -> ' + u['latest_version'])
           ")
 
           echo "summary=$SUMMARY" >> "$GITHUB_OUTPUT"

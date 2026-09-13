@@ -9,6 +9,7 @@
     "Thomas Wood"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/crow-cli/crow-cli/blob/main/LICENSE.md",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

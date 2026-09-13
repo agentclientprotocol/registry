@@ -14,12 +14,18 @@ from registry_utils import (
     extract_npm_package_name,
     extract_npm_package_version,
     extract_pypi_package_name,
+    is_preview_version,
     load_quarantine,
     normalize_version,
+    parse_preview_version,
+    resolve_preview_entry,
     sanitize_agent_env,
+    semver_sort_key,
     should_skip_dir,
+    strip_preview,
     subprocess_group_kwargs,
     terminate_process_group,
+    version_tuple,
 )
 
 
@@ -80,6 +86,167 @@ class TestNormalizeVersion:
 
     def test_four_parts_truncated(self):
         assert normalize_version("1.2.3.4") == "1.2.3"
+
+
+class TestVersionTuple:
+    def test_pads_short_versions(self):
+        assert version_tuple("1") == (1, 0, 0)
+        assert version_tuple("1.2") == (1, 2, 0)
+
+    def test_keeps_extra_components(self):
+        assert version_tuple("1.2.3.4") == (1, 2, 3, 4)
+
+    def test_rejects_prerelease(self):
+        with pytest.raises(ValueError):
+            version_tuple("1.9.0-preview.1")
+
+
+class TestParsePreviewVersion:
+    def test_parses_preview(self):
+        assert parse_preview_version("1.9.0-preview.3") == ((1, 9, 0), 3)
+
+    def test_plain_release_is_not_preview(self):
+        assert parse_preview_version("1.9.0") is None
+        assert not is_preview_version("1.9.0")
+
+    @pytest.mark.parametrize(
+        "version",
+        [
+            "1.0-preview-1",
+            "1.0-preview.1",
+            "1.9.0-preview",
+            "1.9.0-preview.",
+            "1.9.0-rc.1",
+            "1.9.0-next.1",
+            "1.9.0+preview.1",
+            "v1.9.0-preview.1",
+            "",
+        ],
+    )
+    def test_rejects_unsupported_shapes(self, version):
+        assert parse_preview_version(version) is None
+        assert not is_preview_version(version)
+
+
+class TestSemverSortKey:
+    def test_total_ordering(self):
+        ordered = [
+            "1.9.0-preview.2",
+            "1.9.0-preview.10",
+            "1.9.0",
+            "1.9.1-preview.1",
+            "1.9.1",
+        ]
+        assert sorted(ordered, key=semver_sort_key) == ordered
+
+    def test_numeric_counter_comparison(self):
+        assert semver_sort_key("1.9.0-preview.10") > semver_sort_key("1.9.0-preview.2")
+
+    def test_prerelease_ranks_below_its_release(self):
+        assert semver_sort_key("1.9.0-preview.99") < semver_sort_key("1.9.0")
+
+    def test_release_ranks_below_next_prerelease(self):
+        assert semver_sort_key("1.9.0") < semver_sort_key("1.9.1-preview.1")
+
+
+def _agent(version: str, preview: dict | None = None) -> dict:
+    agent = {
+        "id": "codex-acp",
+        "name": "Codex",
+        "version": version,
+        "description": "ACP adapter",
+        "repository": "https://github.com/agentclientprotocol/codex-acp",
+        "authors": ["OpenAI"],
+        "license": "proprietary",
+        "distribution": {
+            "npx": {
+                "package": f"@agentclientprotocol/codex-acp@{version}",
+                "args": ["--stable-flag"],
+            }
+        },
+    }
+    if preview is not None:
+        agent["preview"] = preview
+    return agent
+
+
+def _preview(version: str) -> dict:
+    return {
+        "version": version,
+        "distribution": {"npx": {"package": f"@agentclientprotocol/codex-acp@{version}"}},
+    }
+
+
+class TestStripPreview:
+    def test_removes_preview_block(self):
+        agent = _agent("1.8.0", _preview("1.9.0-preview.1"))
+
+        stripped = strip_preview(agent)
+
+        assert "preview" not in stripped
+        assert stripped["version"] == "1.8.0"
+        assert "preview" in agent  # input untouched
+
+    def test_no_preview_block_is_a_copy(self):
+        agent = _agent("1.8.0")
+
+        stripped = strip_preview(agent)
+
+        assert stripped == agent
+        assert stripped["distribution"] is not agent["distribution"]
+
+
+class TestResolvePreviewEntry:
+    def test_no_preview_block_returns_base_entry(self):
+        agent = _agent("1.8.0")
+
+        assert resolve_preview_entry(agent) == agent
+
+    def test_preview_ahead_substitutes_version_and_distribution(self):
+        agent = _agent("1.8.0", _preview("1.9.0-preview.1"))
+
+        entry = resolve_preview_entry(agent)
+
+        assert "preview" not in entry
+        assert entry["version"] == "1.9.0-preview.1"
+        assert entry["distribution"] == {
+            "npx": {"package": "@agentclientprotocol/codex-acp@1.9.0-preview.1"}
+        }
+        for field in ("id", "name", "description", "repository", "authors", "license"):
+            assert entry[field] == agent[field]
+        assert list(entry.keys()) == [k for k in agent if k != "preview"]
+
+    def test_stable_ahead_falls_back_to_base_entry(self):
+        agent = _agent("1.9.1", _preview("1.9.0-preview.1"))
+
+        entry = resolve_preview_entry(agent)
+
+        assert entry == strip_preview(agent)
+        assert entry["version"] == "1.9.1"
+
+    def test_equal_versions_fall_back_to_base_entry(self):
+        agent = _agent("1.9.1", _preview("1.9.1"))
+
+        entry = resolve_preview_entry(agent)
+
+        assert entry == strip_preview(agent)
+
+    def test_plain_release_preview_ahead_is_substituted(self):
+        agent = _agent("1.9.0", _preview("1.9.1"))
+
+        entry = resolve_preview_entry(agent)
+
+        assert entry["version"] == "1.9.1"
+        assert entry["distribution"]["npx"]["package"].endswith("@1.9.1")
+        assert "preview" not in entry
+
+    def test_result_is_detached_from_input(self):
+        agent = _agent("1.8.0", _preview("1.9.0-preview.1"))
+
+        entry = resolve_preview_entry(agent)
+        entry["distribution"]["npx"]["package"] = "mutated"
+
+        assert agent["preview"]["distribution"]["npx"]["package"] != "mutated"
 
 
 class TestLoadQuarantine:

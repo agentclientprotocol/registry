@@ -9,6 +9,7 @@
     "LangChain"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/langchain-ai/deepagentsjs/blob/main/LICENSE",
   "distribution": {
     "npx": {
       "package": "deepagents-acp@0.1.7",

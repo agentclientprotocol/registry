@@ -9,6 +9,7 @@
     "Mistral AI"
   ],
   "license": "Apache-2.0",
+  "license_url": "https://github.com/mistralai/mistral-vibe/blob/main/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
     "binary": {
