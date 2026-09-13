@@ -1,0 +1,21 @@
+{
+  "id": "clio-coder",
+  "name": "Clio Coder",
+  "version": "0.4.0",
+  "description": "Coding agent for HPC and scientific-software developers, part of IOWarp's CLIO ecosystem",
+  "repository": "https://github.com/iowarp/clio-coder",
+  "website": "https://iowarp.ai",
+  "authors": [
+    "Anthony Kougkas <a.kougkas@gmail.com>",
+    "IOWarp <https://iowarp.ai>"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "@iowarp/clio-coder@0.4.0",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
