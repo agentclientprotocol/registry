@@ -1,0 +1,40 @@
+{
+  "id": "pando",
+  "name": "Pando",
+  "version": "0.416.4",
+  "description": "Advanced multimodal AI assistant",
+  "repository": "https://github.com/digiogithub/pando",
+  "website": "https://madeindigio.github.io/pando-docs/en/",
+  "authors": ["digio"],
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/digiogithub/pando/releases/download/v0.416.4/pando-darwin-arm64.zip",
+        "cmd": "./pando-darwin-arm64",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/digiogithub/pando/releases/download/v0.416.4/pando-darwin-x64.zip",
+        "cmd": "./pando-darwin-x64",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/digiogithub/pando/releases/download/v0.416.4/pando-linux-arm64.zip",
+        "cmd": "./pando-linux-arm64",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/digiogithub/pando/releases/download/v0.416.4/pando-linux-x64.zip",
+        "cmd": "./pando-linux-x64",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/digiogithub/pando/releases/download/v0.416.4/pando-windows-x64.zip",
+        "cmd": "./pando-windows-x64.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
