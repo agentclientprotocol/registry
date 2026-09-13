@@ -1,0 +1,28 @@
+{
+  "id": "zed-lm-studio-agent",
+  "name": "Zed Native LM Studio Agent",
+  "version": "1.0.1",
+  "description": "A local-first ACP coding agent for Zed powered by LM Studio.",
+  "repository": "https://github.com/99percentgrip/Native-LM-Studio-ACP",
+  "website": "https://github.com/99percentgrip/Native-LM-Studio-ACP",
+  "authors": [
+    "Aleksejs Kozlitins"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-x86_64": {
+        "archive": "https://github.com/99percentgrip/Native-LM-Studio-ACP/releases/download/v1.0.1/zed-lm-studio-agent-darwin-x86_64.tar.gz",
+        "cmd": "./zed-lm-studio-agent"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/99percentgrip/Native-LM-Studio-ACP/releases/download/v1.0.1/zed-lm-studio-agent-linux-x86_64.tar.gz",
+        "cmd": "./zed-lm-studio-agent"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/99percentgrip/Native-LM-Studio-ACP/releases/download/v1.0.1/zed-lm-studio-agent-windows-x86_64.zip",
+        "cmd": "./zed-lm-studio-agent.exe"
+      }
+    }
+  }
+}
