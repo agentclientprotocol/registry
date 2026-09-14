@@ -1,53 +1,54 @@
 {
   "id": "devin",
   "name": "Devin",
-  "version": "3000.6.14",
+  "version": "3000.10.21",
   "description": "Devin CLI coding agent by Cognition",
   "website": "https://docs.devin.ai/cli",
   "authors": [
     "Cognition"
   ],
   "license": "proprietary",
+  "license_url": "https://cognition.com/legal/platform-terms-of-service",
   "repository": "https://github.com/CognitionAI/devin-cli",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://static.devin.ai/cli/3000.6.14/devin-3000.6.14-aarch64-apple-darwin.tar.gz",
+        "archive": "https://static.devin.ai/cli/3000.10.21/devin-3000.10.21-aarch64-apple-darwin.tar.gz",
         "cmd": "./bin/devin",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://static.devin.ai/cli/3000.6.14/devin-3000.6.14-x86_64-apple-darwin.tar.gz",
+        "archive": "https://static.devin.ai/cli/3000.10.21/devin-3000.10.21-x86_64-apple-darwin.tar.gz",
         "cmd": "./bin/devin",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://static.devin.ai/cli/3000.6.14/devin-3000.6.14-aarch64-unknown-linux.tar.gz",
+        "archive": "https://static.devin.ai/cli/3000.10.21/devin-3000.10.21-aarch64-unknown-linux.tar.gz",
         "cmd": "./bin/devin",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://static.devin.ai/cli/3000.6.14/devin-3000.6.14-x86_64-unknown-linux.tar.gz",
+        "archive": "https://static.devin.ai/cli/3000.10.21/devin-3000.10.21-x86_64-unknown-linux.tar.gz",
         "cmd": "./bin/devin",
         "args": [
           "acp"
         ]
       },
       "windows-aarch64": {
-        "archive": "https://static.devin.ai/cli/3000.6.14/devin-3000.6.14-aarch64-pc-windows.zip",
+        "archive": "https://static.devin.ai/cli/3000.10.21/devin-3000.10.21-aarch64-pc-windows.zip",
         "cmd": "./bin\\devin.exe",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://static.devin.ai/cli/3000.6.14/devin-3000.6.14-x86_64-pc-windows.zip",
+        "archive": "https://static.devin.ai/cli/3000.10.21/devin-3000.10.21-x86_64-pc-windows.zip",
         "cmd": "./bin\\devin.exe",
         "args": [
           "acp"
