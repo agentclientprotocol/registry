@@ -1,0 +1,16 @@
+{
+  "id": "dsh-acp",
+  "name": "DeepSeek Harness",
+  "version": "0.4.5",
+  "description": "ACP adapter for DeepSeek Harness (dsh) — sessions, permission presets, agent presets, live model catalog, MCP servers, and skills from any ACP client",
+  "repository": "https://github.com/openma-ai/deepseek-harness-acp",
+  "authors": [
+    "OpenMA"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "@openma/deepseek-harness-acp@0.4.5"
+    }
+  }
+}
