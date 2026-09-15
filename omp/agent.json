@@ -1,0 +1,20 @@
+{
+  "id": "omp",
+  "name": "Oh My Pi",
+  "version": "18.1.9",
+  "description": "Coding agent with built-in ACP: subagents, plan mode, LSP, DAP, and editor-bridged tools",
+  "repository": "https://github.com/can1357/oh-my-pi",
+  "website": "https://omp.sh/docs/acp",
+  "authors": [
+    "Stencil Labs, Inc.",
+    "Can Boluk"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/can1357/oh-my-pi/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@oh-my-pi/pi-coding-agent@18.1.9",
+      "args": ["acp"]
+    }
+  }
+}
