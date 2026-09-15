@@ -1,0 +1,16 @@
+{
+  "id": "zcode-acp",
+  "name": "ZCode ACP",
+  "version": "0.17.1",
+  "description": "Community bridge that drives the real ZCode app-server (GLM) over ACP — the full official harness in Zed and JetBrains, no editor-side API keys.",
+  "repository": "https://github.com/william0wang/zcode-acp",
+  "website": "https://github.com/william0wang/zcode-acp",
+  "authors": ["William Wang"],
+  "license": "Apache-2.0",
+  "icon": "icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "zcode-acp-server@0.17.1"
+    }
+  }
+}
