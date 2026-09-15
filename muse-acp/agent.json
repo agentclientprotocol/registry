@@ -1,0 +1,17 @@
+{
+  "id": "muse-acp",
+  "name": "Muse",
+  "version": "0.1.0",
+  "description": "ACP adapter for Muse Code",
+  "repository": "https://github.com/sanjay3290/muse-acp",
+  "website": "https://github.com/sanjay3290/muse-acp#readme",
+  "authors": [
+    "sanjay3290"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "muse-acp@0.1.0"
+    }
+  }
+}
