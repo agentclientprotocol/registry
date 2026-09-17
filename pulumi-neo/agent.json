@@ -1,0 +1,64 @@
+{
+  "id": "pulumi-neo",
+  "name": "Pulumi Neo",
+  "version": "3.254.0",
+  "description": "Pulumi's AI agent for provisioning, governing, and optimizing cloud infrastructure",
+  "repository": "https://github.com/pulumi/pulumi",
+  "website": "https://www.pulumi.com/product/neo/",
+  "authors": [
+    "Pulumi"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/pulumi/pulumi/releases/download/v3.254.0/pulumi-v3.254.0-darwin-arm64.tar.gz",
+        "cmd": "./pulumi/pulumi",
+        "args": [
+          "neo",
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/pulumi/pulumi/releases/download/v3.254.0/pulumi-v3.254.0-darwin-x64.tar.gz",
+        "cmd": "./pulumi/pulumi",
+        "args": [
+          "neo",
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/pulumi/pulumi/releases/download/v3.254.0/pulumi-v3.254.0-linux-arm64.tar.gz",
+        "cmd": "./pulumi/pulumi",
+        "args": [
+          "neo",
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/pulumi/pulumi/releases/download/v3.254.0/pulumi-v3.254.0-linux-x64.tar.gz",
+        "cmd": "./pulumi/pulumi",
+        "args": [
+          "neo",
+          "acp"
+        ]
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/pulumi/pulumi/releases/download/v3.254.0/pulumi-v3.254.0-windows-arm64.zip",
+        "cmd": "pulumi\\bin\\pulumi.exe",
+        "args": [
+          "neo",
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/pulumi/pulumi/releases/download/v3.254.0/pulumi-v3.254.0-windows-x64.zip",
+        "cmd": "pulumi\\bin\\pulumi.exe",
+        "args": [
+          "neo",
+          "acp"
+        ]
+      }
+    }
+  }
+}
