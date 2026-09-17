@@ -1,0 +1,51 @@
+{
+  "id": "nail-agent",
+  "name": "nail-agent",
+  "version": "0.1.0",
+  "description": "Small, clean ACP agent for Zed: streaming chat over 3 switchable models, permission-gated local tools, embedded octofs filesystem server, MCP stdio servers, AgDb session memory with resume, token usage and thinking display.",
+  "repository": "https://github.com/qkun-zh/nail-agent",
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "linux-x86_64": {
+        "archive": "https://github.com/qkun-zh/nail-agent/releases/download/v0.1.0/nail-agent-v0.1.0-linux-x86_64.tar.gz",
+        "sha256": "28e9ed9bf0ae4c9556adff00cb52d91709f8858e34d114ab5ade316adbff37d6",
+        "cmd": "./nail-agent",
+        "args": [],
+        "env": {}
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/qkun-zh/nail-agent/releases/download/v0.1.0/nail-agent-v0.1.0-linux-aarch64.tar.gz",
+        "sha256": "88d89b4e1e5abc65009d031d0c746780c686de7cfa127f0d82068be0da3b2aba",
+        "cmd": "./nail-agent",
+        "args": [],
+        "env": {}
+      },
+      "darwin-aarch64": {
+        "archive": "https://github.com/qkun-zh/nail-agent/releases/download/v0.1.0/nail-agent-v0.1.0-darwin-aarch64.tar.gz",
+        "sha256": "9119ea258d98d1e14fceb2d488903a4a489ffea031a74a657e90fd4d2c822702",
+        "cmd": "./nail-agent",
+        "args": [],
+        "env": {}
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/qkun-zh/nail-agent/releases/download/v0.1.0/nail-agent-v0.1.0-darwin-x86_64.tar.gz",
+        "sha256": "39bda5930dcb056c778eba46d5ece73ebd8752a460a87c0e32e78bdbc8aaeb90",
+        "cmd": "./nail-agent",
+        "args": [],
+        "env": {}
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/qkun-zh/nail-agent/releases/download/v0.1.0/nail-agent-v0.1.0-windows-x86_64.zip",
+        "sha256": "9d06e6c9308def74657855d43d0e3d1789addcf4434cc630afc6a67b9a590aef",
+        "cmd": "./nail-agent.exe",
+        "args": [],
+        "env": {}
+      }
+    }
+  },
+  "website": "https://github.com/qkun-zh/nail-agent",
+  "authors": [
+    "qkun-zh"
+  ]
+}
