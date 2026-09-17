@@ -271,6 +271,9 @@ jobs:
     if: needs.apply-updates.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      has_verified_updates: ${{ steps.filter.outputs.has_verified_updates }}
+      verified_updates_json: ${{ steps.filter.outputs.verified_updates_json }}
     permissions:
       contents: read
     steps:
@@ -344,29 +347,177 @@ jobs:
       - name: Verify agent auth support
         env:
           UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          VERIFICATION_RESULTS: ${{ runner.temp }}/verification-results.tsv
+        #language=bash
         run: |
           # The preview channel is explicitly unverified: preview distributions
           # are never launched, so only stable bumps are auth-checked here.
-          UPDATED_AGENTS=$(echo "$UPDATES_JSON" | python3 -c "
+          mapfile -t STABLE_UPDATES < <(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
           data = json.load(sys.stdin)
-          ids = sorted({
-              u['agent_id']
+          versions = {
+              u['agent_id']: u['latest_version']
               for u in data.get('updates', [])
               if u.get('channel', 'stable') == 'stable'
-          })
-          print(','.join(ids))
+          }
+          for agent_id, version in sorted(versions.items()):
+              print(f'{agent_id}\t{version}')
           ")
-          if [ -z "$UPDATED_AGENTS" ]; then
+          : > "$VERIFICATION_RESULTS"
+
+          if [ "${#STABLE_UPDATES[@]}" -eq 0 ]; then
             echo "No stable agent updates in this run; skipping auth verification"
             exit 0
           fi
-          echo "Verifying updated agents: $UPDATED_AGENTS"
-          python3 .github/workflows/verify_agents.py --auth-check --agent "$UPDATED_AGENTS"
+
+          for STABLE_UPDATE in "${STABLE_UPDATES[@]}"; do
+            IFS=$'\t' read -r AGENT_ID AGENT_VERSION <<< "$STABLE_UPDATE"
+            echo "::group::Verify $AGENT_ID"
+            if python3 .github/workflows/verify_agents.py --auth-check --agent "$AGENT_ID"; then
+              printf '%s\tpassed\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
+            else
+              printf '%s\tfailed\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
+              echo "::warning title=Agent update skipped::$AGENT_ID@$AGENT_VERSION failed auth verification; its version updates will not be committed."
+            fi
+            echo "::endgroup::"
+          done
+
+      - name: Filter verified updates
+        id: filter
+        if: always()
+        env:
+          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          UPDATE_ARTIFACT_DIR: ${{ runner.temp }}/agent-updates
+          VERIFIED_ARTIFACT_DIR: ${{ runner.temp }}/verified-agent-updates
+          VERIFICATION_RESULTS: ${{ runner.temp }}/verification-results.tsv
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import shutil
+          import sys
+          from pathlib import Path
+
+          updates = json.loads(os.environ["UPDATES_JSON"]).get("updates", [])
+          source_dir = Path(os.environ["UPDATE_ARTIFACT_DIR"])
+          destination_dir = Path(os.environ["VERIFIED_ARTIFACT_DIR"])
+          results_path = Path(os.environ["VERIFICATION_RESULTS"])
+
+          results = {}
+          if results_path.exists():
+              for line in results_path.read_text().splitlines():
+                  agent_id, status = line.split("\t", 1)
+                  if status not in ("passed", "failed"):
+                      print(f"Invalid verification status for {agent_id}: {status}", file=sys.stderr)
+                      sys.exit(1)
+                  results[agent_id] = status
+
+          stable_agents = {
+              update["agent_id"]
+              for update in updates
+              if update.get("channel", "stable") == "stable"
+          }
+          missing_results = sorted(stable_agents - results.keys())
+          if missing_results:
+              print(
+                  "Missing verification results for: " + ", ".join(missing_results),
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          failed_agents = {
+              agent_id for agent_id, status in results.items() if status == "failed"
+          }
+          verified_updates = [
+              update for update in updates if update["agent_id"] not in failed_agents
+          ]
+          verified_agent_ids = {update["agent_id"] for update in verified_updates}
+
+          files = json.loads((source_dir / "files.json").read_text())
+          verified_files = [
+              rel_path
+              for rel_path in files
+              if rel_path.split("/", 1)[0] in verified_agent_ids
+          ]
+          if {path.split("/", 1)[0] for path in verified_files} != verified_agent_ids:
+              print("Verified update artifact is missing an agent manifest", file=sys.stderr)
+              sys.exit(1)
+
+          if destination_dir.exists():
+              shutil.rmtree(destination_dir)
+          destination_dir.mkdir(parents=True)
+          shutil.copy2(source_dir / "base-sha.txt", destination_dir / "base-sha.txt")
+          for rel_path in verified_files:
+              destination = destination_dir / rel_path
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source_dir / rel_path, destination)
+          (destination_dir / "files.json").write_text(
+              json.dumps(verified_files, indent=2) + "\n"
+          )
+
+          verified_json = json.dumps({"updates": verified_updates}, separators=(",", ":"))
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              print(f"has_verified_updates={'true' if verified_updates else 'false'}", file=output)
+              print("verified_updates_json<<EOF", file=output)
+              print(verified_json, file=output)
+              print("EOF", file=output)
+
+          passed_agents = sorted(results.keys() - failed_agents)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+              print("## Agent update verification", file=summary)
+              print(file=summary)
+              if failed_agents:
+                  print("> [!WARNING]", file=summary)
+                  print(
+                      f"> {len(failed_agents)} agent update(s) failed auth verification and "
+                      "were excluded from the commit.",
+                      file=summary,
+                  )
+                  print(file=summary)
+                  print("### Skipped updates", file=summary)
+                  print(file=summary)
+                  print("| Agent | Updates |", file=summary)
+                  print("| --- | --- |", file=summary)
+                  for agent_id in sorted(failed_agents):
+                      versions = ", ".join(
+                          f"{u.get('channel', 'stable')} {u['current_version']} → {u['latest_version']}"
+                          for u in updates
+                          if u["agent_id"] == agent_id
+                      )
+                      print(f"| `{agent_id}` | {versions} |", file=summary)
+                  print(file=summary)
+
+              print("### Updates proceeding to commit", file=summary)
+              print(file=summary)
+              if verified_updates:
+                  print("| Agent | Updates | Verification |", file=summary)
+                  print("| --- | --- | --- |", file=summary)
+                  for agent_id in sorted(verified_agent_ids):
+                      versions = ", ".join(
+                          f"{u.get('channel', 'stable')} {u['current_version']} → {u['latest_version']}"
+                          for u in verified_updates
+                          if u["agent_id"] == agent_id
+                      )
+                      verification = (
+                          "passed" if agent_id in passed_agents else "preview only (not required)"
+                      )
+                      print(f"| `{agent_id}` | {versions} | {verification} |", file=summary)
+              else:
+                  print("No updates passed verification; no commit will be created.", file=summary)
+          PY
+
+      - name: Upload verified update artifact
+        if: steps.filter.outputs.has_verified_updates == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: verified-agent-updates
+          path: ${{ runner.temp }}/verified-agent-updates/
+          if-no-files-found: error
+          retention-days: 1
 
   commit-updates:
     needs: [check-versions, apply-updates, verify-updates]
-    if: needs.verify-updates.result == 'success'
+    if: needs.verify-updates.result == 'success' && needs.verify-updates.outputs.has_verified_updates == 'true'
     concurrency:
       group: registry-main-write
       cancel-in-progress: false
@@ -383,7 +534,7 @@ jobs:
       - name: Download update artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: agent-updates
+          name: verified-agent-updates
           path: ${{ runner.temp }}/agent-updates
 
       - name: Apply staged update manifests
@@ -441,7 +592,7 @@ jobs:
       - name: Generate commit message
         id: commit_msg
         env:
-          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          UPDATES_JSON: ${{ needs.verify-updates.outputs.verified_updates_json }}
         run: |
           # Generate summary of updates
           SUMMARY=$(echo "$UPDATES_JSON" | python3 -c "
