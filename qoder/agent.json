@@ -8,6 +8,7 @@
     "Qoder AI"
   ],
   "license": "proprietary",
+  "license_url": "https://qoder.com/product-service?lang=en",
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
