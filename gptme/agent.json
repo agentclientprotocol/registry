@@ -1,0 +1,18 @@
+{
+  "id": "gptme",
+  "name": "gptme",
+  "version": "0.33.0",
+  "description": "Powerful AI agent for coding and general tasks. Terminal-first with shell, code execution, file editing, web browsing, vision, and computer use.",
+  "repository": "https://github.com/gptme/gptme",
+  "website": "https://gptme.org",
+  "authors": [
+    "Erik Bjäreholt"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/gptme/gptme/blob/master/LICENSE",
+  "distribution": {
+    "uvx": {
+      "package": "gptme-acp"
+    }
+  }
+}
