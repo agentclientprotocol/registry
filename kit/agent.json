@@ -1,0 +1,32 @@
+{
+  "id": "kit",
+  "name": "Kit",
+  "version": "0.1.125",
+  "description": "A coding agent runtime with one composable tool, reusable subagents, and open protocol support",
+  "repository": "https://github.com/speakeasy-api/kit",
+  "authors": [
+    "Speakeasy"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/speakeasy-api/kit/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/speakeasy-api/kit/releases/download/v0.1.125/kit-v0.1.125-aarch64-apple-darwin.tar.gz",
+        "sha256": "9952aca1316dc13061ba978ec70f4dd252a0a7ca00a0f0b8b0d01e243e29b4f2",
+        "cmd": "./kit",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/speakeasy-api/kit/releases/download/v0.1.125/kit-v0.1.125-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "09fa9673ce7378da5bd9c504c77ef47546399b4ec820fc89db43cf9eb4d03772",
+        "cmd": "./kit",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
