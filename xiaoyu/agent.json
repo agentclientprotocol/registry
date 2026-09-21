@@ -1,0 +1,16 @@
+{
+  "id": "xiaoyu",
+  "name": "小羽 (Xiaoyu)",
+  "version": "0.50.0",
+  "description": "Coding agent with plan mode, session restore, model selector, and multi-provider routing — terminal TUI and ACP in one Python package.",
+  "repository": "https://github.com/pholex/zhinu",
+  "authors": ["Fenghuang"],
+  "license": "MIT",
+  "license_url": "https://github.com/pholex/zhinu/blob/main/LICENSE",
+  "distribution": {
+    "uvx": {
+      "package": "xiaoyu-agent==0.50.0",
+      "args": ["--acp"]
+    }
+  }
+}
