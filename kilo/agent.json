@@ -1,7 +1,7 @@
 {
   "id": "kilo",
   "name": "Kilo",
-  "version": "7.5.15",
+  "version": "7.7.6",
   "description": "The open source coding agent",
   "repository": "https://github.com/Kilo-Org/kilocode",
   "website": "https://kilo.ai/",
@@ -14,48 +14,48 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.5.15/kilo-darwin-arm64.zip",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.7.6/kilo-darwin-arm64.zip",
         "cmd": "./kilo",
         "args": [
           "acp"
         ],
-        "sha256": "7e723d083bc433543399a5903cd90ab1322edc686011f8a58c7333ec2a28e17a"
+        "sha256": "d873e03e76a677fd0c458aa1d827087fe4984f6e6b472940a6ddab0131c9e45d"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.5.15/kilo-darwin-x64.zip",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.7.6/kilo-darwin-x64.zip",
         "cmd": "./kilo",
         "args": [
           "acp"
         ],
-        "sha256": "40912af6429eeb29a0ec0cc2bf697934280ebca66f362ba9135df76fb3eaa059"
+        "sha256": "c57043f343fa2eeca5439989c532c1fa5207b9462bf39c9ace101e6d35f6be5d"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.5.15/kilo-linux-arm64.tar.gz",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.7.6/kilo-linux-arm64.tar.gz",
         "cmd": "./kilo",
         "args": [
           "acp"
         ],
-        "sha256": "23ed28ee2e705c699454c7197776d876e95842042131030ed92e8b82af42d8b2"
+        "sha256": "45f454dbe49fa30114a8656c8235f84550a852dc7719782d1fdd4e152cb43c45"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.5.15/kilo-linux-x64.tar.gz",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.7.6/kilo-linux-x64.tar.gz",
         "cmd": "./kilo",
         "args": [
           "acp"
         ],
-        "sha256": "830b770fc6b8cb3e24e290c3b703df74e1decb7d7a43fafdbc2304f54b1149ce"
+        "sha256": "3836e493b96e412897564f98c856c85952b114b790b281f287eac6f0f5f00a21"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.5.15/kilo-windows-x64.zip",
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.7.6/kilo-windows-x64.zip",
         "cmd": "./kilo.exe",
         "args": [
           "acp"
         ],
-        "sha256": "b335c65d409874660069da2ef47410f344f2138a88744ea9ca405cf23931e28a"
+        "sha256": "55952278197f6885a302be314e0b39149c0cda20bbc6b733ba0638533dfb0754"
       }
     },
     "npx": {
-      "package": "@kilocode/cli@7.5.15",
+      "package": "@kilocode/cli@7.7.6",
       "args": [
         "acp"
       ]

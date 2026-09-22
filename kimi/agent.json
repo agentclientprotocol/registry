@@ -1,7 +1,7 @@
 {
   "id": "kimi",
   "name": "Kimi CLI",
-  "version": "1.50.0",
+  "version": "1.51.0",
   "description": "Moonshot AI's coding assistant",
   "repository": "https://github.com/MoonshotAI/kimi-cli",
   "website": "https://moonshotai.github.io/kimi-cli/",
@@ -13,44 +13,44 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.50.0/kimi-1.50.0-aarch64-apple-darwin.tar.gz",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.51.0/kimi-1.51.0-aarch64-apple-darwin.tar.gz",
         "cmd": "./kimi",
         "args": [
           "acp"
         ],
-        "sha256": "5684f903cfc1ca1be4135a2634f7db108c787827c084b41df6a98eb01c9012df"
+        "sha256": "c2d6b5bf04585bed92dc620b81e4bd31e36ca373aaf771335cc03b1857833b16"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.50.0/kimi-1.50.0-aarch64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.51.0/kimi-1.51.0-aarch64-unknown-linux-gnu.tar.gz",
         "cmd": "./kimi",
         "args": [
           "acp"
         ],
-        "sha256": "de235322f48abe63e7a8d737f39f0c00fecf724f1dfaa1ae02491bb773ae8070"
+        "sha256": "329edc376ebd4dba9e359b49c27ce6c0ae23c43e7488349c2f1ae29a6d76273e"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.50.0/kimi-1.50.0-x86_64-unknown-linux-gnu.tar.gz",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.51.0/kimi-1.51.0-x86_64-unknown-linux-gnu.tar.gz",
         "cmd": "./kimi",
         "args": [
           "acp"
         ],
-        "sha256": "10ccaa26ee7f5bb43f7c05baf808c11cd0160710b07ac422382d1d1923f3dab6"
+        "sha256": "538f81a212fcfdbd0a7f73e06973d925b8ecdeb842a0b914857691d77abf2afb"
       },
       "windows-aarch64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.50.0/kimi-1.50.0-aarch64-pc-windows-msvc.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.51.0/kimi-1.51.0-aarch64-pc-windows-msvc.zip",
         "cmd": "./kimi.exe",
         "args": [
           "acp"
         ],
-        "sha256": "45fdb98d41a37e5430c332290a9cd97cb0586c428c1d49f6e11c54c80efdfc85"
+        "sha256": "d0f871487b7f210c76aeff3e7ee470ebf6b67d365460751b81a4adee777ce890"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.50.0/kimi-1.50.0-x86_64-pc-windows-msvc.zip",
+        "archive": "https://github.com/MoonshotAI/kimi-cli/releases/download/1.51.0/kimi-1.51.0-x86_64-pc-windows-msvc.zip",
         "cmd": "./kimi.exe",
         "args": [
           "acp"
         ],
-        "sha256": "2752f041cd7ead131c81b06f32bd1cf30afadf9b2e4741f7273331877aef6b33"
+        "sha256": "6732980551b1899ada284c8d06728c342781332e17eabe8c4e0a4dd011b26a85"
       }
     }
   }

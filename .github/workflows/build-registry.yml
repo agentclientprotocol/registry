@@ -33,7 +33,7 @@ jobs:
           persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
 
       - name: Ruff check
         working-directory: .github/workflows
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run tests
         working-directory: .github/workflows
-        run: uv run --with pytest pytest tests/ -v
+        run: uv run --with pytest --with jsonschema pytest tests/ -v
 
   build:
     name: Build & Validate
@@ -60,7 +60,7 @@ jobs:
           persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
@@ -102,7 +102,7 @@ jobs:
           persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
@@ -234,6 +234,7 @@ jobs:
             --notes "$RELEASE_NOTES" \
             dist/registry.json \
             dist/registry-for-jetbrains.json \
+            dist/registry-for-jetbrains-preview.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
             dist/*.svg
