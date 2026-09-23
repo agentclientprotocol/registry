@@ -1,7 +1,7 @@
 {
   "id": "gptme",
   "name": "gptme",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "description": "Powerful AI agent for coding and general tasks. Terminal-first with shell, code execution, file editing, web browsing, vision, and computer use.",
   "repository": "https://github.com/gptme/gptme",
   "website": "https://gptme.org",
