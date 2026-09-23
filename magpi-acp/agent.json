@@ -1,0 +1,18 @@
+{
+  "id": "magpi-acp",
+  "name": "MagPi ACP",
+  "version": "0.2.0",
+  "description": "ACP adapter for the Pi coding agent",
+  "repository": "https://github.com/digital-overground/magpi-acp",
+  "website": "https://github.com/digital-overground/magpi-acp#readme",
+  "authors": [
+    "Kyle Humphrey"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/digital-overground/magpi-acp/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "magpi-acp@0.2.0"
+    }
+  }
+}
