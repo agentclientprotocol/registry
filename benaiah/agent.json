@@ -1,0 +1,15 @@
+{
+  "id": "benaiah",
+  "name": "Benaiah",
+  "version": "1.0.0",
+  "description": "Benaiah inside ACP-compatible editors and clients, with local tools, persistent sessions and five native effort levels.",
+  "website": "https://benaiah.ai/applications#benaiah-acp",
+  "authors": ["Benaiah AI Ltd"],
+  "license": "proprietary",
+  "icon": "icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "benaiah-acp@1.0.0"
+    }
+  }
+}
