@@ -4,7 +4,7 @@
   "version": "1.549.0",
   "description": "GitHub's AI pair programmer",
   "repository": "https://github.com/github/copilot-language-server-release",
-  "website": "https://github.com/features/copilot/cli/",
+  "website": "https://github.com/github/copilot-language-server-release",
   "authors": [
     "GitHub"
   ],
