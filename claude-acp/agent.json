@@ -17,10 +17,10 @@
     }
   },
   "preview": {
-    "version": "0.81.1",
+    "version": "0.81.2-preview.1",
     "distribution": {
       "npx": {
-        "package": "@agentclientprotocol/claude-agent-acp@0.81.1"
+        "package": "@agentclientprotocol/claude-agent-acp@0.81.2-preview.1"
       }
     }
   }
