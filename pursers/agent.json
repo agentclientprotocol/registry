@@ -1,0 +1,19 @@
+{
+  "id": "pursers",
+  "name": "Pursers",
+  "version": "0.1.0",
+  "description": "A human-authorized ACP board assistant for Pursers Personal",
+  "repository": "https://github.com/swisspra/Pursers",
+  "website": "https://github.com/swisspra/Pursers/blob/main/docs/GETTING-STARTED.md",
+  "authors": [
+    "Pursers contributors"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/swisspra/Pursers/blob/main/LICENSE",
+  "distribution": {
+    "uvx": {
+      "package": "pursers-acp==0.1.0",
+      "args": []
+    }
+  }
+}
