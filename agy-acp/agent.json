@@ -1,0 +1,17 @@
+{
+  "id": "agy-acp",
+  "name": "Antigravity ACP Bridge",
+  "version": "0.3.7",
+  "description": "Community ACP adapter bridge for the Google Antigravity CLI (agy) built on native JSON-stream output, with session persistence and MCP support.",
+  "repository": "https://github.com/maojindao55/agy-acp",
+  "authors": [
+    "maojindao55 <hobby0524@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/maojindao55/agy-acp/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "agy-acp-bridge@0.3.7"
+    }
+  }
+}
