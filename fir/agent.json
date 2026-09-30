@@ -1,7 +1,7 @@
 {
   "id": "fir",
   "name": "fir",
-  "version": "1.11.0",
+  "version": "1.23.0",
   "description": "A fast, portable AI coding agent. Single <20 MB static binary with no runtime dependencies, multi-provider model support, MCP, skills and extensions.",
   "repository": "https://github.com/kfet/fir",
   "website": "https://github.com/kfet/fir",
@@ -13,8 +13,8 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/kfet/fir/releases/download/v1.11.0/fir-darwin-arm64",
-        "sha256": "49c01ed4148ebd6e948e0841594528e8681912f8fb83d14e4fb42e5432537e71",
+        "archive": "https://github.com/kfet/fir/releases/download/v1.23.0/fir-darwin-arm64",
+        "sha256": "1250e8ab29c2de560bb2f5a1199ab2cb22c0663d3f4facc941629523ec86c776",
         "cmd": "./fir-darwin-arm64",
         "args": [
           "--mode",
@@ -22,8 +22,8 @@
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/kfet/fir/releases/download/v1.11.0/fir-darwin-amd64",
-        "sha256": "6ed38c1240677a4ce350f2a2c694434610042ad65609e5b329aafc0c1b646cbb",
+        "archive": "https://github.com/kfet/fir/releases/download/v1.23.0/fir-darwin-amd64",
+        "sha256": "72ef23391b6e9aca0586f3e56d63bbc582045cafdd4c34e2e0d15499d404a274",
         "cmd": "./fir-darwin-amd64",
         "args": [
           "--mode",
@@ -31,8 +31,8 @@
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/kfet/fir/releases/download/v1.11.0/fir-linux-arm64",
-        "sha256": "14822b74dcfa3e0176b254f88bc153e6c40747f2afe08db742bb11a12ed77045",
+        "archive": "https://github.com/kfet/fir/releases/download/v1.23.0/fir-linux-arm64",
+        "sha256": "4866eaaa85caa10e9b3164ec7e20e6a38a99beb562575b43f50e96c8926a5070",
         "cmd": "./fir-linux-arm64",
         "args": [
           "--mode",
@@ -40,8 +40,8 @@
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/kfet/fir/releases/download/v1.11.0/fir-linux-amd64",
-        "sha256": "ff256a3e82ff6ebc0bb70bd9e199050862c54d5bc2786d4d1a8c5ccc1e9fabed",
+        "archive": "https://github.com/kfet/fir/releases/download/v1.23.0/fir-linux-amd64",
+        "sha256": "9bbaef891da0b2fa70bbc19d599c2526088ee993ff282c740b47614c24fd631c",
         "cmd": "./fir-linux-amd64",
         "args": [
           "--mode",
