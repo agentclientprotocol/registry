@@ -1,0 +1,44 @@
+{
+  "id": "fx",
+  "name": "fx",
+  "version": "0.0.3",
+  "description": "Tiny, open, Unix-like coding agent from Vercel Labs",
+  "repository": "https://github.com/vercel-labs/fx",
+  "website": "https://fx.sh",
+  "authors": [
+    "Vercel Labs"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.3/fx-macos-aarch64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.3/fx-macos-x86_64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.3/fx-linux-aarch64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.3/fx-linux-x86_64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
