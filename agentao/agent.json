@@ -1,0 +1,21 @@
+{
+  "id": "agentao",
+  "name": "Agentao",
+  "version": "0.5.9",
+  "description": "Provider-neutral, local-first agent harness with permission modes, persistent memory and session replay",
+  "repository": "https://github.com/jin-bo/agentao",
+  "website": "https://agentao.cn",
+  "authors": [
+    "Bo Jin"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/jin-bo/agentao/blob/main/LICENSE",
+  "distribution": {
+    "uvx": {
+      "package": "agentao@0.5.9",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
