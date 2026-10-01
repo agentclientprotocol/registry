@@ -24,6 +24,7 @@
      "website": "https://example.com/docs",
      "authors": ["Your Name <email@example.com>"],
      "license": "MIT",
+     "license_url": "https://github.com/your-org/your-repo/blob/main/LICENSE",
      "distribution": {
        // At least one distribution method required
      }
@@ -133,7 +134,10 @@ Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-
 | `name`         | string | Display name                                   |
 | `version`      | string | Semantic version                               |
 | `description`  | string | Brief description                              |
+| `license_url`  | string | URL to the license text or terms of service     |
 | `distribution` | object | At least one distribution method               |
+
+DimCode (`id: dimcode`) is exempt from the `license_url` requirement.
 
 ## Optional Fields
 
