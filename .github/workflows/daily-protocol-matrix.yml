@@ -58,6 +58,10 @@ jobs:
         with:
           node-version: "lts/*"
 
+      - name: Test protocol matrix close planning
+        working-directory: .github/workflows
+        run: python3 -m unittest tests.test_protocol_matrix_close -v
+
       - name: Generate matrix
         env:
           CI: "1"
