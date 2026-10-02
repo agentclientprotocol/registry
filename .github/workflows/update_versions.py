@@ -21,18 +21,30 @@ Environment variables:
 
 import argparse
 import json
-import os
 import re
 import sys
-import urllib.error
-import urllib.request
 from pathlib import Path
-from typing import NamedTuple
 
+from common import (
+    CHANNELS,
+    LatestRelease,
+    PublishedVersions,
+    ResolvedAsset,
+    UpdateError,
+    VersionUpdate,
+)
+from custom_agent_sources import CustomSourceFn, junie
+from github_api import (
+    get_github_release_digests,
+    get_github_release_versions,
+    is_github_repo,
+    make_request,
+)
 from registry_utils import (
     UVX_VERSION_PATTERN,
     extract_npm_package_name,
     extract_pypi_package_name,
+    is_prerelease,
     is_preview_version,
     load_quarantine,
     normalize_release_version,
@@ -41,73 +53,16 @@ from registry_utils import (
     version_tuple,
 )
 
-
-class VersionUpdate(NamedTuple):
-    """Represents a version update for an agent."""
-
-    agent_id: str
-    agent_path: Path
-    current_version: str
-    latest_version: str
-    distribution_type: str  # 'npx', 'uvx', 'binary', or combined like 'binary+npx'
-    source_url: str  # URL where version was fetched from
-    repository: str  # Agent's `repository` field (empty when unset)
-    channel: str = "stable"  # 'stable' or 'preview'
-
-
-class UpdateError(NamedTuple):
-    """Represents an error during version checking."""
-
-    agent_id: str
-    error: str
-
-
 # Directories to scan for agents
 AGENT_DIRS = [
     ".",  # Root directory (active agents)
 ]
 
-CHANNELS = ("stable", "preview")
-
-
-def get_github_token() -> str | None:
-    """Get GitHub token from environment."""
-    return os.environ.get("GITHUB_TOKEN")
-
-
-def make_request(url: str, headers: dict | None = None) -> dict | list | str | None:
-    """Make HTTP request and return JSON response."""
-    req_headers = {"User-Agent": "ACP-Registry-Version-Checker/1.0"}
-    if headers:
-        req_headers.update(headers)
-
-    # Add GitHub token if available and this is a GitHub API request
-    token = get_github_token()
-    if token and "api.github.com" in url:
-        req_headers["Authorization"] = f"token {token}"
-
-    try:
-        req = urllib.request.Request(url, headers=req_headers)
-        with urllib.request.urlopen(req, timeout=30) as response:
-            content = response.read().decode("utf-8")
-            try:
-                return json.loads(content)
-            except json.JSONDecodeError:
-                return content
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return None
-        if e.code >= 500:
-            return None
-        raise
-    except (urllib.error.URLError, TimeoutError, OSError):
-        return None
-
-
-def is_prerelease(version: str) -> bool:
-    """Check if a version string is not a stable numeric dotted release."""
-    normalized = version.lstrip("v")
-    return not bool(re.fullmatch(r"\d+(?:\.\d+)*", normalized))
+# Per-(agent_id, channel) overrides for agents whose releases can't be
+# discovered through npm/PyPI/GitHub Releases. See custom_agent_sources/__init__.py.
+CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
+    ("junie", "preview"): junie.get_preview_release,
+}
 
 
 def version_sort_key(version: str) -> tuple[int, ...]:
@@ -203,98 +158,6 @@ def get_pypi_versions(package_name: str) -> set[str] | None:
     return None
 
 
-def _is_github_repo(repo_url: str) -> bool:
-    return "github.com" in repo_url
-
-
-def _github_owner_repo(repo_url: str) -> tuple[str, str] | None:
-    """Extract (owner, repo) from a GitHub repository URL, stripping any `.git`."""
-    match = re.search(r"github\.com/([^/]+)/([^/]+)", repo_url)
-    if not match:
-        return None
-    owner, repo = match.groups()
-    if repo.endswith(".git"):
-        repo = repo[:-4]
-    return owner, repo
-
-
-def _parse_release_digests(data: dict) -> dict[str, str]:
-    """Extract {asset_name: hex_sha256} from a GitHub release payload."""
-    digests: dict[str, str] = {}
-    for a in data.get("assets", []):
-        if not isinstance(a, dict):
-            continue
-        name = a.get("name")
-        digest = a.get("digest", "")
-        if name and isinstance(digest, str) and digest.startswith("sha256:"):
-            digests[name] = digest.removeprefix("sha256:")
-    return digests
-
-
-def get_github_latest_version(repo_url: str) -> str | None:
-    parsed = _github_owner_repo(repo_url)
-    if not parsed:
-        return None
-    owner, repo = parsed
-    data = make_request(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
-    if isinstance(data, dict):
-        tag = data.get("tag_name", "")
-        return normalize_release_version(tag.lstrip("v") if tag else None)
-    return None
-
-
-def get_github_release_digests(repo_url: str, version: str) -> dict[str, str]:
-    """Return {asset_filename: hex_sha256} for the release tagged `version`.
-
-    Keys are asset filenames exactly as GitHub returns them (last path segment of
-    the asset's `browser_download_url`). Values are lowercase hex with the
-    `sha256:` prefix stripped.
-    """
-    parsed = _github_owner_repo(repo_url)
-    if not parsed:
-        return {}
-    owner, repo = parsed
-    # Tries `v{version}` first (the common tag convention), then bare `{version}`.
-    for tag in (f"v{version}", version):
-        data = make_request(f"https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}")
-        if isinstance(data, dict):
-            return _parse_release_digests(data)
-    return {}
-
-
-def get_github_release_versions(repo_url: str) -> set[str] | None:
-    """Get stable GitHub release versions published for a repository."""
-    match = re.search(r"github\.com/([^/]+)/([^/]+)", repo_url)
-    if not match:
-        return None
-
-    owner, repo = match.groups()
-    if repo.endswith(".git"):
-        repo = repo[:-4]
-
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases?per_page=100"
-    data = make_request(api_url)
-    if isinstance(data, list):
-        versions = set()
-        for release in data:
-            if not isinstance(release, dict):
-                continue
-            if release.get("draft") or release.get("prerelease"):
-                continue
-            tag = release.get("tag_name", "")
-            version = normalize_release_version(tag.lstrip("v") if tag else None)
-            if version and not is_prerelease(version):
-                versions.add(version)
-        if versions:
-            return versions
-
-    latest = get_github_latest_version(repo_url)
-    if latest:
-        return {latest}
-
-    return None
-
-
 def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
     """Find all agent.json files in the registry, excluding quarantined ones."""
     agents = []
@@ -340,17 +203,15 @@ def fetch_distribution_versions(
     distribution: dict,
     repository: str,
     cache: dict[str, set[str] | None] | None = None,
-) -> tuple[dict[str, tuple[set[str], str]], UpdateError | None]:
+) -> tuple[dict[str, PublishedVersions], UpdateError | None]:
     """Fetch the published version list once per declared distribution source.
 
-    Returns a `{distribution_type: (published_versions, source_url)}` mapping.
-    Both channels partition that result in memory, and `cache` (keyed by source
-    URL) lets a single agent check reuse one fetch across channels, so adding
-    the preview channel costs no extra HTTP traffic.
+    Returns a `{distribution_type: PublishedVersions}` mapping. `cache` (keyed
+    by source URL) lets one agent check reuse a fetch across channels.
     """
     if cache is None:
         cache = {}
-    source_versions: dict[str, tuple[set[str], str]] = {}
+    source_versions: dict[str, PublishedVersions] = {}
 
     def fetch(source_url: str, fetcher) -> set[str] | None:
         if source_url not in cache:
@@ -366,7 +227,7 @@ def fetch_distribution_versions(
         versions = fetch(source_url, lambda: get_npm_versions(package_name))
         if not versions:
             return {}, UpdateError(agent_id, f"Could not fetch npm versions for {package_name}")
-        source_versions["npx"] = (versions, source_url)
+        source_versions["npx"] = PublishedVersions(versions, source_url)
 
     if "uvx" in distribution:
         package_spec = distribution["uvx"].get("package", "")
@@ -377,18 +238,45 @@ def fetch_distribution_versions(
         versions = fetch(source_url, lambda: get_pypi_versions(package_name))
         if not versions:
             return {}, UpdateError(agent_id, f"Could not fetch PyPI versions for {package_name}")
-        source_versions["uvx"] = (versions, source_url)
+        source_versions["uvx"] = PublishedVersions(versions, source_url)
 
-    if "binary" in distribution and _is_github_repo(repository):
+    if "binary" in distribution and is_github_repo(repository):
         versions = fetch(repository, lambda: get_github_release_versions(repository))
         if not versions:
             return {}, UpdateError(
                 agent_id,
                 f"Could not fetch GitHub releases for {repository}",
             )
-        source_versions["binary"] = (versions, repository)
+        source_versions["binary"] = PublishedVersions(versions, repository)
 
     return source_versions, None
+
+
+def resolve_update(
+    agent_id: str,
+    agent_path: Path,
+    current_version: str,
+    channel: str,
+    release: LatestRelease | None,
+) -> VersionUpdate | None:
+    """Compare a source's reported latest release against the agent's current version.
+
+    The single place that decides "is this actually an update", whether
+    `release` came from the standard resolution or a CUSTOM_AGENT_SOURCES override.
+    """
+    if release is None or release.version == current_version:
+        return None
+    return VersionUpdate(
+        agent_id=agent_id,
+        agent_path=agent_path,
+        current_version=current_version,
+        latest_version=release.version,
+        distribution_type=release.distribution_type,
+        source_url=release.source_url,
+        repository=release.repository,
+        channel=channel,
+        resolved_assets=release.resolved_assets,
+    )
 
 
 def check_agent_version(
@@ -402,10 +290,17 @@ def check_agent_version(
     """
     agent_id = agent_data.get("id", "unknown")
     current_version = agent_data.get("version", "0.0.0")
+    current_version = normalize_release_version(current_version) or current_version
+
+    override = CUSTOM_AGENT_SOURCES.get((agent_id, "stable"))
+    if override:
+        release, error = override(agent_data)
+        if error:
+            return None, error
+        return resolve_update(agent_id, agent_path, current_version, "stable", release), None
+
     distribution = agent_data.get("distribution", {})
     repository = agent_data.get("repository", "")
-
-    current_version = normalize_release_version(current_version) or current_version
 
     published_versions, error = fetch_distribution_versions(
         agent_id, distribution, repository, cache
@@ -420,40 +315,37 @@ def check_agent_version(
 
     # Keep the stable channel on stable releases only
     source_versions = {
-        dist_type: (get_stable_versions(versions), source_url)
-        for dist_type, (versions, source_url) in published_versions.items()
+        dist_type: PublishedVersions(get_stable_versions(pv.versions), pv.source_url)
+        for dist_type, pv in published_versions.items()
     }
 
     common_versions: set[str] | None = None
-    for versions, _source_url in source_versions.values():
-        common_versions = set(versions) if common_versions is None else common_versions & versions
+    for pv in source_versions.values():
+        common_versions = (
+            set(pv.versions) if common_versions is None else common_versions & pv.versions
+        )
 
     if not common_versions:
         details = ", ".join(
-            f"{dist_type}={get_highest_stable_version(versions) or 'none'}"
-            for dist_type, (versions, _) in sorted(source_versions.items())
+            f"{dist_type}={get_highest_stable_version(pv.versions) or 'none'}"
+            for dist_type, pv in sorted(source_versions.items())
         )
         return None, UpdateError(agent_id, f"Version mismatch across distributions: {details}")
 
     latest_version = get_highest_stable_version(common_versions)
     if not latest_version:
         return None, UpdateError(agent_id, "No stable versions found across distributions")
-    if latest_version == current_version:
-        return None, None  # Up to date
 
     dist_types = "+".join(sorted(source_versions.keys()))
-    primary_source_url = next(iter(source_versions.values()))[1]
+    primary_source_url = next(iter(source_versions.values())).source_url
 
-    return VersionUpdate(
-        agent_id=agent_id,
-        agent_path=agent_path,
-        current_version=current_version,
-        latest_version=latest_version,
+    release = LatestRelease(
+        version=latest_version,
         distribution_type=dist_types,
         source_url=primary_source_url,
         repository=repository,
-        channel="stable",
-    ), None
+    )
+    return resolve_update(agent_id, agent_path, current_version, "stable", release), None
 
 
 def check_agent_preview_version(
@@ -463,18 +355,29 @@ def check_agent_preview_version(
 ) -> tuple[VersionUpdate | None, UpdateError | None]:
     """Check if an agent has a newer version available on its preview channel.
 
-    The candidate is the highest of (highest published `X.Y.Z-preview.N`, highest
-    published stable release), so preview users always get the newest version that
-    exists - including a plain release once stable overtakes the preview line.
-    Only the distribution types declared inside `preview.distribution` take part;
-    there is no intersection with the base entry's other distributions and no
-    ordering constraint against the stable `version`.
+    The candidate is the highest of the published preview and stable releases,
+    so preview users get the newest version either channel has - including a
+    plain release once stable overtakes the preview line. Only the
+    distribution types declared inside `preview.distribution` take part.
+
+    A CUSTOM_AGENT_SOURCES override for this agent's preview channel, if
+    present, replaces this standard resolution entirely - even for an agent
+    with no `preview` block yet (compared against a "0.0.0" placeholder).
     """
+    agent_id = agent_data.get("id", "unknown")
     preview = agent_data.get("preview")
+
+    override = CUSTOM_AGENT_SOURCES.get((agent_id, "preview"))
+    if override:
+        release, error = override(agent_data)
+        if error:
+            return None, error._replace(error=f"preview: {error.error}")
+        current_version = preview.get("version", "0.0.0") if isinstance(preview, dict) else "0.0.0"
+        return resolve_update(agent_id, agent_path, current_version, "preview", release), None
+
     if not isinstance(preview, dict):
         return None, None
 
-    agent_id = agent_data.get("id", "unknown")
     current_version = preview.get("version", "0.0.0")
     distribution = preview.get("distribution", {})
     repository = agent_data.get("repository", "")
@@ -488,8 +391,10 @@ def check_agent_preview_version(
         return None, None
 
     common_versions: set[str] | None = None
-    for versions, _source_url in published_versions.values():
-        common_versions = set(versions) if common_versions is None else common_versions & versions
+    for pv in published_versions.values():
+        common_versions = (
+            set(pv.versions) if common_versions is None else common_versions & pv.versions
+        )
 
     candidates = [
         candidate
@@ -503,22 +408,16 @@ def check_agent_preview_version(
         return None, None  # Nothing published to point at; stay put
 
     latest_version = max(candidates, key=semver_sort_key)
-    if latest_version == current_version:
-        return None, None  # Up to date
-
     dist_types = "+".join(sorted(published_versions.keys()))
-    primary_source_url = next(iter(published_versions.values()))[1]
+    primary_source_url = next(iter(published_versions.values())).source_url
 
-    return VersionUpdate(
-        agent_id=agent_id,
-        agent_path=agent_path,
-        current_version=current_version,
-        latest_version=latest_version,
+    release = LatestRelease(
+        version=latest_version,
         distribution_type=dist_types,
         source_url=primary_source_url,
         repository=repository,
-        channel="preview",
-    ), None
+    )
+    return resolve_update(agent_id, agent_path, current_version, "preview", release), None
 
 
 def write_agent_data(agent_path: Path, agent_data: dict) -> bool:
@@ -547,6 +446,26 @@ def update_package_specs(distribution: dict, new_version: str) -> None:
         )
 
 
+def _apply_resolved_assets(
+    binary_block: dict, resolved_assets: dict[str, ResolvedAsset], agent_id: str
+) -> None:
+    """Write pre-resolved archive URL + sha256 into existing binary targets.
+
+    Only fills platforms that already have an entry, preserving their
+    existing `cmd`/`args`. Skips (with a warning) any platform with no entry.
+    """
+    for platform, asset in resolved_assets.items():
+        target = binary_block.get(platform)
+        if target is None:
+            print(
+                f"WARN: no existing binary target for {agent_id} ({platform}); skipping",
+                file=sys.stderr,
+            )
+            continue
+        target["archive"] = asset.archive_url
+        target["sha256"] = asset.sha256
+
+
 def apply_update(update: VersionUpdate) -> bool:
     """Apply a version update to an agent, updating all distribution types."""
     try:
@@ -565,7 +484,13 @@ def apply_update(update: VersionUpdate) -> bool:
             print(f"Error: {update.agent_path} has no 'preview' block", file=sys.stderr)
             return False
         preview["version"] = new_version
-        update_package_specs(preview.get("distribution", {}), new_version)
+        preview_distribution = preview.get("distribution", {})
+        if update.resolved_assets:
+            _apply_resolved_assets(
+                preview_distribution.get("binary", {}), update.resolved_assets, update.agent_id
+            )
+        else:
+            update_package_specs(preview_distribution, new_version)
         return write_agent_data(update.agent_path, agent_data)
 
     old_version = agent_data["version"]
@@ -577,13 +502,16 @@ def apply_update(update: VersionUpdate) -> bool:
     # Update npx/uvx package specs if present
     update_package_specs(distribution, new_version)
 
-    # Update binary archive URLs if present
-    if "binary" in distribution:
+    if update.resolved_assets:
+        _apply_resolved_assets(
+            distribution.get("binary", {}), update.resolved_assets, update.agent_id
+        )
+    elif "binary" in distribution:
         # For URLs, also handle x.y.0 <-> x.y conversions
         old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
         new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
 
-        is_github_repo = _is_github_repo(update.repository)
+        is_github_repository = is_github_repo(update.repository)
         asset_digests: dict[str, str] | None = None
 
         for platform_name, target in distribution["binary"].items():
@@ -607,7 +535,7 @@ def apply_update(update: VersionUpdate) -> bool:
                     url = url.replace(f"-{old_short}-", f"-{new_short}-")
                 target["archive"] = url
 
-                if is_github_repo:
+                if is_github_repository:
                     if asset_digests is None:
                         asset_digests = get_github_release_digests(update.repository, new_version)
                     digest = asset_digests.get(url.rsplit("/", 1)[-1])
