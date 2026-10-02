@@ -1,7 +1,7 @@
 {
   "id": "claudexor",
   "name": "Claudexor",
-  "version": "3.1.2",
+  "version": "3.17.2",
   "description": "Local-first control plane for Claude Code, Codex, Cursor, and OpenCode with quota-aware rotation across multiple native subscription accounts of the same Claude Code or Codex harness",
   "repository": "https://github.com/razzant/claudexor",
   "website": "https://claudexor.ai/",
@@ -9,9 +9,10 @@
     "Anton Razzhigaev"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/razzant/claudexor/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "claudexor@3.1.2",
+      "package": "claudexor@3.17.2",
       "args": [
         "acp",
         "serve"
