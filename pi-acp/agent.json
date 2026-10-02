@@ -1,16 +1,17 @@
 {
   "id": "pi-acp",
   "name": "pi ACP",
-  "version": "0.0.32",
+  "version": "0.0.34",
   "description": "ACP adapter for pi coding agent",
   "repository": "https://github.com/svkozak/pi-acp",
   "authors": [
     "Sergii Kozak <svkozak@gmail.com>"
   ],
   "license": "MIT",
+  "license_url": "https://github.com/svkozak/pi-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "pi-acp@0.0.32"
+      "package": "pi-acp@0.0.34"
     }
   }
 }

@@ -12,128 +12,98 @@ Usage:
     # Check specific agents
     python .github/workflows/update_versions.py --agents gemini,goose
 
+    # Check one release channel only ('stable' or 'preview')
+    python .github/workflows/update_versions.py --channels preview
+
 Environment variables:
     GITHUB_TOKEN: GitHub token for API requests (increases rate limit)
 """
 
 import argparse
 import json
-import os
 import re
 import sys
-import urllib.error
-import urllib.request
 from pathlib import Path
-from typing import NamedTuple
 
+from common import (
+    CHANNELS,
+    LatestRelease,
+    PublishedVersions,
+    ResolvedAsset,
+    UpdateError,
+    VersionUpdate,
+)
+from custom_agent_sources import CustomSourceFn, junie
+from github_api import (
+    get_github_release_digests,
+    get_github_release_versions,
+    is_github_repo,
+    make_request,
+)
 from registry_utils import (
+    UVX_VERSION_PATTERN,
     extract_npm_package_name,
     extract_pypi_package_name,
+    is_prerelease,
+    is_preview_version,
     load_quarantine,
+    normalize_release_version,
+    semver_sort_key,
     should_skip_dir,
+    version_tuple,
 )
-
-
-class VersionUpdate(NamedTuple):
-    """Represents a version update for an agent."""
-
-    agent_id: str
-    agent_path: Path
-    current_version: str
-    latest_version: str
-    distribution_type: str  # 'npx', 'uvx', 'binary', or combined like 'binary+npx'
-    source_url: str  # URL where version was fetched from
-    repository: str  # Agent's `repository` field (empty when unset)
-
-
-class UpdateError(NamedTuple):
-    """Represents an error during version checking."""
-
-    agent_id: str
-    error: str
-
 
 # Directories to scan for agents
 AGENT_DIRS = [
     ".",  # Root directory (active agents)
 ]
 
-
-def get_github_token() -> str | None:
-    """Get GitHub token from environment."""
-    return os.environ.get("GITHUB_TOKEN")
-
-
-def make_request(url: str, headers: dict | None = None) -> dict | list | str | None:
-    """Make HTTP request and return JSON response."""
-    req_headers = {"User-Agent": "ACP-Registry-Version-Checker/1.0"}
-    if headers:
-        req_headers.update(headers)
-
-    # Add GitHub token if available and this is a GitHub API request
-    token = get_github_token()
-    if token and "api.github.com" in url:
-        req_headers["Authorization"] = f"token {token}"
-
-    try:
-        req = urllib.request.Request(url, headers=req_headers)
-        with urllib.request.urlopen(req, timeout=30) as response:
-            content = response.read().decode("utf-8")
-            try:
-                return json.loads(content)
-            except json.JSONDecodeError:
-                return content
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return None
-        if e.code >= 500:
-            return None
-        raise
-    except (urllib.error.URLError, TimeoutError, OSError):
-        return None
-
-
-def is_prerelease(version: str) -> bool:
-    """Check if a version string is not a stable numeric dotted release."""
-    normalized = version.lstrip("v")
-    return not bool(re.fullmatch(r"\d+(?:\.\d+)*", normalized))
-
-
-def normalize_release_version(version: str | None) -> str | None:
-    """Normalize comparable release versions to a consistent dotted form."""
-    if not version:
-        return None
-    if re.fullmatch(r"\d+", version):
-        return f"{version}.0.0"
-    if re.fullmatch(r"\d+\.\d+", version):
-        return f"{version}.0"
-    return version
+# Per-(agent_id, channel) overrides for agents whose releases can't be
+# discovered through npm/PyPI/GitHub Releases. See custom_agent_sources/__init__.py.
+CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
+    ("junie", "preview"): junie.get_preview_release,
+}
 
 
 def version_sort_key(version: str) -> tuple[int, ...]:
     """Return a sortable key for numeric dotted release versions."""
-    normalized = normalize_release_version(version)
-    if not normalized or not re.fullmatch(r"\d+(?:\.\d+)*", normalized):
-        raise ValueError(f"Unsupported version format: {version}")
-    return tuple(int(part) for part in normalized.split("."))
+    return version_tuple(version)
 
 
-def get_highest_stable_version(versions: set[str]) -> str | None:
-    """Return the highest non-prerelease version from a set."""
-    stable_versions = {
+def get_stable_versions(versions: set[str]) -> set[str]:
+    """Return the normalized non-prerelease subset of a published version set."""
+    return {
         normalized
         for version in versions
         if not is_prerelease(version)
         for normalized in [normalize_release_version(version)]
         if normalized is not None
     }
+
+
+def get_highest_stable_version(versions: set[str]) -> str | None:
+    """Return the highest non-prerelease version from a set."""
+    stable_versions = get_stable_versions(versions)
     if not stable_versions:
         return None
     return max(stable_versions, key=version_sort_key)
 
 
+def get_highest_preview_version(versions: set[str]) -> str | None:
+    """Return the highest `X.Y.Z-preview.N` version from a set."""
+    preview_versions = [version for version in versions if is_preview_version(version)]
+    if not preview_versions:
+        return None
+    return max(preview_versions, key=semver_sort_key)
+
+
 def get_npm_versions(package_name: str) -> set[str] | None:
-    """Get all stable published versions of an npm package."""
+    """Get all published versions of an npm package, prereleases included.
+
+    Callers partition the result per channel; the `dist-tags.latest` fallback
+    stays stable-only so a preview published without `--tag preview` can never
+    surface as a stable release.
+    """
     # Handle scoped packages: @scope/name -> %40scope%2Fname
     encoded_name = package_name.replace("@", "%40").replace("/", "%2F")
     url = f"https://registry.npmjs.org/{encoded_name}"
@@ -144,15 +114,14 @@ def get_npm_versions(package_name: str) -> set[str] | None:
     if isinstance(data, dict):
         versions = data.get("versions", {})
         if isinstance(versions, dict):
-            stable_versions = {
+            published_versions = {
                 normalized
                 for version in versions
-                if not is_prerelease(version)
                 for normalized in [normalize_release_version(version)]
                 if normalized is not None
             }
-            if stable_versions:
-                return stable_versions
+            if published_versions:
+                return published_versions
 
         dist_tags = data.get("dist-tags", {})
         if isinstance(dist_tags, dict):
@@ -163,121 +132,29 @@ def get_npm_versions(package_name: str) -> set[str] | None:
 
 
 def get_pypi_versions(package_name: str) -> set[str] | None:
-    """Get all stable published versions of a PyPI package."""
+    """Get all published versions of a PyPI package, prereleases included."""
     url = f"https://pypi.org/pypi/{package_name}/json"
     data = make_request(url)
     if isinstance(data, dict):
         releases = data.get("releases", {})
         if isinstance(releases, dict):
-            stable_versions = set()
+            published_versions = set()
             for version, files in releases.items():
-                if not files or is_prerelease(version):
+                if not files:
                     continue
                 if all(isinstance(file, dict) and file.get("yanked", False) for file in files):
                     continue
                 normalized = normalize_release_version(version)
                 if normalized:
-                    stable_versions.add(normalized)
-            if stable_versions:
-                return stable_versions
+                    published_versions.add(normalized)
+            if published_versions:
+                return published_versions
 
         info = data.get("info", {})
         if isinstance(info, dict):
             latest = normalize_release_version(info.get("version"))
             if latest and not is_prerelease(latest):
                 return {latest}
-    return None
-
-
-def _is_github_repo(repo_url: str) -> bool:
-    return "github.com" in repo_url
-
-
-def _github_owner_repo(repo_url: str) -> tuple[str, str] | None:
-    """Extract (owner, repo) from a GitHub repository URL, stripping any `.git`."""
-    match = re.search(r"github\.com/([^/]+)/([^/]+)", repo_url)
-    if not match:
-        return None
-    owner, repo = match.groups()
-    if repo.endswith(".git"):
-        repo = repo[:-4]
-    return owner, repo
-
-
-def _parse_release_digests(data: dict) -> dict[str, str]:
-    """Extract {asset_name: hex_sha256} from a GitHub release payload."""
-    digests: dict[str, str] = {}
-    for a in data.get("assets", []):
-        if not isinstance(a, dict):
-            continue
-        name = a.get("name")
-        digest = a.get("digest", "")
-        if name and isinstance(digest, str) and digest.startswith("sha256:"):
-            digests[name] = digest.removeprefix("sha256:")
-    return digests
-
-
-def get_github_latest_version(repo_url: str) -> str | None:
-    parsed = _github_owner_repo(repo_url)
-    if not parsed:
-        return None
-    owner, repo = parsed
-    data = make_request(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
-    if isinstance(data, dict):
-        tag = data.get("tag_name", "")
-        return normalize_release_version(tag.lstrip("v") if tag else None)
-    return None
-
-
-def get_github_release_digests(repo_url: str, version: str) -> dict[str, str]:
-    """Return {asset_filename: hex_sha256} for the release tagged `version`.
-
-    Keys are asset filenames exactly as GitHub returns them (last path segment of
-    the asset's `browser_download_url`). Values are lowercase hex with the
-    `sha256:` prefix stripped.
-    """
-    parsed = _github_owner_repo(repo_url)
-    if not parsed:
-        return {}
-    owner, repo = parsed
-    # Tries `v{version}` first (the common tag convention), then bare `{version}`.
-    for tag in (f"v{version}", version):
-        data = make_request(f"https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}")
-        if isinstance(data, dict):
-            return _parse_release_digests(data)
-    return {}
-
-
-def get_github_release_versions(repo_url: str) -> set[str] | None:
-    """Get stable GitHub release versions published for a repository."""
-    match = re.search(r"github\.com/([^/]+)/([^/]+)", repo_url)
-    if not match:
-        return None
-
-    owner, repo = match.groups()
-    if repo.endswith(".git"):
-        repo = repo[:-4]
-
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases?per_page=100"
-    data = make_request(api_url)
-    if isinstance(data, list):
-        versions = set()
-        for release in data:
-            if not isinstance(release, dict):
-                continue
-            if release.get("draft") or release.get("prerelease"):
-                continue
-            tag = release.get("tag_name", "")
-            version = normalize_release_version(tag.lstrip("v") if tag else None)
-            if version and not is_prerelease(version):
-                versions.add(version)
-        if versions:
-            return versions
-
-    latest = get_github_latest_version(repo_url)
-    if latest:
-        return {latest}
-
     return None
 
 
@@ -321,85 +198,272 @@ def find_all_agents(registry_dir: Path) -> list[tuple[Path, dict]]:
     return agents
 
 
-def check_agent_version(
-    agent_path: Path, agent_data: dict
-) -> tuple[VersionUpdate | None, UpdateError | None]:
-    """Check if an agent has a newer version available.
+def fetch_distribution_versions(
+    agent_id: str,
+    distribution: dict,
+    repository: str,
+    cache: dict[str, set[str] | None] | None = None,
+) -> tuple[dict[str, PublishedVersions], UpdateError | None]:
+    """Fetch the published version list once per declared distribution source.
 
-    Checks ALL distribution sources and fails if they report different versions.
+    Returns a `{distribution_type: PublishedVersions}` mapping. `cache` (keyed
+    by source URL) lets one agent check reuse a fetch across channels.
     """
-    agent_id = agent_data.get("id", "unknown")
-    current_version = agent_data.get("version", "0.0.0")
-    distribution = agent_data.get("distribution", {})
-    repository = agent_data.get("repository", "")
+    if cache is None:
+        cache = {}
+    source_versions: dict[str, PublishedVersions] = {}
 
-    # Collect stable published versions from all distribution sources
-    current_version = normalize_release_version(current_version) or current_version
-    source_versions: dict[str, tuple[set[str], str]] = {}  # type -> (versions, source_url)
+    def fetch(source_url: str, fetcher) -> set[str] | None:
+        if source_url not in cache:
+            cache[source_url] = fetcher()
+        return cache[source_url]
 
     if "npx" in distribution:
         package_spec = distribution["npx"].get("package", "")
         package_name = extract_npm_package_name(package_spec)
         if not package_name:
-            return None, UpdateError(agent_id, "Could not extract npm package name")
-        versions = get_npm_versions(package_name)
+            return {}, UpdateError(agent_id, "Could not extract npm package name")
+        source_url = f"https://registry.npmjs.org/{package_name}"
+        versions = fetch(source_url, lambda: get_npm_versions(package_name))
         if not versions:
-            return None, UpdateError(agent_id, f"Could not fetch npm versions for {package_name}")
-        source_versions["npx"] = (versions, f"https://registry.npmjs.org/{package_name}")
+            return {}, UpdateError(agent_id, f"Could not fetch npm versions for {package_name}")
+        source_versions["npx"] = PublishedVersions(versions, source_url)
 
     if "uvx" in distribution:
         package_spec = distribution["uvx"].get("package", "")
         package_name = extract_pypi_package_name(package_spec)
         if not package_name:
-            return None, UpdateError(agent_id, "Could not extract PyPI package name")
-        versions = get_pypi_versions(package_name)
+            return {}, UpdateError(agent_id, "Could not extract PyPI package name")
+        source_url = f"https://pypi.org/pypi/{package_name}/json"
+        versions = fetch(source_url, lambda: get_pypi_versions(package_name))
         if not versions:
-            return None, UpdateError(agent_id, f"Could not fetch PyPI versions for {package_name}")
-        source_versions["uvx"] = (versions, f"https://pypi.org/pypi/{package_name}/json")
+            return {}, UpdateError(agent_id, f"Could not fetch PyPI versions for {package_name}")
+        source_versions["uvx"] = PublishedVersions(versions, source_url)
 
-    if "binary" in distribution and _is_github_repo(repository):
-        versions = get_github_release_versions(repository)
+    if "binary" in distribution and is_github_repo(repository):
+        versions = fetch(repository, lambda: get_github_release_versions(repository))
         if not versions:
-            return None, UpdateError(
+            return {}, UpdateError(
                 agent_id,
                 f"Could not fetch GitHub releases for {repository}",
             )
-        source_versions["binary"] = (versions, repository)
+        source_versions["binary"] = PublishedVersions(versions, repository)
 
-    if not source_versions:
+    return source_versions, None
+
+
+def resolve_update(
+    agent_id: str,
+    agent_path: Path,
+    current_version: str,
+    channel: str,
+    release: LatestRelease | None,
+) -> VersionUpdate | None:
+    """Compare a source's reported latest release against the agent's current version.
+
+    The single place that decides "is this actually an update", whether
+    `release` came from the standard resolution or a CUSTOM_AGENT_SOURCES override.
+    """
+    if release is None or release.version == current_version:
+        return None
+    return VersionUpdate(
+        agent_id=agent_id,
+        agent_path=agent_path,
+        current_version=current_version,
+        latest_version=release.version,
+        distribution_type=release.distribution_type,
+        source_url=release.source_url,
+        repository=release.repository,
+        channel=channel,
+        resolved_assets=release.resolved_assets,
+    )
+
+
+def check_agent_version(
+    agent_path: Path,
+    agent_data: dict,
+    cache: dict[str, set[str] | None] | None = None,
+) -> tuple[VersionUpdate | None, UpdateError | None]:
+    """Check if an agent has a newer stable version available.
+
+    Checks ALL distribution sources and fails if they report different versions.
+    """
+    agent_id = agent_data.get("id", "unknown")
+    current_version = agent_data.get("version", "0.0.0")
+    current_version = normalize_release_version(current_version) or current_version
+
+    override = CUSTOM_AGENT_SOURCES.get((agent_id, "stable"))
+    if override:
+        release, error = override(agent_data)
+        if error:
+            return None, error
+        return resolve_update(agent_id, agent_path, current_version, "stable", release), None
+
+    distribution = agent_data.get("distribution", {})
+    repository = agent_data.get("repository", "")
+
+    published_versions, error = fetch_distribution_versions(
+        agent_id, distribution, repository, cache
+    )
+    if error:
+        return None, error
+
+    if not published_versions:
         if distribution:
             return None, None  # Has distributions but none are checkable (e.g. binary without repo)
         return None, UpdateError(agent_id, "Unknown distribution type")
 
+    # Keep the stable channel on stable releases only
+    source_versions = {
+        dist_type: PublishedVersions(get_stable_versions(pv.versions), pv.source_url)
+        for dist_type, pv in published_versions.items()
+    }
+
     common_versions: set[str] | None = None
-    for versions, _source_url in source_versions.values():
-        common_versions = set(versions) if common_versions is None else common_versions & versions
+    for pv in source_versions.values():
+        common_versions = (
+            set(pv.versions) if common_versions is None else common_versions & pv.versions
+        )
 
     if not common_versions:
         details = ", ".join(
-            f"{dist_type}={get_highest_stable_version(versions) or 'none'}"
-            for dist_type, (versions, _) in sorted(source_versions.items())
+            f"{dist_type}={get_highest_stable_version(pv.versions) or 'none'}"
+            for dist_type, pv in sorted(source_versions.items())
         )
         return None, UpdateError(agent_id, f"Version mismatch across distributions: {details}")
 
     latest_version = get_highest_stable_version(common_versions)
     if not latest_version:
         return None, UpdateError(agent_id, "No stable versions found across distributions")
-    if latest_version == current_version:
-        return None, None  # Up to date
 
     dist_types = "+".join(sorted(source_versions.keys()))
-    primary_source_url = next(iter(source_versions.values()))[1]
+    primary_source_url = next(iter(source_versions.values())).source_url
 
-    return VersionUpdate(
-        agent_id=agent_id,
-        agent_path=agent_path,
-        current_version=current_version,
-        latest_version=latest_version,
+    release = LatestRelease(
+        version=latest_version,
         distribution_type=dist_types,
         source_url=primary_source_url,
         repository=repository,
-    ), None
+    )
+    return resolve_update(agent_id, agent_path, current_version, "stable", release), None
+
+
+def check_agent_preview_version(
+    agent_path: Path,
+    agent_data: dict,
+    cache: dict[str, set[str] | None] | None = None,
+) -> tuple[VersionUpdate | None, UpdateError | None]:
+    """Check if an agent has a newer version available on its preview channel.
+
+    The candidate is the highest of the published preview and stable releases,
+    so preview users get the newest version either channel has - including a
+    plain release once stable overtakes the preview line. Only the
+    distribution types declared inside `preview.distribution` take part.
+
+    A CUSTOM_AGENT_SOURCES override for this agent's preview channel, if
+    present, replaces this standard resolution entirely - even for an agent
+    with no `preview` block yet (compared against a "0.0.0" placeholder).
+    """
+    agent_id = agent_data.get("id", "unknown")
+    preview = agent_data.get("preview")
+
+    override = CUSTOM_AGENT_SOURCES.get((agent_id, "preview"))
+    if override:
+        release, error = override(agent_data)
+        if error:
+            return None, error._replace(error=f"preview: {error.error}")
+        current_version = preview.get("version", "0.0.0") if isinstance(preview, dict) else "0.0.0"
+        return resolve_update(agent_id, agent_path, current_version, "preview", release), None
+
+    if not isinstance(preview, dict):
+        return None, None
+
+    current_version = preview.get("version", "0.0.0")
+    distribution = preview.get("distribution", {})
+    repository = agent_data.get("repository", "")
+
+    published_versions, error = fetch_distribution_versions(
+        agent_id, distribution, repository, cache
+    )
+    if error:
+        return None, error._replace(error=f"preview: {error.error}")
+    if not published_versions:
+        return None, None
+
+    common_versions: set[str] | None = None
+    for pv in published_versions.values():
+        common_versions = (
+            set(pv.versions) if common_versions is None else common_versions & pv.versions
+        )
+
+    candidates = [
+        candidate
+        for candidate in (
+            get_highest_preview_version(common_versions or set()),
+            get_highest_stable_version(common_versions or set()),
+        )
+        if candidate
+    ]
+    if not candidates:
+        return None, None  # Nothing published to point at; stay put
+
+    latest_version = max(candidates, key=semver_sort_key)
+    dist_types = "+".join(sorted(published_versions.keys()))
+    primary_source_url = next(iter(published_versions.values())).source_url
+
+    release = LatestRelease(
+        version=latest_version,
+        distribution_type=dist_types,
+        source_url=primary_source_url,
+        repository=repository,
+    )
+    return resolve_update(agent_id, agent_path, current_version, "preview", release), None
+
+
+def write_agent_data(agent_path: Path, agent_data: dict) -> bool:
+    """Write an agent manifest back to disk in the registry's canonical format."""
+    try:
+        with open(agent_path, "w") as f:
+            json.dump(agent_data, f, indent=2)
+            f.write("\n")
+        return True
+    except OSError as e:
+        print(f"Error writing {agent_path}: {e}", file=sys.stderr)
+        return False
+
+
+def update_package_specs(distribution: dict, new_version: str) -> None:
+    """Rewrite npx/uvx package specs in place so they pin `new_version`."""
+    if "npx" in distribution:
+        package_spec = distribution["npx"].get("package", "")
+        package_name = extract_npm_package_name(package_spec)
+        distribution["npx"]["package"] = f"{package_name}@{new_version}"
+
+    if "uvx" in distribution:
+        package_spec = distribution["uvx"].get("package", "")
+        distribution["uvx"]["package"] = re.sub(
+            rf"([=@]+){UVX_VERSION_PATTERN}", rf"\g<1>{new_version}", package_spec
+        )
+
+
+def _apply_resolved_assets(
+    binary_block: dict, resolved_assets: dict[str, ResolvedAsset], agent_id: str
+) -> None:
+    """Write pre-resolved archive URL + sha256 into existing binary targets.
+
+    Only fills platforms that already have an entry, preserving their
+    existing `cmd`/`args`. Skips (with a warning) any platform with no entry.
+    """
+    for platform, asset in resolved_assets.items():
+        target = binary_block.get(platform)
+        if target is None:
+            print(
+                f"WARN: no existing binary target for {agent_id} ({platform}); skipping",
+                file=sys.stderr,
+            )
+            continue
+        target["archive"] = asset.archive_url
+        target["sha256"] = asset.sha256
 
 
 def apply_update(update: VersionUpdate) -> bool:
@@ -411,32 +475,43 @@ def apply_update(update: VersionUpdate) -> bool:
         print(f"Error reading {update.agent_path}: {e}", file=sys.stderr)
         return False
 
-    old_version = agent_data["version"]
     new_version = update.latest_version
+
+    if update.channel == "preview":
+        # Preview bumps touch the preview block only; the stable entry is untouched.
+        preview = agent_data.get("preview")
+        if not isinstance(preview, dict):
+            print(f"Error: {update.agent_path} has no 'preview' block", file=sys.stderr)
+            return False
+        preview["version"] = new_version
+        preview_distribution = preview.get("distribution", {})
+        if update.resolved_assets:
+            _apply_resolved_assets(
+                preview_distribution.get("binary", {}), update.resolved_assets, update.agent_id
+            )
+        else:
+            update_package_specs(preview_distribution, new_version)
+        return write_agent_data(update.agent_path, agent_data)
+
+    old_version = agent_data["version"]
     distribution = agent_data.get("distribution", {})
 
     # Update version field
     agent_data["version"] = new_version
 
-    # Update npx package spec if present
-    if "npx" in distribution:
-        package_spec = distribution["npx"].get("package", "")
-        package_name = extract_npm_package_name(package_spec)
-        distribution["npx"]["package"] = f"{package_name}@{new_version}"
+    # Update npx/uvx package specs if present
+    update_package_specs(distribution, new_version)
 
-    # Update uvx package spec if present
-    if "uvx" in distribution:
-        package_spec = distribution["uvx"].get("package", "")
-        new_package_spec = re.sub(r"([=@]+)[\d.]+", rf"\g<1>{new_version}", package_spec)
-        distribution["uvx"]["package"] = new_package_spec
-
-    # Update binary archive URLs if present
-    if "binary" in distribution:
+    if update.resolved_assets:
+        _apply_resolved_assets(
+            distribution.get("binary", {}), update.resolved_assets, update.agent_id
+        )
+    elif "binary" in distribution:
         # For URLs, also handle x.y.0 <-> x.y conversions
         old_short = re.sub(r"\.0$", "", old_version)  # 1.6.0 -> 1.6
         new_short = re.sub(r"\.0$", "", new_version)  # 1.7.0 -> 1.7
 
-        is_github_repo = _is_github_repo(update.repository)
+        is_github_repository = is_github_repo(update.repository)
         asset_digests: dict[str, str] | None = None
 
         for platform_name, target in distribution["binary"].items():
@@ -460,7 +535,7 @@ def apply_update(update: VersionUpdate) -> bool:
                     url = url.replace(f"-{old_short}-", f"-{new_short}-")
                 target["archive"] = url
 
-                if is_github_repo:
+                if is_github_repository:
                     if asset_digests is None:
                         asset_digests = get_github_release_digests(update.repository, new_version)
                     digest = asset_digests.get(url.rsplit("/", 1)[-1])
@@ -471,15 +546,8 @@ def apply_update(update: VersionUpdate) -> bool:
                             f"WARN: no release digest for {update.agent_id} ({platform_name})",
                             file=sys.stderr,
                         )
-    # Write back
-    try:
-        with open(update.agent_path, "w") as f:
-            json.dump(agent_data, f, indent=2)
-            f.write("\n")
-        return True
-    except OSError as e:
-        print(f"Error writing {update.agent_path}: {e}", file=sys.stderr)
-        return False
+
+    return write_agent_data(update.agent_path, agent_data)
 
 
 def main():
@@ -501,7 +569,18 @@ def main():
         action="store_true",
         help="Output results as JSON",
     )
+    parser.add_argument(
+        "--channels",
+        type=str,
+        default=",".join(CHANNELS),
+        help=f"Comma-separated release channels to check (default: {','.join(CHANNELS)})",
+    )
     args = parser.parse_args()
+
+    channels = [c.strip() for c in args.channels.split(",") if c.strip()]
+    unknown_channels = [c for c in channels if c not in CHANNELS]
+    if unknown_channels or not channels:
+        parser.error(f"--channels must be a subset of {','.join(CHANNELS)}")
 
     # Determine registry directory
     registry_dir = Path(__file__).parent.parent.parent
@@ -521,6 +600,11 @@ def main():
     errors: list[UpdateError] = []
     up_to_date: list[str] = []
 
+    checkers = {
+        "stable": check_agent_version,
+        "preview": check_agent_preview_version,
+    }
+
     # Check each agent
     for agent_path, agent_data in agents:
         agent_id = agent_data.get("id", "unknown")
@@ -528,20 +612,34 @@ def main():
         if not args.json:
             print(f"Checking {agent_id}...", end=" ", flush=True)
 
-        update, error = check_agent_version(agent_path, agent_data)
+        # One fetch per distribution source, shared by every channel
+        fetch_cache: dict[str, set[str] | None] = {}
+        agent_updates: list[VersionUpdate] = []
+        agent_errors: list[UpdateError] = []
 
-        if error:
-            errors.append(error)
-            if not args.json:
-                print(f"ERROR: {error.error}")
-        elif update:
-            updates.append(update)
-            if not args.json:
-                print(f"UPDATE: {update.current_version} -> {update.latest_version}")
-        else:
+        for channel in CHANNELS:
+            if channel not in channels:
+                continue
+            update, error = checkers[channel](agent_path, agent_data, fetch_cache)
+            if error:
+                agent_errors.append(error)
+            elif update:
+                agent_updates.append(update)
+
+        updates.extend(agent_updates)
+        errors.extend(agent_errors)
+        if not agent_updates and not agent_errors:
             up_to_date.append(agent_id)
-            if not args.json:
-                print(f"OK ({agent_data.get('version', 'unknown')})")
+
+        if not args.json:
+            messages = [f"ERROR: {e.error}" for e in agent_errors]
+            messages += [
+                f"UPDATE [{u.channel}]: {u.current_version} -> {u.latest_version}"
+                for u in agent_updates
+            ]
+            if not messages:
+                messages.append(f"OK ({agent_data.get('version', 'unknown')})")
+            print("; ".join(messages))
 
     # Output results
     if args.json:
@@ -550,6 +648,7 @@ def main():
                 {
                     "agent_id": u.agent_id,
                     "agent_path": str(u.agent_path),
+                    "channel": u.channel,
                     "current_version": u.current_version,
                     "latest_version": u.latest_version,
                     "distribution_type": u.distribution_type,
@@ -573,7 +672,7 @@ def main():
             print("Updates available:")
             for u in updates:
                 print(
-                    f"  - {u.agent_id}: {u.current_version} -> "
+                    f"  - {u.agent_id} ({u.channel}): {u.current_version} -> "
                     f"{u.latest_version} ({u.distribution_type})"
                 )
 

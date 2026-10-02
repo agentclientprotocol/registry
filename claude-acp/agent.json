@@ -1,7 +1,7 @@
 {
   "id": "claude-acp",
   "name": "Claude Agent",
-  "version": "0.63.0",
+  "version": "0.85.1",
   "description": "ACP wrapper for Anthropic's Claude",
   "repository": "https://github.com/agentclientprotocol/claude-agent-acp",
   "authors": [
@@ -10,9 +10,18 @@
     "JetBrains"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/agentclientprotocol/claude-agent-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "@agentclientprotocol/claude-agent-acp@0.63.0"
+      "package": "@agentclientprotocol/claude-agent-acp@0.85.1"
+    }
+  },
+  "preview": {
+    "version": "0.85.2-preview.19",
+    "distribution": {
+      "npx": {
+        "package": "@agentclientprotocol/claude-agent-acp@0.85.2-preview.19"
+      }
     }
   }
 }
