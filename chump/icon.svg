@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Chump icon: stylized "C" bracket with a circuit node — represents a local-first agent -->
+  <path fill="currentColor" d="M3 2h2v1H4v10h1v1H3V2zm8 0h2v12h-2v-1h1V3h-1V2zM6 7h4v2H6V7z"/>
+</svg>
