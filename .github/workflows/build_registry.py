@@ -695,7 +695,7 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
     JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
 
     # Agents flagged as bundled in the JetBrains registry
-    JETBRAINS_BUNDLED_IDS = {"claude-acp"}
+    JETBRAINS_BUNDLED_IDS = {"claude-acp", "junie"}
 
     def patch_agent_for_jetbrains(agent):
         patched = copy.deepcopy(agent)
