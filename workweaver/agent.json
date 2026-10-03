@@ -1,0 +1,21 @@
+{
+  "id": "workweaver",
+  "name": "Workweaver",
+  "version": "0.1.12",
+  "description": "AI workforce for business operations. Mount the open-source Workweaver CLI into any ACP-compatible editor (Zed, JetBrains, VS Code ACP Client extension) and drive missions, edge connectors, WorkMemory recall, browser automation, and edge inference through the canonical session/prompt surface.",
+  "repository": "https://github.com/bitfoundry-ai/workweaver",
+  "website": "https://workweaver.ai",
+  "authors": [
+    "Workweaver <hello@workweaver.ai>"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "distribution": {
+    "uvx": {
+      "package": "workweaver",
+      "args": [
+        "acp",
+        "start"
+      ]
+    }
+  }
+}
