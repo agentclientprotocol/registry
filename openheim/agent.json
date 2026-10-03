@@ -1,0 +1,36 @@
+{
+  "id": "openheim",
+  "name": "Openheim",
+  "version": "0.2.1",
+  "description": "Fast, multipurpose, multi-provider LLM agent written in Rust",
+  "repository": "https://github.com/weirdstuff-dev/openheim",
+  "website": "https://openheim.io",
+  "authors": [
+    "themartto"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/weirdstuff-dev/openheim/releases/download/v0.2.1/openheim-v0.2.1-aarch64-apple-darwin.tar.gz",
+        "cmd": "./openheim",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/weirdstuff-dev/openheim/releases/download/v0.2.1/openheim-v0.2.1-x86_64-apple-darwin.tar.gz",
+        "cmd": "./openheim",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/weirdstuff-dev/openheim/releases/download/v0.2.1/openheim-v0.2.1-aarch64-unknown-linux-gnu.tar.gz",
+        "cmd": "./openheim",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/weirdstuff-dev/openheim/releases/download/v0.2.1/openheim-v0.2.1-x86_64-unknown-linux-gnu.tar.gz",
+        "cmd": "./openheim",
+        "args": ["acp"]
+      }
+    }
+  }
+}
