@@ -1,0 +1,50 @@
+{
+  "id": "tempr",
+  "name": "Tempr",
+  "version": "0.9.9",
+  "description": "Tempr's coding agent, on your own AI provider keys",
+  "website": "https://temprhq.io/docs/cli-editors",
+  "authors": ["Tempr"],
+  "license": "proprietary",
+  "license_url": "https://temprhq.io/eula",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://temprhq.io/cli/v0.9.9/tempr-0.9.9-osx-arm64.tar.gz",
+        "sha256": "8b40b1b6910fa444bdfe0ad35155dc3ab93d97c93e9465cc6e5d3c2902a7ebb1",
+        "cmd": "./tempr",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://temprhq.io/cli/v0.9.9/tempr-0.9.9-osx-x64.tar.gz",
+        "sha256": "ea72d8486c8c32716d20bfcc313167c2315f24ce834e408087a49edd7c94dfd8",
+        "cmd": "./tempr",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://temprhq.io/cli/v0.9.9/tempr-0.9.9-linux-arm64.tar.gz",
+        "sha256": "79c19902d22e529299c0c579e0534c5eb080ae3a20365c2fc1ab8e33bab97a37",
+        "cmd": "./tempr",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://temprhq.io/cli/v0.9.9/tempr-0.9.9-linux-x64.tar.gz",
+        "sha256": "11d9a373d9427d05536a9c6e68cf30100966cc49298e83d712aa13ca1714daf8",
+        "cmd": "./tempr",
+        "args": ["acp"]
+      },
+      "windows-aarch64": {
+        "archive": "https://temprhq.io/cli/v0.9.9/tempr-0.9.9-win-arm64.zip",
+        "sha256": "b0a137c324f677e2b5dc26da9803bacdb429f917b6e683f2c1085a792e81de2e",
+        "cmd": "./tempr.exe",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://temprhq.io/cli/v0.9.9/tempr-0.9.9-win-x64.zip",
+        "sha256": "34b848ec7f5194c642798bf5dadebf6b16fa31066a001b8d7ceb8bbfd0dcf293",
+        "cmd": "./tempr.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
