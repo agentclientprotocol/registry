@@ -1,0 +1,21 @@
+{
+  "id": "mastracode",
+  "name": "Mastra Code",
+  "version": "0.44.1",
+  "description": "AI coding agent built on Mastra",
+  "repository": "https://github.com/mastra-ai/mastra",
+  "website": "https://code.mastra.ai",
+  "authors": [
+    "Mastra"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/mastra-ai/mastra/blob/main/LICENSE.md",
+  "distribution": {
+    "npx": {
+      "package": "mastracode@0.44.1",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
