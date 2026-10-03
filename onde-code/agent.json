@@ -5,7 +5,9 @@
   "description": "Small ACP coding agent backed by any OpenAI-compatible chat completions API. Ships its own TUI and speaks ACP over stdio for editors, with multi-root workspaces and session listing.",
   "repository": "https://github.com/kelvin-soen/OndeCode",
   "authors": [
-    "Kelvin Soen <noreply@ondeinference.com>"
+    "Kelvin Soen <kelvin@ondeinference.com>",
+    "OndeCode <noreply@ondeinference.com>",
+    "paydii <paydii@ondeinference.com>"
   ],
   "license": "Apache-2.0",
   "license_url": "https://github.com/kelvin-soen/OndeCode/blob/main/LICENSE",
