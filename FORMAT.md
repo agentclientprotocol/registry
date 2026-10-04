@@ -67,7 +67,7 @@ An agent may declare an optional `preview` block holding **exactly two** fields 
 }
 ```
 
-`preview.distribution` is a full distribution object validated against the same schema definitions as the root `distribution`, restricted to `npx` and `uvx`. **`binary` preview distributions are not supported.**
+`preview.distribution` is a full distribution object validated against the same schema definitions as the root `distribution` (`binary`, `npx`, or `uvx`).
 
 ### Version scheme
 
