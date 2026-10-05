@@ -5,6 +5,7 @@
   "description": "Small, clean ACP agent for Zed: streaming chat over 3 switchable models, permission-gated local tools, embedded octofs filesystem server, MCP stdio servers, AgDb session memory with resume, token usage and thinking display.",
   "repository": "https://github.com/qkun-zh/nail-agent",
   "license": "MIT",
+  "license_url": "https://github.com/qkun-zh/nail-agent/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "linux-x86_64": {
