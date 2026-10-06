@@ -18,7 +18,7 @@ _PLATFORM_ASSETS = {
 
 
 def get_stable_release(agent_data: dict) -> tuple[LatestRelease | None, UpdateError | None]:
-    agent_id = agent_data.get("id", "opencode")
+    agent_id = agent_data.get("id", "opencode-v2")
     data = make_request(BINARY_FEED_URL)
     if not isinstance(data, dict):
         return None, UpdateError(agent_id, "Could not fetch OpenCode binary feed")
