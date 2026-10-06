@@ -1,53 +1,54 @@
 {
   "id": "onde-code",
   "name": "onde-code",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "description": "Small ACP coding agent backed by any OpenAI-compatible chat completions API. Ships its own TUI and speaks ACP over stdio for editors, with multi-root workspaces and session listing.",
   "repository": "https://github.com/kelvin-soen/OndeCode",
   "authors": [
     "Kelvin Soen <kelvin@ondeinference.com>",
     "OndeCode <noreply@ondeinference.com>",
-    "paydii <paydii@ondeinference.com>"
+    "paydii <paydii@ondeinference.com>",
+    "Seto Elkahfi <seto@ondeinference.com>"
   ],
   "license": "Apache-2.0",
   "license_url": "https://github.com/kelvin-soen/OndeCode/blob/main/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.1.0/onde-code-darwin-arm64.tar.gz",
-        "sha256": "9adda2d8f927ec4d40d19e755ce8559de9d3de2c4a86bfff06ac87a1a4032d5e",
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.3.1/onde-code-darwin-arm64.tar.gz",
+        "sha256": "584ffec417821c39f39972f5999ecf2e9a11dfe90fc1b3354b66447a6490b0ad",
         "cmd": "./onde-code",
         "args": [
           "--acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.1.0/onde-code-darwin-x64.tar.gz",
-        "sha256": "ec150f38e0681dfe2675ee7002d7a4254bdfe71ef246b3dada1de77e5971a9b5",
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.3.1/onde-code-darwin-x64.tar.gz",
+        "sha256": "5534f4be4e12031ecf541cc800744153c0db38840894c77ef20368b61be269f8",
         "cmd": "./onde-code",
         "args": [
           "--acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.1.0/onde-code-linux-arm64.tar.gz",
-        "sha256": "48b702f2384fe6c34630aca1ba097620f4c641c19a3196857320526259001fa4",
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.3.1/onde-code-linux-arm64.tar.gz",
+        "sha256": "e2b3cea38d1b668cf0ba67a9518f97ae84f5a89b423f4f4f8824d88fe14412cc",
         "cmd": "./onde-code",
         "args": [
           "--acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.1.0/onde-code-linux-x64.tar.gz",
-        "sha256": "d1e328e2a32da3f5c8304685931182e54b0da5dd1a9271eed72b20d86633d6d6",
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.3.1/onde-code-linux-x64.tar.gz",
+        "sha256": "becc274f1a93cdb0dd75732b7fe09d7357af62e47db085b0ecad13660e5a6dc4",
         "cmd": "./onde-code",
         "args": [
           "--acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.1.0/onde-code-windows-x64.zip",
-        "sha256": "542263097662b28d2ec607c0069dee702637cad9142f98493409fb73ca37563a",
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v0.3.1/onde-code-windows-x64.zip",
+        "sha256": "8ffaf23c672c923c521c44dd1d39c3afebfb2f4c7045e3014a5d372e051fd324",
         "cmd": "onde-code.exe",
         "args": [
           "--acp"
