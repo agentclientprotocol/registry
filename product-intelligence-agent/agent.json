@@ -1,0 +1,15 @@
+{
+  "id": "product-intelligence-agent",
+  "name": "PIA — Product Intelligence Agent",
+  "version": "0.1.0",
+  "description": "Enriches YouTrack tickets with codebase context, linked issues, and customer signals — directly in your JetBrains IDE. Type a ticket ID to get business context, relevant files, and suggested next steps.",
+  "repository": "https://github.com/ditvor/pia",
+  "authors": ["ditvor"],
+  "license": "Apache-2.0",
+  "distribution": {
+    "uvx": {
+      "package": "product-intelligence-agent",
+      "args": ["serve"]
+    }
+  }
+}
