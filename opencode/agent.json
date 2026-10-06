@@ -12,11 +12,55 @@
   "license_url": "https://github.com/anomalyco/opencode/blob/dev/LICENSE",
   "icon": "./icon.svg",
   "distribution": {
-    "npx": {
-      "package": "@opencode/cli@2.0.23",
-      "args": [
-        "acp"
-      ]
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://opencode.ai/files/bin/2.0.23/opencode-darwin-arm64.zip",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "c8d545c80abcad9a7409b564bed546a821823d282a43573ecabf7a6763984591"
+      },
+      "darwin-x86_64": {
+        "archive": "https://opencode.ai/files/bin/2.0.23/opencode-darwin-x64.zip",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "85315edb638d65c8c4f8c4095d1fa71ccb2ead6432269a1bd9ed75e7399e9584"
+      },
+      "linux-aarch64": {
+        "archive": "https://opencode.ai/files/bin/2.0.23/opencode-linux-arm64.tar.gz",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "6c1fa35b43edd1a2daf54e59a4b35faf9f28fedbb742ed18c516954bac91c0f0"
+      },
+      "linux-x86_64": {
+        "archive": "https://opencode.ai/files/bin/2.0.23/opencode-linux-x64.tar.gz",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "13d1d45fc1d205dbfc8bc99a07b59f30d1e192375b75131620ef30cc7edd0f7f"
+      },
+      "windows-aarch64": {
+        "archive": "https://opencode.ai/files/bin/2.0.23/opencode-windows-arm64.zip",
+        "cmd": "./opencode.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "cd558310482774afc1a48003f240a62da8b6894ce1bc0b6da307a6d4c2edfec2"
+      },
+      "windows-x86_64": {
+        "archive": "https://opencode.ai/files/bin/2.0.23/opencode-windows-x64.zip",
+        "cmd": "./opencode.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "83924050088e2c583bba808011dc9835be12438374fc6f870655218b5ee7be71"
+      }
     }
   }
 }

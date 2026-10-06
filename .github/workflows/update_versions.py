@@ -33,7 +33,7 @@ from common import (
     UpdateError,
     VersionUpdate,
 )
-from custom_agent_sources import CustomSourceFn, junie
+from custom_agent_sources import CustomSourceFn, junie, opencode
 from github_api import (
     get_github_release_digests,
     get_github_release_versions,
@@ -62,6 +62,7 @@ AGENT_DIRS = [
 # discovered through npm/PyPI/GitHub Releases. See custom_agent_sources/__init__.py.
 CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
     ("junie", "preview"): junie.get_preview_release,
+    ("opencode", "stable"): opencode.get_stable_release,
 }
 
 
