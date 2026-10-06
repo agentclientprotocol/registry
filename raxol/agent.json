@@ -1,0 +1,48 @@
+{
+  "id": "raxol",
+  "name": "Raxol",
+  "version": "0.2.6",
+  "description": "Coding agent on the BEAM. Serves over ACP from a self-contained binary with no Erlang or Elixir install required.",
+  "repository": "https://github.com/DROOdotFOO/raxol",
+  "website": "https://raxol.io",
+  "license": "MIT",
+  "authors": [
+    "DROOdotFOO"
+  ],
+  "distribution": {
+    "binary": {
+      "linux-x86_64": {
+        "archive": "https://github.com/DROOdotFOO/raxol/releases/download/raxol-cli-v0.2.6/raxol_cli_linux",
+        "cmd": "raxol",
+        "args": [
+          "acp"
+        ],
+        "sha256": "6d8c9db1e3cc06df90a3dcde4ee27689b01cf8bf76b9b88325dd45da80aa1265"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/DROOdotFOO/raxol/releases/download/raxol-cli-v0.2.6/raxol_cli_linux_arm",
+        "cmd": "raxol",
+        "args": [
+          "acp"
+        ],
+        "sha256": "8a3351d8815136719d63df6fc922b0d4b75d228a7981bdb2e77716475802e46d"
+      },
+      "darwin-aarch64": {
+        "archive": "https://github.com/DROOdotFOO/raxol/releases/download/raxol-cli-v0.2.6/raxol_cli_macos",
+        "cmd": "raxol",
+        "args": [
+          "acp"
+        ],
+        "sha256": "9dc35bd00b7d41e902fb34228cb45d01246b2f8a2b202692f8853ea83f3d5a35"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/DROOdotFOO/raxol/releases/download/raxol-cli-v0.2.6/raxol_cli_windows.exe",
+        "cmd": "raxol.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "2efca33ec3b87c7e96ac664b0609816c0fa8b27a835da7400b8a022d737256c2"
+      }
+    }
+  }
+}
