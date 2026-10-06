@@ -1,7 +1,7 @@
 {
   "id": "jaipilot",
   "name": "JAIPilot",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Workflow-based Java testing: generate tests, improve coverage, fix failing tests, stabilize flaky tests, test changes, and lock behavior.",
   "repository": "https://github.com/JAIPilot/jaipilot",
   "website": "https://github.com/JAIPilot/jaipilot/blob/main/docs/intellij-acp.md",
@@ -13,40 +13,40 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.1.0/jaipilot-acp-aarch64-apple-darwin.zip",
-        "sha256": "4d20c57c6a0e4ccd505dd660ec75c76090a609c99ad3fb89966277c94e5c8418",
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-aarch64-apple-darwin.zip",
+        "sha256": "29e9efb5b7233187e6e47b6f64106ddcaa64a7812671010bffcfa6f5b50b51a9",
         "cmd": "./jaipilot-acp",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.1.0/jaipilot-acp-x86_64-apple-darwin.zip",
-        "sha256": "5f1828f1b314a388a035efd3941a10bc0319a273f2d0cec1f18aef1b3a846992",
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-x86_64-apple-darwin.zip",
+        "sha256": "68fddc28abc3e3f11292773c7a3ae128515d68a519f635808447f0f1530d0819",
         "cmd": "./jaipilot-acp",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.1.0/jaipilot-acp-aarch64-unknown-linux-gnu.zip",
-        "sha256": "d16945d376abcd21924965ced89f1a9de175f4b7e091b139b268a750aa014404",
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-aarch64-unknown-linux-gnu.zip",
+        "sha256": "03734d91ad8c9b3e76bc12ca6336fba790960ed28203a25e2833593e831d934d",
         "cmd": "./jaipilot-acp",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.1.0/jaipilot-acp-x86_64-unknown-linux-gnu.zip",
-        "sha256": "3da5fe167742a0811874f537d24e95fe78aa790c6194c7fbdd34480a740c6b05",
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-x86_64-unknown-linux-gnu.zip",
+        "sha256": "7f12177b98c446e738ff4fefd45704b6a0db44504310401e8691a5455966e647",
         "cmd": "./jaipilot-acp",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.1.0/jaipilot-acp-x86_64-pc-windows-msvc.zip",
-        "sha256": "b6e5768fcd8ade06f3fd795429beec1153e370712855ce4517de28a8f604e821",
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-x86_64-pc-windows-msvc.zip",
+        "sha256": "53d9a4300ca0bd9d101e4c772685100db401dbb938f566f15df2f61445886444",
         "cmd": "./jaipilot-acp.exe",
         "args": [
           "acp"
