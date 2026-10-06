@@ -1,0 +1,17 @@
+{
+  "id": "chutes",
+  "name": "Chutes Agent",
+  "version": "0.1.0",
+  "description": "Coding agent powered by Chutes.ai models (DeepSeek, Qwen, GLM, Kimi, …) with file editing, shell tools, and a live model picker",
+  "repository": "https://github.com/heyalbert/zed-chutes-agent",
+  "website": "https://chutes.ai",
+  "authors": [
+    "Albert (heyalbert)"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "chutes-agent@0.1.0"
+    }
+  }
+}
