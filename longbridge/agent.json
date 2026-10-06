@@ -1,0 +1,56 @@
+{
+  "id": "longbridge",
+  "name": "Longbridge AI",
+  "version": "0.27.1",
+  "description": "Research US and HK stocks with market data, fundamentals, analyst ratings, news, filings, screeners, movers, rankings, and short interest. Connect your Longbridge account to analyze balances, positions, profit and loss, cash flow, statements, watchlists, and order history.",
+  "repository": "https://github.com/longbridge/longbridge-terminal",
+  "website": "https://longbridge.com/ai",
+  "authors": [
+    "Longbridge"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/longbridge/longbridge-terminal/releases/download/v0.27.1/longbridge-terminal-darwin-arm64.tar.gz",
+        "sha256": "52b540cd00b40d29782be78e05a1e1a1a4c1ac19773d7d152ceeaf36ac197508",
+        "cmd": "./longbridge",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/longbridge/longbridge-terminal/releases/download/v0.27.1/longbridge-terminal-darwin-amd64.tar.gz",
+        "sha256": "36c26ad056273114142e157ac80cc84c472284222ece926f67f66f2a3663b9f8",
+        "cmd": "./longbridge",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/longbridge/longbridge-terminal/releases/download/v0.27.1/longbridge-terminal-linux-arm64.tar.gz",
+        "sha256": "4f4010b49e099001018f1f64bc698a974bc65156045e6c56915e33a3cf7a32d0",
+        "cmd": "./longbridge",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/longbridge/longbridge-terminal/releases/download/v0.27.1/longbridge-terminal-linux-amd64.tar.gz",
+        "sha256": "ad54ea5ecedcda8f0ea0e41eb6387b2098bbe2326201d43063cb05f6f20d4466",
+        "cmd": "./longbridge",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/longbridge/longbridge-terminal/releases/download/v0.27.1/longbridge-terminal-windows-amd64.zip",
+        "sha256": "c26af9231843e7502674b4dd15f6aabed867486f58681b27e7a1e563b4e2831b",
+        "cmd": "longbridge.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
