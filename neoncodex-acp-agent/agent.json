@@ -1,0 +1,15 @@
+{
+  "id": "neoncodex-acp-agent",
+  "name": "NeonCodex",
+  "version": "1.0.2",
+  "description": "ACP agent for NeonCodex AI, enabling JetBrains IDE integration",
+  "repository": "https://github.com/BrowserlessAPI/neoncodex-acp-agent",
+  "website": "https://neoncodex.io",
+  "authors": ["Viper"],
+  "license": "ISC",
+  "distribution": {
+    "npx": {
+      "package": "neoncodex-acp-agent@1.0.2"
+    }
+  }
+}
