@@ -1,0 +1,49 @@
+{
+  "id": "fx",
+  "name": "fx",
+  "version": "0.0.8",
+  "description": "Tiny, open, embeddable native coding agent from Vercel Labs",
+  "repository": "https://github.com/vercel-labs/fx",
+  "website": "https://fx.sh",
+  "authors": [
+    "Vercel Labs"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/vercel-labs/fx/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.8/fx-macos-aarch64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ],
+        "sha256": "32afc3180c5061b7b19fc8a72107e2b0fac381b2edf0a5decf767b262562fe07"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.8/fx-macos-x86_64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ],
+        "sha256": "1d054613d6605cb6e25c6627cc85e7e380f5eee9e7c8c52e7d707b387d8830a1"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.8/fx-linux-aarch64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ],
+        "sha256": "8b2ee30fdaad4f6c716aef514d629cba1a0ccff352e55891bd31e7ab870d15ca"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/vercel-labs/fx/releases/download/v0.0.8/fx-linux-x86_64.tar.gz",
+        "cmd": "./fx",
+        "args": [
+          "acp"
+        ],
+        "sha256": "5a2a5e188381c7f63d4d9b705bc5968e9d5cb94e1fad696dcae988474e00d124"
+      }
+    }
+  }
+}
