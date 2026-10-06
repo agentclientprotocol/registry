@@ -1,0 +1,48 @@
+{
+  "id": "dora",
+  "name": "Dora",
+  "version": "1.0.0",
+  "description": "A tiny, modular, provider-neutral LLM agent with configurable models, tools, skills, sessions, and native ACP support.",
+  "repository": "https://github.com/lgxz/dora",
+  "website": "https://github.com/lgxz/dora#agent-client-protocol",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/lgxz/dora/releases/download/v1.0.0/dora-darwin-arm64.tar.gz",
+        "sha256": "a20d2f31f4f30a3e8db43bcf2d7cc8c0fe70f8d2882e35bd00f94de318e05cc7",
+        "cmd": "./dora",
+        "args": ["--acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/lgxz/dora/releases/download/v1.0.0/dora-darwin-amd64.tar.gz",
+        "sha256": "a2b13c804e545999685f99140840e38deeb0b3fbc0d9be69bd90fa1062d6928f",
+        "cmd": "./dora",
+        "args": ["--acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/lgxz/dora/releases/download/v1.0.0/dora-linux-arm64.tar.gz",
+        "sha256": "832892a299ecf91aa70b0ca29488b254e18ac057849095ae61ab2da7bbec58b3",
+        "cmd": "./dora",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/lgxz/dora/releases/download/v1.0.0/dora-linux-amd64.tar.gz",
+        "sha256": "a256ff3d116b98d6100f15feea7f7d69e0d55891f5e4bf3f5b352201eb2eb416",
+        "cmd": "./dora",
+        "args": ["--acp"]
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/lgxz/dora/releases/download/v1.0.0/dora-windows-arm64.zip",
+        "sha256": "6c5da1448b43c98cc2953feb2084aecf8b6f7b904b1b8a41d32be02369a85098",
+        "cmd": "./dora.exe",
+        "args": ["--acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/lgxz/dora/releases/download/v1.0.0/dora-windows-amd64.zip",
+        "sha256": "8092fd14983824a8078b875c45316a19557e5531c7ed35f1073ec6ee2f6da139",
+        "cmd": "./dora.exe",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
