@@ -1,7 +1,7 @@
 {
   "id": "sigit",
   "name": "siGit Code",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Local-first coding agent. Runs entirely on your machine with optional on-device LLM inference via Onde.",
   "repository": "https://github.com/getsigit/sigit",
   "website": "https://github.com/getsigit/sigit",
@@ -13,38 +13,38 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.2/sigit-macos-arm64.tar.gz",
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.3/sigit-macos-arm64.tar.gz",
         "cmd": "./sigit",
-        "sha256": "fe4b6ce6a92a58a123e398543050dcf373b1feff1f772cb3a2cc38cc736cb986"
+        "sha256": "5631561956da6592a98e8cc17a90914fc25873bc12d2f7090bb112b21eb21d77"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.2/sigit-macos-amd64.tar.gz",
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.3/sigit-macos-amd64.tar.gz",
         "cmd": "./sigit",
-        "sha256": "431bb408b3ead0085d16611805fe6f44c544ba9e4e3984ed3cebf23c1fbafa25"
+        "sha256": "5deeae7761a515a07e9567d65755553ca3c9bb1c464198e9b1c8aa02340af211"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.2/sigit-linux-arm64",
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.3/sigit-linux-arm64",
         "cmd": "./sigit-linux-arm64",
-        "sha256": "cfab6a5284df8234c634a6647d22db0df74758d660039c71a4347256d7c8b555"
+        "sha256": "b08ae17b388c2d583a92b898e90db535eed182707221e5a9837aa73f21e6f547"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.2/sigit-linux-amd64",
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.3/sigit-linux-amd64",
         "cmd": "./sigit-linux-amd64",
-        "sha256": "3fc0ddb6daac851ae0ac45cc220256db36dff902dec0a6f9f5dea11843087a5c"
+        "sha256": "9df5df6da1fae121740767bc96de2230aab841d0ec143ad8527c6282a72f1273"
       },
       "windows-aarch64": {
-        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.2/sigit-win-arm64.exe",
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.3/sigit-win-arm64.exe",
         "cmd": "./sigit-win-arm64.exe",
-        "sha256": "b547a1f215588a0ff98add62778b5ccc8623c88bd25b9c582389e6f569d0edae"
+        "sha256": "cc2af5ab6ecb9b139db35be64623ab03b3bec03dedfc39bde73a803dd1dac6c8"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.2/sigit-win-amd64.exe",
+        "archive": "https://github.com/getsigit/sigit/releases/download/v1.6.3/sigit-win-amd64.exe",
         "cmd": "./sigit-win-amd64.exe",
-        "sha256": "af53abd8cf8ab4ec017100c966df5b9a228bf6d1c0f66c91c1c023082be3e4dd"
+        "sha256": "7f98089cc36a12fbed5d8099d75632420c3e7425bc185c745f8ae8653f2964d1"
       }
     },
     "npx": {
-      "package": "@smbcloud/sigit@1.6.2"
+      "package": "@smbcloud/sigit@1.6.3"
     }
   }
 }
