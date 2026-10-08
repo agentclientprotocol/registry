@@ -1,0 +1,14 @@
+{
+  "id": "reasonix",
+  "name": "DeepSeek Reasonix",
+  "version": "1.0.0",
+  "description": "DeepSeek-native terminal coding agent",
+  "repository": "https://github.com/esengine/DeepSeek-Reasonix",
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "reasonix",
+      "args": ["acp"]
+    }
+  }
+}
