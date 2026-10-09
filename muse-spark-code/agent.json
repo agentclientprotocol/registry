@@ -1,0 +1,19 @@
+{
+  "id": "muse-spark-code",
+  "name": "Muse Spark Code",
+  "version": "0.14.3",
+  "description": "Unofficial coding agent for Meta's Muse Spark, through the Muse Code CLI or the Meta Model API, with subagents, browser checks and permission modes",
+  "repository": "https://github.com/RandyNorthrup/muse-spark-code",
+  "website": "https://github.com/RandyNorthrup/muse-spark-code#readme",
+  "authors": [
+    "Randy Northrup"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/RandyNorthrup/muse-spark-code/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "muse-spark-code-acp@0.14.3"
+    }
+  }
+}
