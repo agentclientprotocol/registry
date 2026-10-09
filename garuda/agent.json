@@ -1,0 +1,17 @@
+{
+  "id": "garuda",
+  "name": "Garuda",
+  "version": "0.16.1",
+  "description": "A coding agent with an OS sandbox, approvals and an audit log. Use Claude, OpenRouter or a local model. macOS and Linux (on Windows, use WSL).",
+  "repository": "https://github.com/madhu-sv/garuda",
+  "website": "https://madhu-sv.github.io/garuda/",
+  "authors": ["Madhusudhan Vasanth Kumar"],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/madhu-sv/garuda/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@garuda-agent/garuda@0.16.1",
+      "args": ["acp"]
+    }
+  }
+}
