@@ -1,0 +1,16 @@
+{
+  "id": "omp",
+  "name": "Oh My Pi",
+  "version": "17.3.3",
+  "description": "A coding agent with the IDE wired in: subagents, plan mode, LSP, DAP, hindsight memory, time-traveling rules",
+  "repository": "https://github.com/can1357/oh-my-pi",
+  "website": "https://omp.sh",
+  "authors": ["can1357"],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@oh-my-pi/pi-coding-agent@17.3.3",
+      "args": ["acp"]
+    }
+  }
+}
