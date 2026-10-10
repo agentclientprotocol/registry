@@ -1,0 +1,65 @@
+{
+  "id": "oh-my-pi",
+  "name": "Oh My Pi",
+  "version": "18.2.4",
+  "description": "A coding agent with the IDE wired in",
+  "repository": "https://github.com/can1357/oh-my-pi",
+  "website": "https://omp.sh",
+  "authors": [
+    "can1357"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/can1357/oh-my-pi/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/can1357/oh-my-pi/releases/download/v18.2.4/omp-darwin-arm64",
+        "cmd": "./omp",
+        "args": [
+          "acp"
+        ],
+        "sha256": "1a54cf39713ec1443a6323ed716f9b972af325065903ed5c0f0ca1bb626da9ba"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/can1357/oh-my-pi/releases/download/v18.2.4/omp-darwin-x64",
+        "cmd": "./omp",
+        "args": [
+          "acp"
+        ],
+        "sha256": "780a47a5e5668807f5ac1ca37067ddbc528a64edcdf964286bf346f7a83e0609"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/can1357/oh-my-pi/releases/download/v18.2.4/omp-linux-arm64",
+        "cmd": "./omp",
+        "args": [
+          "acp"
+        ],
+        "sha256": "59fe68eee9103494016e22d4261c81ac64a3493df5a9b54816bc064a44fad7cf"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/can1357/oh-my-pi/releases/download/v18.2.4/omp-linux-x64",
+        "cmd": "./omp",
+        "args": [
+          "acp"
+        ],
+        "sha256": "61b4cd50ceaea70baccae7b52a22034469130ea2985a0b2e9adc0f7b3a77a85f"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/can1357/oh-my-pi/releases/download/v18.2.4/omp-windows-arm64.exe",
+        "cmd": "./omp.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "2a86895cec7c69afc817edbe1bbc96ffa67eb3a31d5dfacfe88fc9c25b952244"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/can1357/oh-my-pi/releases/download/v18.2.4/omp-windows-x64.exe",
+        "cmd": "./omp.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "2ca8f2e142ede392dc3c3aadf2a5d179f4169a181ce91f78ee70ddaf96455741"
+      }
+    }
+  }
+}
