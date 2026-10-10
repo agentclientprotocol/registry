@@ -1,0 +1,39 @@
+{
+  "id": "edith",
+  "name": "EDITH",
+  "version": "0.2.1",
+  "description": "A local coding agent for your project directory",
+  "repository": "https://github.com/lucy971326/EDITH",
+  "authors": [
+    "Lucy"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/lucy971326/EDITH/releases/download/v0.2.1/edith-darwin-arm64",
+        "sha256": "8a69e2a764f3a838e94593217d6f51337e9f1179e2beb1a1141784d2d9dbe0ae",
+        "cmd": "./edith-darwin-arm64",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/lucy971326/EDITH/releases/download/v0.2.1/edith-darwin-amd64",
+        "sha256": "3b0aafad5b6b0d904efd025e1a27391dfa4fc389f21412f0c631c3b1dbbb9e9a",
+        "cmd": "./edith-darwin-amd64",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/lucy971326/EDITH/releases/download/v0.2.1/edith-linux-amd64",
+        "sha256": "ba49e83e590a6f06bf3b6e14033e13f1345de252f6b09ba71a75973af93c6d0a",
+        "cmd": "./edith-linux-amd64",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/lucy971326/EDITH/releases/download/v0.2.1/edith-windows-amd64.exe",
+        "sha256": "6f145d69b43eb7f90164b00ce38f0ea4b01fd4404c068e5cf8a1f5e3e49f72e1",
+        "cmd": "edith-windows-amd64.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
