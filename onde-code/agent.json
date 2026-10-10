@@ -1,0 +1,60 @@
+{
+  "id": "onde-code",
+  "name": "onde-code",
+  "version": "1.0.0",
+  "description": "Onde Code is Onde Inference's ACP-compatible coding agent for model fine-tuning and deployment.",
+  "repository": "https://github.com/kelvin-soen/OndeCode",
+  "authors": [
+    "Kelvin Soen <kelvin@ondeinference.com>",
+    "OndeCode <noreply@ondeinference.com>",
+    "paydii <paydii@ondeinference.com>",
+    "Seto Elkahfi <seto@ondeinference.com>",
+    "siGit Code <noreply@sigit.si>"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/kelvin-soen/OndeCode/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v1.0.0/onde-code-darwin-arm64.tar.gz",
+        "sha256": "00890a3022dd1eb7177eff3e509dfea83a3d541a96ff5bb7aa52d229b565745a",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v1.0.0/onde-code-darwin-x64.tar.gz",
+        "sha256": "68e006eaffb8aac3e95ade9b87ff3f965e8825a0c445475544b1d11592e68279",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v1.0.0/onde-code-linux-arm64.tar.gz",
+        "sha256": "a91f5544ad5d6cc8978999aa2cbf2319eb6ec7b8ebd4ffc11639713adafdde57",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v1.0.0/onde-code-linux-x64.tar.gz",
+        "sha256": "91eccfdb3396522d85c2e20f776f8e4ba66389e11bf46550e4f0b7dbd46c81c5",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/kelvin-soen/OndeCode/releases/download/v1.0.0/onde-code-windows-x64.zip",
+        "sha256": "e7945d0ea081d060661474a200205e2d06b0d0522dcb389cef8c4226bdefc076",
+        "cmd": "onde-code.exe",
+        "args": [
+          "--acp"
+        ]
+      }
+    }
+  }
+}
