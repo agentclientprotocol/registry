@@ -1,0 +1,71 @@
+{
+  "id": "octomind",
+  "name": "Octomind",
+  "version": "0.56.0",
+  "description": "Open-source, token-efficient coding agent runtime: one Rust binary, any model provider, MCP-native",
+  "repository": "https://github.com/muvon/octomind",
+  "website": "https://octomind.run",
+  "authors": [
+    "Muvon"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/muvon/octomind/blob/master/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/muvon/octomind/releases/download/0.56.0/octomind-0.56.0-aarch64-apple-darwin.tar.gz",
+        "cmd": "./octomind",
+        "args": [
+          "acp",
+          "developer:general"
+        ],
+        "sha256": "416ebdf72d80d638c2cc799ded3b14ff779466efbfcbce2033fbcfaf5fd122d9"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/muvon/octomind/releases/download/0.56.0/octomind-0.56.0-x86_64-apple-darwin.tar.gz",
+        "cmd": "./octomind",
+        "args": [
+          "acp",
+          "developer:general"
+        ],
+        "sha256": "6e43118de696500164411f08275d996e026b45b1969db0121cc570d839665bf3"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/muvon/octomind/releases/download/0.56.0/octomind-0.56.0-aarch64-unknown-linux-musl.tar.gz",
+        "cmd": "./octomind",
+        "args": [
+          "acp",
+          "developer:general"
+        ],
+        "sha256": "b095b120422eb4532d4ec07f6b1c9e96c91f99b9723d5557040f1843ee2d9112"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/muvon/octomind/releases/download/0.56.0/octomind-0.56.0-x86_64-unknown-linux-musl.tar.gz",
+        "cmd": "./octomind",
+        "args": [
+          "acp",
+          "developer:general"
+        ],
+        "sha256": "81c36873d5863ba88f0178bca249ca94eff9278ae35a383be37b9bfd5d907947"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/muvon/octomind/releases/download/0.56.0/octomind-0.56.0-aarch64-pc-windows-msvc.zip",
+        "cmd": "./octomind.exe",
+        "args": [
+          "acp",
+          "developer:general"
+        ],
+        "sha256": "689306a596d72ac75f81d8fd03d0e8c3067bfcfd307dce31cf3b60d4151f7894"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/muvon/octomind/releases/download/0.56.0/octomind-0.56.0-x86_64-pc-windows-msvc.zip",
+        "cmd": "./octomind.exe",
+        "args": [
+          "acp",
+          "developer:general"
+        ],
+        "sha256": "e57f9f9cbca457ab97d47a0dae939707907018518c78e320ba892c99f7550bce"
+      }
+    }
+  }
+}
