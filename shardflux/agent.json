@@ -1,0 +1,17 @@
+{
+  "id": "shardflux",
+  "name": "Shardflux",
+  "version": "0.15.0",
+  "description": "Claude Code and Codex, each conversation in its own cloud VM",
+  "repository": "https://github.com/shardfluxdev",
+  "website": "https://docs.shardflux.dev",
+  "authors": ["Shardflux"],
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "distribution": {
+    "npx": {
+      "package": "@shardflux/cli@0.15.0",
+      "args": ["acp"]
+    }
+  }
+}
