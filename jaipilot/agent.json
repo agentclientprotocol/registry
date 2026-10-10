@@ -1,0 +1,57 @@
+{
+  "id": "jaipilot",
+  "name": "JAIPilot",
+  "version": "1.2.0",
+  "description": "Workflow-based Java testing: generate tests, improve coverage, fix failing tests, stabilize flaky tests, test changes, and lock behavior.",
+  "repository": "https://github.com/JAIPilot/jaipilot",
+  "website": "https://github.com/JAIPilot/jaipilot/blob/main/docs/intellij-acp.md",
+  "authors": [
+    "JAIPilot"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/JAIPilot/jaipilot/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-aarch64-apple-darwin.zip",
+        "sha256": "29e9efb5b7233187e6e47b6f64106ddcaa64a7812671010bffcfa6f5b50b51a9",
+        "cmd": "./jaipilot-acp",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-x86_64-apple-darwin.zip",
+        "sha256": "68fddc28abc3e3f11292773c7a3ae128515d68a519f635808447f0f1530d0819",
+        "cmd": "./jaipilot-acp",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-aarch64-unknown-linux-gnu.zip",
+        "sha256": "03734d91ad8c9b3e76bc12ca6336fba790960ed28203a25e2833593e831d934d",
+        "cmd": "./jaipilot-acp",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-x86_64-unknown-linux-gnu.zip",
+        "sha256": "7f12177b98c446e738ff4fefd45704b6a0db44504310401e8691a5455966e647",
+        "cmd": "./jaipilot-acp",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/JAIPilot/jaipilot/releases/download/v1.2.0/jaipilot-acp-x86_64-pc-windows-msvc.zip",
+        "sha256": "53d9a4300ca0bd9d101e4c772685100db401dbb938f566f15df2f61445886444",
+        "cmd": "./jaipilot-acp.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
