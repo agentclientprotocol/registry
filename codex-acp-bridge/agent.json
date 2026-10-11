@@ -1,0 +1,21 @@
+{
+  "id": "codex-acp-bridge",
+  "name": "Codex ACP Bridge",
+  "version": "1.10.1",
+  "description": "ACP bridge for running the local Codex CLI with native sessions, models, tools, and authentication",
+  "repository": "https://github.com/baldaworks/codex-acp",
+  "website": "https://github.com/baldaworks/codex-acp",
+  "authors": [
+    "Alexey Samoylov"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/baldaworks/codex-acp/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "codex-acp@1.10.1",
+      "args": [
+        "--defer-backend"
+      ]
+    }
+  }
+}
