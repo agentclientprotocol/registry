@@ -259,7 +259,7 @@ jobs:
         run: uv run --with jsonschema .github/workflows/build_registry.py
 
       - name: Upload update artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: agent-updates
           path: ${{ runner.temp }}/agent-updates/
@@ -508,7 +508,7 @@ jobs:
 
       - name: Upload verified update artifact
         if: steps.filter.outputs.has_verified_updates == 'true'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: verified-agent-updates
           path: ${{ runner.temp }}/verified-agent-updates/
