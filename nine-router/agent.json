@@ -1,0 +1,17 @@
+{
+  "id": "nine-router",
+  "name": "9Router",
+  "version": "0.5.96",
+  "description": "AI routing gateway with model combos, multi-provider fallback, quota tracking and RTK token saver, exposed as an ACP agent",
+  "repository": "https://github.com/decolua/9router",
+  "website": "https://9router.com",
+  "authors": ["decolua"],
+  "license": "MIT",
+  "license_url": "https://github.com/decolua/9router/blob/master/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "9router@0.5.96",
+      "args": ["acp"]
+    }
+  }
+}
