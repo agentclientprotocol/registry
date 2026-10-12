@@ -1,12 +1,12 @@
-# ACP Protocol Adaptation Matrix — 2026-10-11
+# ACP Protocol Adaptation Matrix — 2026-10-12
 
-_Generated at 2026-10-11T11:25:41+00:00_
+_Generated at 2026-10-12T13:12:36+00:00_
 
 - Agents in report: **35**
 - Probed this run: **35**
 - Reused unchanged versions: **0**
-- `initialize` success: **34**
-- `session/new` returned `auth_required`: **23**
+- `initialize` success: **33**
+- `session/new` returned `auth_required`: **22**
 
 Legend: `Capabilities` lists the capabilities advertised in the `initialize` response via `agentCapabilities` and `sessionCapabilities`.
 
@@ -33,29 +33,29 @@ github-copilot      1.552.0     npx     ok        agent                     load
 github-copilot-cli  1.0.95      npx     ok        terminal                  loadSession, session/list                              
 glm-acp-agent       1.14.0      npx     ok        agent, env_var            loadSession, session/list, session/fork, session/resume
 goose               1.54.0      binary  ok        agent                     loadSession, session/list                              
-grok-build          1.0.51      npx     ok        agent                     loadSession, session/list, session/resume              
-harn                0.10.163    binary  ok        agent                     loadSession, session/list, session/resume              
+grok-build          1.0.52      npx     ok        agent                     loadSession, session/list, session/resume              
+harn                0.10.165    binary  ok        agent                     loadSession, session/list, session/resume              
 junie               3579.5.0    binary  ok        agent                     loadSession, session/list, session/fork, session/resume
 kilo                7.8.8       npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 kimchi              1.9.1       binary  ok        agent                     loadSession, session/list                              
 kimi                1.52.0      binary  ok        terminal                  loadSession, session/list, session/resume              
 minimax-code        0.2.7       npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 mistral-vibe        2.26.1      binary  ok        agent, terminal           loadSession, session/list, session/fork                
-nova                1.1.51      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
+nova                1.1.52      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 opencode            1.19.0      binary  ok        terminal                  loadSession, session/list, session/fork, session/resume
 pi-acp              0.0.34      npx     ok        terminal                  loadSession, session/list                              
 poolside            1.0.16      binary  ok        terminal                  loadSession, session/list                              
-qwen-code           0.25.0      npx     ok        agent                     loadSession, session/list, session/resume              
-sigit               1.6.6       npx     ok        agent                     loadSession, session/list, session/fork, session/resume
-stakpak             0.3.88      binary  ok        agent                     loadSession                                            
+qwen-code           0.25.1      npx     ok        agent                     loadSession, session/list, session/resume              
+sigit               1.6.7       npx     ok        agent                     loadSession, session/list, session/fork, session/resume
+stakpak             0.3.88      binary  proc_err  -                         -                                                      
 ```
 
 ## Method Probe Summary
 
 | Method | Supported | Auth Required | Method Not Found | Other |
 | --- | ---: | ---: | ---: | ---: |
-| `session/list` | 23 | 4 | 7 | 1 |
-| `session/fork` | 10 | 3 | 18 | 4 |
-| `session/resume` | 12 | 7 | 14 | 2 |
-| `session/stop` | 0 | 0 | 32 | 3 |
-| `session/set_model` | 17 | 2 | 11 | 5 |
+| `session/list` | 23 | 4 | 6 | 2 |
+| `session/fork` | 10 | 3 | 17 | 5 |
+| `session/resume` | 12 | 7 | 13 | 3 |
+| `session/stop` | 0 | 0 | 31 | 4 |
+| `session/set_model` | 16 | 2 | 11 | 6 |
