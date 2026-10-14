@@ -1,0 +1,36 @@
+{
+  "id": "codeep",
+  "name": "Codeep",
+  "version": "2.14.0",
+  "description": "AI coding agent for the terminal. Multi-provider LLM support (Anthropic, OpenAI, OpenRouter, Z.AI, Gemini, DeepSeek, MiniMax, Ollama). Full MCP support (stdio + HTTP) with sampling, resources, and prompts. Claude-Code-compatible skill bundles, checkpoints, custom slash commands, and lifecycle hooks.",
+  "repository": "https://github.com/VladoIvankovic/Codeep",
+  "website": "https://codeep.dev",
+  "authors": [
+    "Vlado Ivankovic <info@codeep.dev>"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v2.14.0/codeep-darwin-aarch64.tar.gz",
+        "cmd": "codeep",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v2.14.0/codeep-darwin-x86_64.tar.gz",
+        "cmd": "codeep",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v2.14.0/codeep-linux-x86_64.tar.gz",
+        "cmd": "codeep",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/VladoIvankovic/Codeep/releases/download/v2.14.0/codeep-linux-aarch64.tar.gz",
+        "cmd": "codeep",
+        "args": ["acp"]
+      }
+    }
+  }
+}
