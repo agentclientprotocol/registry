@@ -1,0 +1,15 @@
+{
+  "id": "pixir",
+  "name": "Pixir",
+  "version": "0.1.3",
+  "description": "OTP-native local-first coding-agent harness with ACP, supervised sessions, subagents, workflows, and replayable evidence.",
+  "website": "https://pixir.dev",
+  "authors": ["Ranvier Technologies"],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@ranvier-technologies/pixir-acp@0.1.3",
+      "args": []
+    }
+  }
+}
