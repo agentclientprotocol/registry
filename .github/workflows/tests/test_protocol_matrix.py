@@ -36,7 +36,7 @@ def make_record(
     list_status: str = "success",
     fork_status: str = "method_not_found",
     resume_status: str = "method_not_found",
-    stop_status: str = "method_not_found",
+    close_status: str = "method_not_found",
     set_model_status: str = "method_not_found",
     set_model_signal: bool = False,
     reused_from_previous: bool = False,
@@ -57,14 +57,14 @@ def make_record(
             "sessionList": True,
             "sessionFork": False,
             "sessionResume": False,
-            "sessionStop": False,
+            "sessionClose": False,
             "setModel": False,
         },
         "methodProbes": {
             "session/list": {"status": list_status, "code": None, "message": None},
             "session/fork": {"status": fork_status, "code": None, "message": None},
             "session/resume": {"status": resume_status, "code": None, "message": None},
-            "session/stop": {"status": stop_status, "code": None, "message": None},
+            "session/close": {"status": close_status, "code": None, "message": None},
             "session/set_model": {"status": set_model_status, "code": None, "message": None},
         },
         "reusedFromPrevious": reused_from_previous,
@@ -203,7 +203,7 @@ def test_probe_params_for_methods_match_schema():
         "cwd": cwd,
         "mcpServers": [],
     }
-    assert probe_params_for_method("session/stop", session_id, cwd) == {
+    assert probe_params_for_method("session/close", session_id, cwd) == {
         "sessionId": session_id,
     }
     assert probe_params_for_method("session/set_model", session_id, cwd) == {
@@ -225,6 +225,12 @@ def test_response_exposes_models_only_when_present():
         }
     )
     assert not response_exposes_models({"result": {"sessionId": "sess-123"}})
+    assert not response_exposes_models(
+        {
+            "result": {"models": {"currentModelId": "model-a"}},
+            "error": {"code": -32602, "message": "Invalid params"},
+        }
+    )
     assert not response_exposes_models({"error": {"code": -32601, "message": "Method not found"}})
 
 
@@ -243,6 +249,17 @@ def test_classify_rpc_response_auth_required():
 def test_classify_rpc_response_success():
     outcome = classify_rpc_response({"result": {"ok": True}})
     assert outcome.status == "success"
+
+
+def test_classify_rpc_response_rejects_result_and_error():
+    outcome = classify_rpc_response(
+        {
+            "result": {"sessionId": "ambiguous-session"},
+            "error": {"code": -32602, "message": "Invalid params"},
+        }
+    )
+    assert outcome.status == "invalid_response"
+    assert "exactly one" in (outcome.message or "")
 
 
 def test_request_with_timeout_reports_exited_process():
@@ -325,7 +342,7 @@ def test_format_capabilities_lists_advertised_initialize_capabilities():
             "sessionList": True,
             "sessionFork": False,
             "sessionResume": True,
-            "sessionStop": False,
+            "sessionClose": False,
         }
     )
 
@@ -339,7 +356,7 @@ def test_summarize_results_counts_statuses():
             list_status="success",
             fork_status="auth_required",
             resume_status="method_not_found",
-            stop_status="error",
+            close_status="error",
             set_model_status="invalid_params",
         )
     ]
@@ -352,7 +369,7 @@ def test_summarize_results_counts_statuses():
     assert summary["features"]["session/list"]["supported"] == 1
     assert summary["features"]["session/fork"]["authRequired"] == 1
     assert summary["features"]["session/resume"]["methodNotFound"] == 1
-    assert summary["features"]["session/stop"]["other"] == 1
+    assert summary["features"]["session/close"]["other"] == 1
     assert summary["features"]["session/set_model"]["supported"] == 1
 
 
@@ -382,6 +399,8 @@ def test_render_markdown_full_mode_contains_matrix_headers_and_signal_legend():
     assert "Capabilities" in header_line
     assert "session/new" in header_line
     assert "session/list" in header_line
+    assert "session/close" in header_line
+    assert "session/stop" not in md
     assert "session/set_model" in header_line
     assert "agent-1" in md
     assert "1.2.3" in md
