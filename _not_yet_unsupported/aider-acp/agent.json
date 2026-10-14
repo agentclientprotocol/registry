@@ -1,0 +1,40 @@
+{
+  "$schema": "../../agent.schema.json",
+  "id": "aider-acp",
+  "name": "Aider",
+  "version": "0.5.0",
+  "description": "AI pair programming in your terminal and IDE. Aider lets you pair program with LLMs to edit code in your local git repo. Works with Claude, GPT, Gemini, DeepSeek, and 50+ other models.",
+  "homepage": "https://aider.chat",
+  "repository": "https://github.com/jorgejhms/aider-acp",
+  "license": "Apache-2.0",
+  "authors": [
+    "Jorge Manrique",
+    "Paul Gauthier"
+  ],
+  "distribution": {
+    "npx": {
+      "package": "aider-acp@latest",
+      "args": []
+    }
+  },
+  "capabilities": {
+    "edit": true,
+    "read": true,
+    "tools": false,
+    "streaming": true
+  },
+  "requirements": {
+    "api_key": {
+      "description": "API key for your LLM provider (OpenAI, Anthropic, etc.)",
+      "env_var": "OPENAI_API_KEY",
+      "optional": true
+    }
+  },
+  "tags": [
+    "coding",
+    "pair-programming",
+    "git",
+    "terminal",
+    "multi-model"
+  ]
+}
