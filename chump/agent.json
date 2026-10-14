@@ -1,0 +1,36 @@
+{
+  "id": "chump",
+  "name": "Chump",
+  "version": "0.1.2",
+  "description": "Self-hosted local-first AI coding agent with fleet coordination, SQLite state, and ACP v1+v2 support. Runs fully offline on local LLMs or with any OpenAI-compatible inference backend.",
+  "repository": "https://github.com/repairman29/chump",
+  "website": "https://repairman29.github.io/chump/",
+  "authors": [
+    "repairman29"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/repairman29/chump/releases/download/v0.1.2/chump-aarch64-apple-darwin.tar.xz",
+        "cmd": "./chump",
+        "args": ["--acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/repairman29/chump/releases/download/v0.1.2/chump-x86_64-apple-darwin.tar.xz",
+        "cmd": "./chump",
+        "args": ["--acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/repairman29/chump/releases/download/v0.1.2/chump-aarch64-unknown-linux-gnu.tar.xz",
+        "cmd": "./chump",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/repairman29/chump/releases/download/v0.1.2/chump-x86_64-unknown-linux-gnu.tar.xz",
+        "cmd": "./chump",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
