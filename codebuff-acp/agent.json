@@ -1,0 +1,14 @@
+{
+  "id": "codebuff-acp",
+  "name": "Codebuff Agent",
+  "version": "0.1.1",
+  "description": "ACP wrapper for Codebuff's agent engine",
+  "repository": "https://github.com/dvaJi/codebuff-agent-acp",
+  "authors": ["Francisco Pizarro"],
+  "license": "Apache-2.0",
+  "distribution": {
+    "npx": {
+      "package": "codebuff-agent-acp@0.1.1"
+    }
+  }
+}
