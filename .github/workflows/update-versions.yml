@@ -58,6 +58,12 @@ jobs:
           EXIT_CODE=$?
 
           echo "$OUTPUT"
+          # Per-agent check errors don't block other agents' updates; surface them as warnings
+          printf '%s\n' "$OUTPUT" | python3 -c "
+          import sys, json
+          for e in json.load(sys.stdin).get('errors', []):
+              print(f\"::warning title=Version check failed::{e['agent_id']}: {e['error']}\")
+          " || true
 
           # Save JSON output
           UPDATES_DELIMITER="$(uuidgen)"
@@ -127,6 +133,8 @@ jobs:
     needs: check-versions
     if: needs.check-versions.outputs.has_updates == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || inputs.apply == true || inputs.apply == 'true')
     runs-on: ubuntu-latest
+    outputs:
+      updates_json: ${{ steps.apply.outputs.updates_json }}
     permissions:
       contents: read
     steps:
@@ -140,20 +148,13 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Setup Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
-        with:
-          node-version: "lts/*"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884
-
       - name: Apply version updates
+        id: apply
         env:
           GITHUB_TOKEN: ${{ github.token }}
           INPUT_AGENTS: ${{ inputs.agents }}
         run: |
-          ARGS=(--apply)
+          ARGS=(--apply --json)
           if [ -n "$INPUT_AGENTS" ]; then
             if [[ ! "$INPUT_AGENTS" =~ ^[a-z0-9-]+(,[a-z0-9-]+)*$ ]]; then
               echo "Invalid agents input: $INPUT_AGENTS" >&2
@@ -162,11 +163,28 @@ jobs:
             ARGS+=(--agents "$INPUT_AGENTS")
           fi
 
-          python .github/workflows/update_versions.py "${ARGS[@]}"
+          # Exit code 1 only means some agents failed; the JSON lists what was actually applied
+          set +e
+          OUTPUT=$(python .github/workflows/update_versions.py "${ARGS[@]}")
+          set -e
+
+          echo "$OUTPUT"
+          printf '%s\n' "$OUTPUT" | python3 -c "
+          import sys, json
+          for e in json.load(sys.stdin).get('errors', []):
+              print(f\"::warning title=Agent update skipped::{e['agent_id']}: {e['error']}\")
+          "
+
+          UPDATES_DELIMITER="$(uuidgen)"
+          {
+            echo "updates_json<<$UPDATES_DELIMITER"
+            printf '%s\n' "$OUTPUT"
+            echo "$UPDATES_DELIMITER"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Stage updated agent manifests
         env:
-          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          UPDATES_JSON: ${{ steps.apply.outputs.updates_json }}
           UPDATE_ARTIFACT_DIR: ${{ runner.temp }}/agent-updates
         run: |
           python3 - <<'PY'
@@ -255,9 +273,7 @@ jobs:
           )
           PY
 
-      - name: Validate registry build
-        run: uv run --with jsonschema .github/workflows/build_registry.py
-
+      # Validation runs per agent in verify-updates, so one bad manifest can't block the rest
       - name: Upload update artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -341,43 +357,38 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884
 
-      - name: Validate registry build
-        run: uv run --with jsonschema .github/workflows/build_registry.py
-
-      - name: Verify agent auth support
+      - name: Verify updated agents
         env:
-          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          UPDATES_JSON: ${{ needs.apply-updates.outputs.updates_json }}
           VERIFICATION_RESULTS: ${{ runner.temp }}/verification-results.tsv
         #language=bash
         run: |
+          # Each updated agent is validated on its own so one failure only drops that agent.
           # The preview channel is explicitly unverified: preview distributions
           # are never launched, so only stable bumps are auth-checked here.
-          mapfile -t STABLE_UPDATES < <(echo "$UPDATES_JSON" | python3 -c "
+          mapfile -t UPDATED_AGENTS < <(echo "$UPDATES_JSON" | python3 -c "
           import sys, json
-          data = json.load(sys.stdin)
-          versions = {
-              u['agent_id']: u['latest_version']
-              for u in data.get('updates', [])
-              if u.get('channel', 'stable') == 'stable'
-          }
-          for agent_id, version in sorted(versions.items()):
-              print(f'{agent_id}\t{version}')
+          channels = {}
+          for u in json.load(sys.stdin).get('updates', []):
+              channels.setdefault(u['agent_id'], set()).add(u.get('channel', 'stable'))
+          for agent_id, agent_channels in sorted(channels.items()):
+              print(f\"{agent_id}\t{'stable' in agent_channels}\")
           ")
           : > "$VERIFICATION_RESULTS"
 
-          if [ "${#STABLE_UPDATES[@]}" -eq 0 ]; then
-            echo "No stable agent updates in this run; skipping auth verification"
-            exit 0
-          fi
-
-          for STABLE_UPDATE in "${STABLE_UPDATES[@]}"; do
-            IFS=$'\t' read -r AGENT_ID AGENT_VERSION <<< "$STABLE_UPDATE"
+          for UPDATED_AGENT in "${UPDATED_AGENTS[@]}"; do
+            IFS=$'\t' read -r AGENT_ID HAS_STABLE <<< "$UPDATED_AGENT"
             echo "::group::Verify $AGENT_ID"
-            if python3 .github/workflows/verify_agents.py --auth-check --agent "$AGENT_ID"; then
-              printf '%s\tpassed\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
+            if ! uv run --with jsonschema .github/workflows/build_registry.py --agents "$AGENT_ID"; then
+              printf '%s\tfailed\tregistry validation\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
+              echo "::warning title=Agent update skipped::$AGENT_ID failed registry validation; its version updates will not be committed."
+            elif [ "$HAS_STABLE" != "True" ]; then
+              printf '%s\tpassed\tvalidated (preview: auth check not required)\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
+            elif python3 .github/workflows/verify_agents.py --auth-check --agent "$AGENT_ID"; then
+              printf '%s\tpassed\tvalidated, auth check passed\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
             else
-              printf '%s\tfailed\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
-              echo "::warning title=Agent update skipped::$AGENT_ID@$AGENT_VERSION failed auth verification; its version updates will not be committed."
+              printf '%s\tfailed\tauth verification\n' "$AGENT_ID" >> "$VERIFICATION_RESULTS"
+              echo "::warning title=Agent update skipped::$AGENT_ID failed auth verification; its version updates will not be committed."
             fi
             echo "::endgroup::"
           done
@@ -386,7 +397,7 @@ jobs:
         id: filter
         if: always()
         env:
-          UPDATES_JSON: ${{ needs.check-versions.outputs.updates_json }}
+          UPDATES_JSON: ${{ needs.apply-updates.outputs.updates_json }}
           UPDATE_ARTIFACT_DIR: ${{ runner.temp }}/agent-updates
           VERIFIED_ARTIFACT_DIR: ${{ runner.temp }}/verified-agent-updates
           VERIFICATION_RESULTS: ${{ runner.temp }}/verification-results.tsv
@@ -406,18 +417,14 @@ jobs:
           results = {}
           if results_path.exists():
               for line in results_path.read_text().splitlines():
-                  agent_id, status = line.split("\t", 1)
+                  agent_id, status, detail = line.split("\t", 2)
                   if status not in ("passed", "failed"):
                       print(f"Invalid verification status for {agent_id}: {status}", file=sys.stderr)
                       sys.exit(1)
-                  results[agent_id] = status
+                  results[agent_id] = (status, detail)
 
-          stable_agents = {
-              update["agent_id"]
-              for update in updates
-              if update.get("channel", "stable") == "stable"
-          }
-          missing_results = sorted(stable_agents - results.keys())
+          updated_agents = {update["agent_id"] for update in updates}
+          missing_results = sorted(updated_agents - results.keys())
           if missing_results:
               print(
                   "Missing verification results for: " + ", ".join(missing_results),
@@ -426,7 +433,7 @@ jobs:
               sys.exit(1)
 
           failed_agents = {
-              agent_id for agent_id, status in results.items() if status == "failed"
+              agent_id for agent_id, (status, _) in results.items() if status == "failed"
           }
           verified_updates = [
               update for update in updates if update["agent_id"] not in failed_agents
@@ -462,29 +469,33 @@ jobs:
               print(verified_json, file=output)
               print("EOF", file=output)
 
-          passed_agents = sorted(results.keys() - failed_agents)
+          def describe(agent_id):
+              return ", ".join(
+                  f"{u.get('channel', 'stable')} {u['current_version']} → {u['latest_version']}"
+                  for u in updates
+                  if u["agent_id"] == agent_id
+              )
+
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
               print("## Agent update verification", file=summary)
               print(file=summary)
               if failed_agents:
                   print("> [!WARNING]", file=summary)
                   print(
-                      f"> {len(failed_agents)} agent update(s) failed auth verification and "
+                      f"> {len(failed_agents)} agent update(s) failed verification and "
                       "were excluded from the commit.",
                       file=summary,
                   )
                   print(file=summary)
                   print("### Skipped updates", file=summary)
                   print(file=summary)
-                  print("| Agent | Updates |", file=summary)
-                  print("| --- | --- |", file=summary)
+                  print("| Agent | Updates | Failed check |", file=summary)
+                  print("| --- | --- | --- |", file=summary)
                   for agent_id in sorted(failed_agents):
-                      versions = ", ".join(
-                          f"{u.get('channel', 'stable')} {u['current_version']} → {u['latest_version']}"
-                          for u in updates
-                          if u["agent_id"] == agent_id
+                      print(
+                          f"| `{agent_id}` | {describe(agent_id)} | {results[agent_id][1]} |",
+                          file=summary,
                       )
-                      print(f"| `{agent_id}` | {versions} |", file=summary)
                   print(file=summary)
 
               print("### Updates proceeding to commit", file=summary)
@@ -493,15 +504,10 @@ jobs:
                   print("| Agent | Updates | Verification |", file=summary)
                   print("| --- | --- | --- |", file=summary)
                   for agent_id in sorted(verified_agent_ids):
-                      versions = ", ".join(
-                          f"{u.get('channel', 'stable')} {u['current_version']} → {u['latest_version']}"
-                          for u in verified_updates
-                          if u["agent_id"] == agent_id
+                      print(
+                          f"| `{agent_id}` | {describe(agent_id)} | {results[agent_id][1]} |",
+                          file=summary,
                       )
-                      verification = (
-                          "passed" if agent_id in passed_agents else "preview only (not required)"
-                      )
-                      print(f"| `{agent_id}` | {versions} | {verification} |", file=summary)
               else:
                   print("No updates passed verification; no commit will be created.", file=summary)
           PY
@@ -586,8 +592,11 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884
 
+      # URLs of the committed agents were checked in verify-updates; the rest are unchanged from main
       - name: Validate registry build
-        run: uv run --with jsonschema .github/workflows/build_registry.py
+        env:
+          SKIP_URL_VALIDATION: "1"
+        run: uv run --with jsonschema .github/workflows/build_registry.py --dry-run
 
       - name: Generate commit message
         id: commit_msg

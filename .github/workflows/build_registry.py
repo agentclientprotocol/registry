@@ -641,13 +641,20 @@ def process_entry(
     return entry, []
 
 
-def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
+def build_registry(
+    dry_run: bool = False,
+    registry_dir: Path | None = None,
+    agent_ids: set[str] | None = None,
+):
     """Build registry.json from agent directories.
 
     Args:
         dry_run: If True, validate and report what would be built without writing to dist/.
         registry_dir: Registry root to scan (defaults to the repository root).
+        agent_ids: If set, validate only these agents; implies dry_run.
     """
+    if agent_ids is not None:
+        dry_run = True
     if registry_dir is None:
         registry_dir = Path(__file__).parent.parent.parent
     base_url = get_base_url()
@@ -664,6 +671,8 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
     for entry_dir in sorted(registry_dir.iterdir()):
         if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
             continue
+        if agent_ids is not None and entry_dir.name not in agent_ids:
+            continue
 
         agent_json_path = entry_dir / "agent.json"
 
@@ -679,6 +688,13 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
             continue
         agents.append(entry)
         print(f"Added agent: {entry['id']} v{entry['version']}")
+
+    if agent_ids is not None:
+        for missing_id in sorted(
+            i for i in agent_ids if not (registry_dir / i / "agent.json").is_file()
+        ):
+            print(f"Error: agent '{missing_id}' not found")
+            has_errors = True
 
     if has_errors:
         print("\nBuild failed due to validation errors")
@@ -813,5 +829,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Validate all agents without writing to dist/",
     )
+    parser.add_argument(
+        "--agents",
+        type=str,
+        help="Comma-separated agent IDs to validate (implies --dry-run)",
+    )
     args = parser.parse_args()
-    build_registry(dry_run=args.dry_run)
+    agent_ids = {a.strip() for a in args.agents.split(",") if a.strip()} if args.agents else None
+    build_registry(dry_run=args.dry_run, agent_ids=agent_ids)
