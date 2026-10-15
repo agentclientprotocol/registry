@@ -1,0 +1,36 @@
+{
+  "id": "native-glm-acp",
+  "name": "Native GLM ACP",
+  "version": "2.7.37",
+  "description": "Native GLM ACP — an open-source ACP-native coding agent runtime for Z.ai GLM models.",
+  "repository": "https://github.com/99percentgrip/Native-GLM-ACP",
+  "website": "https://github.com/99percentgrip/Native-GLM-ACP",
+  "authors": [
+    "Aleksejs Kozlitins"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "binary": {
+      "darwin-x86_64": {
+        "archive": "https://github.com/99percentgrip/Native-GLM-ACP/releases/download/v2.7.37/native-glm-acp-darwin-x86_64.tar.gz",
+        "cmd": "./native-glm-acp/native-glm-acp"
+      },
+      "darwin-aarch64": {
+        "archive": "https://github.com/99percentgrip/Native-GLM-ACP/releases/download/v2.7.37/native-glm-acp-darwin-aarch64.tar.gz",
+        "cmd": "./native-glm-acp/native-glm-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/99percentgrip/Native-GLM-ACP/releases/download/v2.7.37/native-glm-acp-linux-x86_64.tar.gz",
+        "cmd": "./native-glm-acp/native-glm-acp"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/99percentgrip/Native-GLM-ACP/releases/download/v2.7.37/native-glm-acp-linux-aarch64.tar.gz",
+        "cmd": "./native-glm-acp/native-glm-acp"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/99percentgrip/Native-GLM-ACP/releases/download/v2.7.37/native-glm-acp-windows-x86_64.zip",
+        "cmd": "./native-glm-acp/native-glm-acp.exe"
+      }
+    }
+  }
+}
