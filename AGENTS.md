@@ -15,6 +15,9 @@ uv run --with jsonschema .github/workflows/build_registry.py
 # Dry run (validate without writing to dist/)
 uv run --with jsonschema .github/workflows/build_registry.py --dry-run
 
+# Validate only specific agents (implies --dry-run)
+uv run --with jsonschema .github/workflows/build_registry.py --agents gemini,goose
+
 # Build without schema validation (if jsonschema not available)
 python .github/workflows/build_registry.py
 ```
@@ -167,6 +170,8 @@ uv run .github/workflows/update_versions.py --channels preview
 ```
 
 Both channels are checked from a single fetch per distribution source. Stable updates rewrite the root `version` and distribution specs; preview updates rewrite only `preview.version` and the preview specs. Each entry in the `--json` payload carries a `channel` field, and only `stable` bumps are auth-verified.
+
+Failures are isolated per agent: a failed version check, apply, registry validation (`build_registry.py --agents <id>`), or auth check drops only that agent's updates (reported as a warning and in the run summary); the remaining updates are still committed.
 
 The workflow can also be triggered manually via GitHub Actions with options to apply updates and filter by agent IDs.
 
