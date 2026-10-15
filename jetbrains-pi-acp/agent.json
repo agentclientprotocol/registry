@@ -1,0 +1,15 @@
+{
+  "id": "jetbrains-pi-acp",
+  "name": "JetBrains pi ACP",
+  "version": "0.1.0",
+  "description": "连接 JetBrains IDE 与 pi coding agent 的 ACP 适配器，支持历史会话、权限控制、文件 diff 和子会话",
+  "repository": "https://github.com/fun90/jetbrains-pi-acp",
+  "website": "https://github.com/fun90/jetbrains-pi-acp#readme",
+  "license_url": "https://github.com/fun90/jetbrains-pi-acp/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "jetbrains-pi-acp@0.1.0"
+    }
+  },
+  "license": "MIT"
+}
