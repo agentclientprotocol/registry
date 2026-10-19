@@ -1,0 +1,36 @@
+{
+  "id": "openhands",
+  "name": "OpenHands",
+  "version": "1.12.2",
+  "description": "AI-driven development platform - autonomous coding agent that can create/edit files, run commands, and browse the web",
+  "repository": "https://github.com/OpenHands/OpenHands-CLI",
+  "authors": [
+    "OpenHands <contact@all-hands.dev>"
+  ],
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/OpenHands/OpenHands-CLI/releases/download/1.12.2/openhands-macos-arm64",
+        "cmd": "./openhands",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/OpenHands/OpenHands-CLI/releases/download/1.12.2/openhands-macos-intel",
+        "cmd": "./openhands",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/OpenHands/OpenHands-CLI/releases/download/1.12.2/openhands-linux-arm64",
+        "cmd": "./openhands",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/OpenHands/OpenHands-CLI/releases/download/1.12.2/openhands-linux-x86_64",
+        "cmd": "./openhands",
+        "args": ["acp"]
+      }
+    }
+  }
+}
