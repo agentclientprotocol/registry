@@ -1,14 +1,14 @@
 {
   "id": "jetbrains-pi-acp",
   "name": "JetBrains pi ACP",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "ACP adapter connecting JetBrains IDEs to the pi coding agent, with session history, permission controls, file diffs, and subagents",
   "repository": "https://github.com/fun90/jetbrains-pi-acp",
   "website": "https://github.com/fun90/jetbrains-pi-acp#readme",
   "license_url": "https://github.com/fun90/jetbrains-pi-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "jetbrains-pi-acp@0.1.7"
+      "package": "jetbrains-pi-acp@0.1.8"
     }
   },
   "license": "MIT"
