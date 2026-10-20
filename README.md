@@ -23,6 +23,7 @@ JetBrains IDEs use a dedicated index, plus an opt-in preview channel that serves
 ```
 https://cdn.agentclientprotocol.com/registry/v1/latest/registry-for-jetbrains.json
 https://cdn.agentclientprotocol.com/registry/v1/latest/registry-for-jetbrains-preview.json
+https://cdn.agentclientprotocol.com/registry/v1/latest/registry-for-jetbrains-air.json
 ```
 
 The preview index is a complete, drop-in replacement for the JetBrains index — agents without a preview channel appear at their stable version. Preview distributions are **not** verified; see [FORMAT.md](FORMAT.md#preview-channel).
