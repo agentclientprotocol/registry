@@ -1,7 +1,7 @@
 {
   "id": "inferpal",
   "name": "Inferpal",
-  "version": "1.7.7",
+  "version": "1.8.2",
   "description": "A coding agent that runs on your own model server (Ollama, LM Studio or any OpenAI-compatible endpoint): no account, no telemetry.",
   "repository": "https://github.com/EstaxNet/Inferpal",
   "website": "https://github.com/EstaxNet/Inferpal/blob/master/docs/acp.md",
@@ -13,8 +13,8 @@
   "distribution": {
     "binary": {
       "windows-x86_64": {
-        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.7.7/inferpal-acp-win32-x64-1.7.7.zip",
-        "sha256": "10b0da57c6158008cb86ddeb1efb0a5476608d38c3fbc3598a03fa3f28dccc84",
+        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.8.2/inferpal-acp-win32-x64-1.8.2.zip",
+        "sha256": "7ca1ae93b00735a30c0e85de061899d195d1bf20b07fbd46d69e57d55e5bf1b9",
         "cmd": "./Inferpal.Host.exe",
         "args": [
           "--acp"
@@ -22,8 +22,8 @@
         "env": {}
       },
       "linux-x86_64": {
-        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.7.7/inferpal-acp-linux-x64-1.7.7.tar.gz",
-        "sha256": "9f05b617d19720c456888d4b9f8c5cad6b9289e32e1e5194bac08c4677da8a22",
+        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.8.2/inferpal-acp-linux-x64-1.8.2.tar.gz",
+        "sha256": "65948db42bd1f79cb46ecb13af57f63a31860218f4f6606f479791f089825f08",
         "cmd": "./Inferpal.Host",
         "args": [
           "--acp"
@@ -31,8 +31,8 @@
         "env": {}
       },
       "darwin-aarch64": {
-        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.7.7/inferpal-acp-darwin-arm64-1.7.7.tar.gz",
-        "sha256": "9ac39bdbd451e5a2b5420d809658630290b3b1a22361f7dd0072a02ee055a91e",
+        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.8.2/inferpal-acp-darwin-arm64-1.8.2.tar.gz",
+        "sha256": "25d478467ba5546c172c623fd721356e3efc4eed776070c4a14041ce55702073",
         "cmd": "./Inferpal.Host",
         "args": [
           "--acp"
