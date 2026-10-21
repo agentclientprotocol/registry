@@ -63,7 +63,16 @@ def test_updates_all_binary_urls_and_checksums_without_using_github(entry, feed,
 
 
 @pytest.mark.parametrize(
-    "fault", ["missing_platform", "checksum", "wrong_version_url", "prerelease", "unavailable"]
+    "fault",
+    [
+        "missing_platform",
+        "checksum",
+        "wrong_version_url",
+        "prerelease",
+        "new_major",
+        "older_version",
+        "unavailable",
+    ],
 )
 def test_rejects_unusable_feed(entry, feed, fault):
     name = opencode_v2._PLATFORM_ASSETS["windows-aarch64"]
@@ -75,12 +84,27 @@ def test_rejects_unusable_feed(entry, feed, fault):
         feed["metadata"]["files"][name]["url"] = "https://opencode.ai/files/bin/2.0.22/old.zip"
     elif fault == "prerelease":
         feed["version"] = "2.0.24-preview.1"
+    elif fault in {"new_major", "older_version"}:
+        version = "3.0.0" if fault == "new_major" else "2.0.21"
+        feed["version"] = version
+        for filename, asset in feed["metadata"]["files"].items():
+            asset["url"] = f"https://opencode.ai/files/bin/{version}/{filename}"
     else:
         feed = None
     with patch.object(opencode_v2, "make_request", return_value=feed):
         release, error = opencode_v2.get_stable_release(entry)
     assert release is None
     assert error is not None
+    if fault in {"new_major", "older_version"}:
+        assert error.error == f"OpenCode feed version {version} is not a newer 2.x release"
+
+
+def test_current_version_is_up_to_date(entry, feed, tmp_path):
+    entry["version"] = feed["version"]
+    with patch.object(opencode_v2, "make_request", return_value=feed):
+        update, error = check_agent_version(tmp_path / "agent.json", entry)
+    assert update is None
+    assert error is None
 
 
 def test_v1_keeps_github_release_source(tmp_path):

@@ -4,6 +4,7 @@ import re
 
 from common import LatestRelease, ResolvedAsset, UpdateError
 from github_api import make_request
+from registry_utils import version_tuple
 
 BINARY_FEED_URL = "https://opencode.ai/update/api/latest/cli/opencode"
 
@@ -26,6 +27,12 @@ def get_stable_release(agent_data: dict) -> tuple[LatestRelease | None, UpdateEr
     version = data.get("version")
     if not isinstance(version, str) or not re.fullmatch(r"\d+\.\d+\.\d+", version):
         return None, UpdateError(agent_id, "OpenCode binary feed has no stable version")
+    current = version_tuple(agent_data.get("version", "0.0.0"))
+    latest = version_tuple(version)
+    if latest[0] != current[0] or latest < current:
+        return None, UpdateError(
+            agent_id, f"OpenCode feed version {version} is not a newer {current[0]}.x release"
+        )
     if data.get("distribution") != "opencode" or data.get("name") != "cli":
         return None, UpdateError(agent_id, "Unexpected OpenCode binary feed distribution")
 
