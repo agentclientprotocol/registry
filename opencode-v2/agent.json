@@ -1,0 +1,66 @@
+{
+  "id": "opencode-v2",
+  "name": "OpenCode V2",
+  "version": "2.1.2",
+  "description": "The open source coding agent, version 2",
+  "repository": "https://github.com/anomalyco/opencode",
+  "website": "https://opencode.ai",
+  "authors": [
+    "Anomaly"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/anomalyco/opencode/blob/dev/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://opencode.ai/files/bin/2.1.2/opencode-darwin-arm64.zip",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "1051221bbce68e541f432be07d58beb66c1827dae9e04417a49f56115e0e0d4c"
+      },
+      "darwin-x86_64": {
+        "archive": "https://opencode.ai/files/bin/2.1.2/opencode-darwin-x64.zip",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "e21cacc8789e517ef4a10fcf3378abbcb24ba8ad664a1475b10b45897c3f9227"
+      },
+      "linux-aarch64": {
+        "archive": "https://opencode.ai/files/bin/2.1.2/opencode-linux-arm64.tar.gz",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "3ddeab155dd75f36d9fd4f5db80e2392181a4b9f59e347a0361a127244686e94"
+      },
+      "linux-x86_64": {
+        "archive": "https://opencode.ai/files/bin/2.1.2/opencode-linux-x64.tar.gz",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "f752172139f82d33470955f68bbd00c244de81b079f51ea54a1b68d170c394c8"
+      },
+      "windows-aarch64": {
+        "archive": "https://opencode.ai/files/bin/2.1.2/opencode-windows-arm64.zip",
+        "cmd": "./opencode.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "f9075940f7de39c084ad20015d888ade7f5dfd4a51d020e31d047029f8bd18a1"
+      },
+      "windows-x86_64": {
+        "archive": "https://opencode.ai/files/bin/2.1.2/opencode-windows-x64.zip",
+        "cmd": "./opencode.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "77bac6d705ade3324c2d2895b65962e0af73261d95246bdbc36dc40bf6be8006"
+      }
+    }
+  }
+}

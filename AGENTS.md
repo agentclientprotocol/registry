@@ -15,6 +15,9 @@ uv run --with jsonschema .github/workflows/build_registry.py
 # Dry run (validate without writing to dist/)
 uv run --with jsonschema .github/workflows/build_registry.py --dry-run
 
+# Validate only specific agents (implies --dry-run)
+uv run --with jsonschema .github/workflows/build_registry.py --agents gemini,goose
+
 # Build without schema validation (if jsonschema not available)
 python .github/workflows/build_registry.py
 ```
@@ -82,7 +85,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 1. Scans directories for `agent.json` files
 2. Validates against `agent.schema.json` (JSON Schema)
 3. Validates icons (16x16 SVG, monochrome with `currentColor`)
-4. Aggregates into three views: `dist/registry.json`, `dist/registry-for-jetbrains.json` and `dist/registry-for-jetbrains-preview.json`
+4. Aggregates into four views: `dist/registry.json`, `dist/registry-for-jetbrains.json`, `dist/registry-for-jetbrains-preview.json` and `dist/registry-for-jetbrains-air.json`
 5. Copies icons to `dist/<id>.svg`
 
 **CI/CD** (`.github/workflows/build-registry.yml`):
@@ -119,7 +122,7 @@ An agent may declare an optional `preview` block in its `agent.json`, holding **
 
 See [FORMAT.md](FORMAT.md#preview-channel) for the full contract. Key points when working in this repo:
 
-- **Three build outputs.** `registry.json` and `registry-for-jetbrains.json` always carry the **stable** `version`/`distribution` with the `preview` key stripped. `registry-for-jetbrains-preview.json` is a complete, drop-in replacement for the JetBrains registry where a previewed agent appears as an ordinary entry with `version` and `distribution` substituted by the preview values (and still no `preview` key). Agents without a `preview` block appear there at their stable version.
+- **Four build outputs.** `registry.json`, `registry-for-jetbrains.json` and `registry-for-jetbrains-air.json` always carry the **stable** `version`/`distribution` with the `preview` key stripped. `registry-for-jetbrains-preview.json` is a complete, drop-in replacement for the JetBrains registry where a previewed agent appears as an ordinary entry with `version` and `distribution` substituted by the preview values (and still no `preview` key). Agents without a `preview` block appear there at their stable version.
 - **Version scheme `X.Y.Z-preview.N`.** Valid semver; `1.9.0-preview.N` ranks below `1.9.0`, and `preview.10` ranks above `preview.2`. The root `version` must stay a plain `X.Y.Z` release.
 - **Highest of both channels wins.** `preview.version` means "the newest version we know about", so it may legitimately hold a plain release. A `preview.version` at or below the stable `version` is **not** an error — the build simply serves the stable entry, and the hourly checker rewrites the block on the next run. Never add an ordering constraint between the channels.
 - **Preview is deliberately unverified.** Preview distributions are never launched (`verify_agents.py` and `protocol_matrix.py` stay stable-only), their URLs are never probed, and they add no CI jobs. The only preview-specific check is offline: the package spec's pinned version must equal `preview.version`.
@@ -167,6 +170,8 @@ uv run .github/workflows/update_versions.py --channels preview
 ```
 
 Both channels are checked from a single fetch per distribution source. Stable updates rewrite the root `version` and distribution specs; preview updates rewrite only `preview.version` and the preview specs. Each entry in the `--json` payload carries a `channel` field, and only `stable` bumps are auth-verified.
+
+Failures are isolated per agent: a failed version check, apply, registry validation (`build_registry.py --agents <id>`), or auth check drops only that agent's updates (reported as a warning and in the run summary); the remaining updates are still committed.
 
 The workflow can also be triggered manually via GitHub Actions with options to apply updates and filter by agent IDs.
 
