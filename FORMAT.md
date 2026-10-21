@@ -96,7 +96,7 @@ A stale preview block therefore self-heals on the next hourly run instead of fai
 
 ### Published preview entries
 
-The `preview` key never appears in any published registry. It is stripped from `registry.json` and `registry-for-jetbrains.json`, and in `registry-for-jetbrains-preview.json` the previewed agent appears as an **ordinary agent entry** with `version` and `distribution` substituted wholesale by the preview values:
+The `preview` key never appears in any published registry. It is stripped from `registry.json`, `registry-for-jetbrains.json` and `registry-for-jetbrains-air.json`, and in `registry-for-jetbrains-preview.json` the previewed agent appears as an **ordinary agent entry** with `version` and `distribution` substituted wholesale by the preview values:
 
 ```json
 {
