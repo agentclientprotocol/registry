@@ -641,13 +641,20 @@ def process_entry(
     return entry, []
 
 
-def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
+def build_registry(
+    dry_run: bool = False,
+    registry_dir: Path | None = None,
+    agent_ids: set[str] | None = None,
+):
     """Build registry.json from agent directories.
 
     Args:
         dry_run: If True, validate and report what would be built without writing to dist/.
         registry_dir: Registry root to scan (defaults to the repository root).
+        agent_ids: If set, validate only these agents; implies dry_run.
     """
+    if agent_ids is not None:
+        dry_run = True
     if registry_dir is None:
         registry_dir = Path(__file__).parent.parent.parent
     base_url = get_base_url()
@@ -663,6 +670,8 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
 
     for entry_dir in sorted(registry_dir.iterdir()):
         if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
+            continue
+        if agent_ids is not None and entry_dir.name not in agent_ids:
             continue
 
         agent_json_path = entry_dir / "agent.json"
@@ -680,6 +689,13 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
         agents.append(entry)
         print(f"Added agent: {entry['id']} v{entry['version']}")
 
+    if agent_ids is not None:
+        for missing_id in sorted(
+            i for i in agent_ids if not (registry_dir / i / "agent.json").is_file()
+        ):
+            print(f"Error: agent '{missing_id}' not found")
+            has_errors = True
+
     if has_errors:
         print("\nBuild failed due to validation errors")
         sys.exit(1)
@@ -693,6 +709,9 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
 
     # Agents excluded from registry-for-jetbrains.json
     JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
+
+    # Gemini CLI is not supported in JetBrains Air.
+    AIR_EXCLUDE_IDS = {"gemini"}
 
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp"}
@@ -711,6 +730,7 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
         for a in agents
         if a["id"] not in JETBRAINS_EXCLUDE_IDS
     ]
+    air_agents = [a for a in jetbrains_agents if a["id"] not in AIR_EXCLUDE_IDS]
 
     # Preview registry: a complete, drop-in replacement for the JetBrains registry
     # where every previewed agent resolves to the highest of its two channels.
@@ -742,6 +762,10 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
         print(
             f"  registry-for-jetbrains-preview.json would contain "
             f"{len(jetbrains_preview_agents)} agents ({preview_summary()})"
+        )
+        print(
+            f"  registry-for-jetbrains-air.json would contain {len(air_agents)} agents"
+            f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
         )
         return
 
@@ -776,6 +800,11 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
         json.dump(jetbrains_preview_registry, f, indent=2)
         f.write("\n")
 
+    air_registry = {"version": REGISTRY_VERSION, "agents": air_agents}
+    with open(dist_dir / "registry-for-jetbrains-air.json", "w") as f:
+        json.dump(air_registry, f, indent=2)
+        f.write("\n")
+
     # Copy icons to dist
     for entry in agents:
         entry_id = entry["id"]
@@ -804,6 +833,10 @@ def build_registry(dry_run: bool = False, registry_dir: Path | None = None):
         f"  registry-for-jetbrains-preview.json: {len(jetbrains_preview_agents)} agents"
         f" ({preview_summary()})"
     )
+    print(
+        f"  registry-for-jetbrains-air.json: {len(air_agents)} agents"
+        f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
+    )
 
 
 if __name__ == "__main__":
@@ -813,5 +846,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Validate all agents without writing to dist/",
     )
+    parser.add_argument(
+        "--agents",
+        type=str,
+        help="Comma-separated agent IDs to validate (implies --dry-run)",
+    )
     args = parser.parse_args()
-    build_registry(dry_run=args.dry_run)
+    agent_ids = {a.strip() for a in args.agents.split(",") if a.strip()} if args.agents else None
+    build_registry(dry_run=args.dry_run, agent_ids=agent_ids)
