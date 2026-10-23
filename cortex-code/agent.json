@@ -6,6 +6,7 @@
   "repository": "https://docs.snowflake.com/en/user-guide/cortex-code/cortex-code",
   "authors": ["Snowflake"],
   "license": "proprietary",
+  "license_url": "https://www.snowflake.com/en/legal/terms-of-service/",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
