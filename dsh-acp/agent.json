@@ -1,0 +1,15 @@
+{
+  "id": "dsh-acp",
+  "name": "DeepSeek Harness",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness as an Agent Client Protocol agent: delegate tasks to a DeepSeek-powered coding agent that shares dsh credentials and session logs.",
+  "repository": "https://github.com/jeremy9682/dsh-cursor-codex",
+  "website": "https://github.com/jeremy9682/dsh-cursor-codex#readme",
+  "authors": ["Jeremy Liu"],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@jeremy9682/dsh-acp"
+    }
+  }
+}
