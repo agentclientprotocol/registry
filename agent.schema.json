@@ -99,8 +99,11 @@
         "distribution": {
           "type": "object",
           "minProperties": 1,
-          "description": "Preview artifact locations. Only package-based distributions are supported.",
+          "description": "Preview artifact locations.",
           "properties": {
+            "binary": {
+              "$ref": "#/definitions/binaryDistribution"
+            },
             "npx": {
               "$ref": "#/definitions/packageDistribution"
             },

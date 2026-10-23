@@ -361,7 +361,12 @@ def write_registry(root: Path, manifests: list[dict]) -> Path:
 def read_registries(root: Path) -> dict[str, dict]:
     return {
         name: json.loads((root / "dist" / f"{name}.json").read_text())
-        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview")
+        for name in (
+            "registry",
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        )
     }
 
 
@@ -441,7 +446,7 @@ class TestValidatePreview:
 
 
 class TestPreviewRegistryOutputs:
-    def test_writes_three_registries(self, tmp_path):
+    def test_writes_four_registries(self, tmp_path):
         write_registry(
             tmp_path,
             [
@@ -457,7 +462,29 @@ class TestPreviewRegistryOutputs:
             "registry",
             "registry-for-jetbrains",
             "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
         }
+
+    def test_air_registry_excludes_only_gemini(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest("gemini", "1.0.0"),
+                agent_manifest("gemini-custom", "1.0.0"),
+                agent_manifest("antigravity-acp", "1.4.1"),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+
+        registries = read_registries(tmp_path)
+        jetbrains_agents = by_id(registries["registry-for-jetbrains"])
+        assert registries["registry-for-jetbrains-air"] == {
+            "version": registries["registry-for-jetbrains"]["version"],
+            "agents": [jetbrains_agents["antigravity-acp"], jetbrains_agents["gemini-custom"]],
+        }
+        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview"):
+            assert "gemini" in by_id(registries[name])
 
     def test_public_registries_hide_the_preview_channel(self, tmp_path):
         write_registry(
@@ -468,7 +495,7 @@ class TestPreviewRegistryOutputs:
         build_registry(registry_dir=tmp_path)
         registries = read_registries(tmp_path)
 
-        for name in ("registry", "registry-for-jetbrains"):
+        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-air"):
             entry = by_id(registries[name])["agent-a"]
             assert "preview" not in entry
             assert entry["version"] == "1.8.0"
@@ -669,3 +696,35 @@ class TestPreviewValidationFailures:
 
     def test_prerelease_in_root_version(self, tmp_path):
         self._build_fails(tmp_path, agent_manifest("agent-a", "1.9.0-preview.1"))
+
+
+class TestScopedValidation:
+    def test_only_selected_agents_are_validated(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        probed = []
+        monkeypatch.setattr("build_registry.url_exists", lambda url: probed.append(url) or True)
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+        (tmp_path / "agent-b" / "icon.svg").write_text("not an svg")
+
+        build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+
+        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
+        assert not (tmp_path / "dist").exists()
+
+    def test_selected_agent_failure_fails_the_build(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr("build_registry.url_exists", lambda url: False)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        with pytest.raises(SystemExit) as excinfo:
+            build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+        assert excinfo.value.code == 1
+
+    def test_unknown_agent_fails_the_build(self, tmp_path):
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        with pytest.raises(SystemExit) as excinfo:
+            build_registry(registry_dir=tmp_path, agent_ids={"agent-z"})
+        assert excinfo.value.code == 1

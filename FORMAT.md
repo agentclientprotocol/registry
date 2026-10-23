@@ -67,7 +67,7 @@ An agent may declare an optional `preview` block holding **exactly two** fields 
 }
 ```
 
-`preview.distribution` is a full distribution object validated against the same schema definitions as the root `distribution`, restricted to `npx` and `uvx`. **`binary` preview distributions are not supported.**
+`preview.distribution` is a full distribution object validated against the same schema definitions as the root `distribution` (`binary`, `npx`, or `uvx`).
 
 ### Version scheme
 
@@ -96,7 +96,7 @@ A stale preview block therefore self-heals on the next hourly run instead of fai
 
 ### Published preview entries
 
-The `preview` key never appears in any published registry. It is stripped from `registry.json` and `registry-for-jetbrains.json`, and in `registry-for-jetbrains-preview.json` the previewed agent appears as an **ordinary agent entry** with `version` and `distribution` substituted wholesale by the preview values:
+The `preview` key never appears in any published registry. It is stripped from `registry.json`, `registry-for-jetbrains.json` and `registry-for-jetbrains-air.json`, and in `registry-for-jetbrains-preview.json` the previewed agent appears as an **ordinary agent entry** with `version` and `distribution` substituted wholesale by the preview values:
 
 ```json
 {
