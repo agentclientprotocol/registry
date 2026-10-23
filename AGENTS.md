@@ -67,8 +67,14 @@ GitHub Actions runs the nightly protocol matrix natively on the runner (`uv` + N
 
 `run-protocol-matrix.sh` mirrors the scheduled GitHub Actions defaults: it uses `--table-mode capabilities` and creates ephemeral isolated Docker state plus a fresh protocol sandbox by default so agents cannot reuse local login/keychain state or stale install artifacts across runs. Set `ACP_PROTOCOL_MATRIX_KEEP_STATE=1` if you intentionally want to keep the container state and `.matrix-sandbox` for debugging.
 
-The generic Docker wrapper keeps state under `.docker-state/` in the repo, defaults to `linux/amd64` to match `ubuntu-latest`, injects a passwd entry for the current UID inside the container, and disables Python keyring backends to avoid host keychain prompts during local verification. It reuses an existing local Docker image when the requested platform and image inputs still match, and rebuilds automatically when they do not; set `ACP_REGISTRY_BUILD_IMAGE=1` to force a rebuild. Treat the Docker wrappers as the canonical local path; use host-native `uv run ...` commands only when you intentionally want to debug outside the container. Set `ACP_REGISTRY_DOCKER_PLATFORM=` to opt out of the default platform override when you explicitly want native-architecture debugging.
+The generic Docker wrapper keeps state under `.docker-state/` in the repo, defaults to `linux/amd64` to match `ubuntu-latest`, injects a passwd entry for the current UID inside the container, and disables Python keyring backends to avoid host keychain prompts during local verification. It reuses an existing local Docker image when the requested platform and image inputs still match, and rebuilds automatically when they do not; set `ACP_REGISTRY_BUILD_IMAGE=1` to force a rebuild with Docker's normal cache behavior. Set `ACP_REGISTRY_BUILD_IMAGE=refresh` to force a security refresh with `--pull --no-cache`, even when the image inputs have not changed. Treat the Docker wrappers as the canonical local path; use host-native `uv run ...` commands only when you intentionally want to debug outside the container. Set `ACP_REGISTRY_DOCKER_PLATFORM=` to opt out of the default platform override when you explicitly want native-architecture debugging.
 Set `ACP_PROTOCOL_MATRIX_SKIP_AGENTS=crow-cli` to skip specific agents during matrix generation.
+
+After a Node security release, refresh the tooling image and verify its runtime before reusing it:
+
+```bash
+ACP_REGISTRY_BUILD_IMAGE=refresh .github/workflows/scripts/run-registry-docker.sh node --version
+```
 
 ## Architecture
 

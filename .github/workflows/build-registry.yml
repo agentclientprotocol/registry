@@ -66,6 +66,7 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
         with:
           node-version: "lts/*"
+          check-latest: true
 
       - name: Validate and build
         run: uv run --with jsonschema .github/workflows/build_registry.py
@@ -108,6 +109,7 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
         with:
           node-version: "lts/*"
+          check-latest: true
 
       - name: Verify auth
         env:
