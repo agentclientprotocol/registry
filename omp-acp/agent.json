@@ -1,0 +1,18 @@
+{
+  "id": "omp-acp",
+  "name": "Oh My Pi",
+  "version": "15.9.0",
+  "description": "Built-in ACP server mode for Oh My Pi.",
+  "repository": "https://github.com/can1357/oh-my-pi",
+  "website": "https://omp.sh",
+  "authors": [
+    "Can Boluk"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@oh-my-pi/pi-coding-agent@15.9.0",
+      "args": ["acp"]
+    }
+  }
+}
