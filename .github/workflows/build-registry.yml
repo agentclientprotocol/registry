@@ -66,6 +66,7 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
         with:
           node-version: "lts/*"
+          check-latest: true
 
       - name: Validate and build
         run: uv run --with jsonschema .github/workflows/build_registry.py
@@ -108,6 +109,7 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
         with:
           node-version: "lts/*"
+          check-latest: true
 
       - name: Verify auth
         env:
@@ -192,7 +194,7 @@ jobs:
       # Generating a GitHub token, so that PRs and tags created by
       # the action can trigger actions workflows.
       - name: Generate GitHub token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510
         id: generate-token
         with:
           # GitHub App ID secret name
@@ -235,6 +237,7 @@ jobs:
             dist/registry.json \
             dist/registry-for-jetbrains.json \
             dist/registry-for-jetbrains-preview.json \
+            dist/registry-for-jetbrains-air.json \
             dist/agent.schema.json \
             dist/registry.schema.json \
             dist/*.svg

@@ -710,6 +710,9 @@ def build_registry(
     # Agents excluded from registry-for-jetbrains.json
     JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
 
+    # Gemini CLI is not supported in JetBrains Air.
+    AIR_EXCLUDE_IDS = {"gemini"}
+
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp"}
 
@@ -727,6 +730,7 @@ def build_registry(
         for a in agents
         if a["id"] not in JETBRAINS_EXCLUDE_IDS
     ]
+    air_agents = [a for a in jetbrains_agents if a["id"] not in AIR_EXCLUDE_IDS]
 
     # Preview registry: a complete, drop-in replacement for the JetBrains registry
     # where every previewed agent resolves to the highest of its two channels.
@@ -758,6 +762,10 @@ def build_registry(
         print(
             f"  registry-for-jetbrains-preview.json would contain "
             f"{len(jetbrains_preview_agents)} agents ({preview_summary()})"
+        )
+        print(
+            f"  registry-for-jetbrains-air.json would contain {len(air_agents)} agents"
+            f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
         )
         return
 
@@ -792,6 +800,11 @@ def build_registry(
         json.dump(jetbrains_preview_registry, f, indent=2)
         f.write("\n")
 
+    air_registry = {"version": REGISTRY_VERSION, "agents": air_agents}
+    with open(dist_dir / "registry-for-jetbrains-air.json", "w") as f:
+        json.dump(air_registry, f, indent=2)
+        f.write("\n")
+
     # Copy icons to dist
     for entry in agents:
         entry_id = entry["id"]
@@ -819,6 +832,10 @@ def build_registry(
     print(
         f"  registry-for-jetbrains-preview.json: {len(jetbrains_preview_agents)} agents"
         f" ({preview_summary()})"
+    )
+    print(
+        f"  registry-for-jetbrains-air.json: {len(air_agents)} agents"
+        f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
     )
 
 

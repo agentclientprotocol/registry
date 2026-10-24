@@ -361,7 +361,12 @@ def write_registry(root: Path, manifests: list[dict]) -> Path:
 def read_registries(root: Path) -> dict[str, dict]:
     return {
         name: json.loads((root / "dist" / f"{name}.json").read_text())
-        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview")
+        for name in (
+            "registry",
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        )
     }
 
 
@@ -441,7 +446,7 @@ class TestValidatePreview:
 
 
 class TestPreviewRegistryOutputs:
-    def test_writes_three_registries(self, tmp_path):
+    def test_writes_four_registries(self, tmp_path):
         write_registry(
             tmp_path,
             [
@@ -457,7 +462,29 @@ class TestPreviewRegistryOutputs:
             "registry",
             "registry-for-jetbrains",
             "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
         }
+
+    def test_air_registry_excludes_only_gemini(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest("gemini", "1.0.0"),
+                agent_manifest("gemini-custom", "1.0.0"),
+                agent_manifest("antigravity-acp", "1.4.1"),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+
+        registries = read_registries(tmp_path)
+        jetbrains_agents = by_id(registries["registry-for-jetbrains"])
+        assert registries["registry-for-jetbrains-air"] == {
+            "version": registries["registry-for-jetbrains"]["version"],
+            "agents": [jetbrains_agents["antigravity-acp"], jetbrains_agents["gemini-custom"]],
+        }
+        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview"):
+            assert "gemini" in by_id(registries[name])
 
     def test_public_registries_hide_the_preview_channel(self, tmp_path):
         write_registry(
@@ -468,7 +495,7 @@ class TestPreviewRegistryOutputs:
         build_registry(registry_dir=tmp_path)
         registries = read_registries(tmp_path)
 
-        for name in ("registry", "registry-for-jetbrains"):
+        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-air"):
             entry = by_id(registries[name])["agent-a"]
             assert "preview" not in entry
             assert entry["version"] == "1.8.0"
