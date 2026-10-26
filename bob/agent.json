@@ -1,7 +1,7 @@
 {
   "id": "bob",
   "name": "Bob",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "IBM Bob is your AI-Powered Development Partner",
   "website": "https://bob.ibm.com",
   "authors": [
@@ -11,7 +11,7 @@
   "license_url": "https://www.ibm.com/support/customer/csol/terms/?id=L-EBQG-R9G8MA",
   "distribution": {
     "npx": {
-      "package": "@ibm/bob@2.0.8",
+      "package": "@ibm/bob@2.0.9",
       "args": [
         "acp"
       ]
