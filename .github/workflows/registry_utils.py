@@ -244,6 +244,12 @@ def extract_pypi_package_name(package_spec: str) -> str:
     return re.split(r"[<>=!@]", package_spec)[0]
 
 
+def is_prerelease(version: str) -> bool:
+    """Check if a version string is not a stable numeric dotted release."""
+    normalized = version.lstrip("v")
+    return not bool(re.fullmatch(r"\d+(?:\.\d+)*", normalized))
+
+
 def normalize_version(version: str) -> str:
     """Normalize version to semver format (x.y.z)."""
     parts = version.split(".")
