@@ -1,0 +1,66 @@
+{
+  "id": "mammouth-code",
+  "name": "Mammouth Code",
+  "version": "1.18.31.1",
+  "description": "Mammouth Code is Mammouth AI's terminal-based coding agent.",
+  "repository": "https://github.com/mammouth-ai/code",
+  "website": "https://mammouth.ai/",
+  "authors": [
+    "Mammouth AI"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/mammouth-ai/code/blob/dev/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/mammouth-ai/code/releases/download/v1.18.31.1/mammouth-darwin-arm64.tar.gz",
+        "cmd": "./mammouth",
+        "args": [
+          "acp"
+        ],
+        "sha256": "ffd38dfe71abd67aa2052efa054d43a08c14e3b1184b99684ac313c6d02cb25c"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/mammouth-ai/code/releases/download/v1.18.31.1/mammouth-darwin-x64.tar.gz",
+        "cmd": "./mammouth",
+        "args": [
+          "acp"
+        ],
+        "sha256": "3b83a3f270f84b18ff6eb2a59ea411829328fd1dd60f2b7e2bcc712ced5e74fb"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/mammouth-ai/code/releases/download/v1.18.31.1/mammouth-linux-arm64.tar.gz",
+        "cmd": "./mammouth",
+        "args": [
+          "acp"
+        ],
+        "sha256": "06f6526e23668a6d547a13c76cc9988cf9ee30831a01003d2653951bd5d95e0f"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/mammouth-ai/code/releases/download/v1.18.31.1/mammouth-linux-x64.tar.gz",
+        "cmd": "./mammouth",
+        "args": [
+          "acp"
+        ],
+        "sha256": "e8b2b4b08653cc224c3a84f61d34348999c5d0e747b3162453d5fb17a1cc5324"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/mammouth-ai/code/releases/download/v1.18.31.1/mammouth-windows-arm64.zip",
+        "cmd": "./mammouth",
+        "args": [
+          "acp"
+        ],
+        "sha256": "b8824dbdff36f5d476583f48038dc29d3ff62ddbf1e1b29c86fbd0d50c342b93"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/mammouth-ai/code/releases/download/v1.18.31.1/mammouth-windows-x64.zip",
+        "cmd": "./mammouth.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "ee669fb0a079e39fa9ff01a6d80023206fd8d7a4aa94ac13caa6df56d93d057d"
+      }
+    }
+  }
+}
