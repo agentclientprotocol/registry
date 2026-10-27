@@ -15,6 +15,9 @@ uv run --with jsonschema .github/workflows/build_registry.py
 # Dry run (validate without writing to dist/)
 uv run --with jsonschema .github/workflows/build_registry.py --dry-run
 
+# Validate only specific agents (implies --dry-run)
+uv run --with jsonschema .github/workflows/build_registry.py --agents gemini,goose
+
 # Build without schema validation (if jsonschema not available)
 python .github/workflows/build_registry.py
 ```
@@ -64,8 +67,14 @@ GitHub Actions runs the nightly protocol matrix natively on the runner (`uv` + N
 
 `run-protocol-matrix.sh` mirrors the scheduled GitHub Actions defaults: it uses `--table-mode capabilities` and creates ephemeral isolated Docker state plus a fresh protocol sandbox by default so agents cannot reuse local login/keychain state or stale install artifacts across runs. Set `ACP_PROTOCOL_MATRIX_KEEP_STATE=1` if you intentionally want to keep the container state and `.matrix-sandbox` for debugging.
 
-The generic Docker wrapper keeps state under `.docker-state/` in the repo, defaults to `linux/amd64` to match `ubuntu-latest`, injects a passwd entry for the current UID inside the container, and disables Python keyring backends to avoid host keychain prompts during local verification. It reuses an existing local Docker image when the requested platform and image inputs still match, and rebuilds automatically when they do not; set `ACP_REGISTRY_BUILD_IMAGE=1` to force a rebuild. Treat the Docker wrappers as the canonical local path; use host-native `uv run ...` commands only when you intentionally want to debug outside the container. Set `ACP_REGISTRY_DOCKER_PLATFORM=` to opt out of the default platform override when you explicitly want native-architecture debugging.
+The generic Docker wrapper keeps state under `.docker-state/` in the repo, defaults to `linux/amd64` to match `ubuntu-latest`, injects a passwd entry for the current UID inside the container, and disables Python keyring backends to avoid host keychain prompts during local verification. It reuses an existing local Docker image when the requested platform and image inputs still match, and rebuilds automatically when they do not; set `ACP_REGISTRY_BUILD_IMAGE=1` to force a rebuild with Docker's normal cache behavior. Set `ACP_REGISTRY_BUILD_IMAGE=refresh` to force a security refresh with `--pull --no-cache`, even when the image inputs have not changed. Treat the Docker wrappers as the canonical local path; use host-native `uv run ...` commands only when you intentionally want to debug outside the container. Set `ACP_REGISTRY_DOCKER_PLATFORM=` to opt out of the default platform override when you explicitly want native-architecture debugging.
 Set `ACP_PROTOCOL_MATRIX_SKIP_AGENTS=crow-cli` to skip specific agents during matrix generation.
+
+After a Node security release, refresh the tooling image and verify its runtime before reusing it:
+
+```bash
+ACP_REGISTRY_BUILD_IMAGE=refresh .github/workflows/scripts/run-registry-docker.sh node --version
+```
 
 ## Architecture
 
@@ -82,7 +91,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 1. Scans directories for `agent.json` files
 2. Validates against `agent.schema.json` (JSON Schema)
 3. Validates icons (16x16 SVG, monochrome with `currentColor`)
-4. Aggregates into three views: `dist/registry.json`, `dist/registry-for-jetbrains.json` and `dist/registry-for-jetbrains-preview.json`
+4. Aggregates into four views: `dist/registry.json`, `dist/registry-for-jetbrains.json`, `dist/registry-for-jetbrains-preview.json` and `dist/registry-for-jetbrains-air.json`
 5. Copies icons to `dist/<id>.svg`
 
 **CI/CD** (`.github/workflows/build-registry.yml`):
@@ -119,7 +128,7 @@ An agent may declare an optional `preview` block in its `agent.json`, holding **
 
 See [FORMAT.md](FORMAT.md#preview-channel) for the full contract. Key points when working in this repo:
 
-- **Three build outputs.** `registry.json` and `registry-for-jetbrains.json` always carry the **stable** `version`/`distribution` with the `preview` key stripped. `registry-for-jetbrains-preview.json` is a complete, drop-in replacement for the JetBrains registry where a previewed agent appears as an ordinary entry with `version` and `distribution` substituted by the preview values (and still no `preview` key). Agents without a `preview` block appear there at their stable version.
+- **Four build outputs.** `registry.json`, `registry-for-jetbrains.json` and `registry-for-jetbrains-air.json` always carry the **stable** `version`/`distribution` with the `preview` key stripped. `registry-for-jetbrains-preview.json` is a complete, drop-in replacement for the JetBrains registry where a previewed agent appears as an ordinary entry with `version` and `distribution` substituted by the preview values (and still no `preview` key). Agents without a `preview` block appear there at their stable version.
 - **Version scheme `X.Y.Z-preview.N`.** Valid semver; `1.9.0-preview.N` ranks below `1.9.0`, and `preview.10` ranks above `preview.2`. The root `version` must stay a plain `X.Y.Z` release.
 - **Highest of both channels wins.** `preview.version` means "the newest version we know about", so it may legitimately hold a plain release. A `preview.version` at or below the stable `version` is **not** an error — the build simply serves the stable entry, and the hourly checker rewrites the block on the next run. Never add an ordering constraint between the channels.
 - **Preview is deliberately unverified.** Preview distributions are never launched (`verify_agents.py` and `protocol_matrix.py` stay stable-only), their URLs are never probed, and they add no CI jobs. The only preview-specific check is offline: the package spec's pinned version must equal `preview.version`.
@@ -148,7 +157,7 @@ To add a new custom source: write `custom_agent_sources/<agent_id>.py` with a fu
 
 Agent versions are automatically updated via `.github/workflows/update-versions.yml`:
 
-- **Schedule:** Runs hourly (cron: `0 * * * *`)
+- **Schedule:** Runs hourly at minute 17 (cron: `17 * * * *`)
 - **Scope:** Checks all agents in the root directory
 - **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases only — non-GitHub `repository` URLs are skipped)
 
@@ -167,6 +176,8 @@ uv run .github/workflows/update_versions.py --channels preview
 ```
 
 Both channels are checked from a single fetch per distribution source. Stable updates rewrite the root `version` and distribution specs; preview updates rewrite only `preview.version` and the preview specs. Each entry in the `--json` payload carries a `channel` field, and only `stable` bumps are auth-verified.
+
+Failures are isolated per agent: a failed version check, apply, registry validation (`build_registry.py --agents <id>`), or auth check drops only that agent's updates (reported as a warning and in the run summary); the remaining updates are still committed.
 
 The workflow can also be triggered manually via GitHub Actions with options to apply updates and filter by agent IDs.
 
