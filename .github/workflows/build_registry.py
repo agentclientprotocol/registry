@@ -645,13 +645,6 @@ def process_entry(
                 f"  - {e}" for e in url_errors
             ]
 
-    # Validate license URL
-    license_errors = validate_license_url(entry)
-    if license_errors:
-        return None, [f"{entry_dir.name} license URL validation failed:"] + [
-            f"  - {e}" for e in license_errors
-        ]
-
     # Validate icon (required)
     icon_path = entry_dir / "icon.svg"
     if not icon_path.exists():
@@ -664,6 +657,33 @@ def process_entry(
     entry["icon"] = f"{base_url}/{entry_id}.svg"
 
     return entry, []
+
+
+def check_license_urls(registry_dir: Path | None = None) -> None:
+    """Check that every agent's license_url returns HTTP 200; exit 1 if any does not.
+
+    Runs on a schedule rather than in build_registry, so a third-party license
+    page going down does not block unrelated PRs or version updates.
+    """
+    if registry_dir is None:
+        registry_dir = Path(__file__).parent.parent.parent
+    failed = False
+
+    for entry_dir in sorted(registry_dir.iterdir()):
+        if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
+            continue
+        agent_json_path = entry_dir / "agent.json"
+        if not agent_json_path.exists():
+            continue
+        with open(agent_json_path) as f:
+            entry = json.load(f)
+        for error in validate_license_url(entry):
+            print(f"Error: {entry_dir.name}: {error}")
+            failed = True
+
+    if failed:
+        sys.exit(1)
+    print("All license URLs returned 200")
 
 
 def build_registry(
@@ -876,6 +896,14 @@ if __name__ == "__main__":
         type=str,
         help="Comma-separated agent IDs to validate (implies --dry-run)",
     )
+    parser.add_argument(
+        "--check-license-urls",
+        action="store_true",
+        help="Only check that every license_url returns HTTP 200",
+    )
     args = parser.parse_args()
+    if args.check_license_urls:
+        check_license_urls()
+        sys.exit(0)
     agent_ids = {a.strip() for a in args.agents.split(",") if a.strip()} if args.agents else None
     build_registry(dry_run=args.dry_run, agent_ids=agent_ids)

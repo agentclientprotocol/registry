@@ -12,6 +12,7 @@ import pytest
 from build_registry import (
     HAS_JSONSCHEMA,
     build_registry,
+    check_license_urls,
     is_public_https_url,
     url_exists,
     validate_icon,
@@ -733,10 +734,7 @@ class TestPreviewRegistryOutputs:
 
         build_registry(registry_dir=tmp_path)
 
-        assert probed == [
-            "https://registry.npmjs.org/@acp/agent-a",
-            "https://example.com/agent-a/license",
-        ]
+        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
 
 
 class TestPreviewValidationFailures:
@@ -804,9 +802,7 @@ class TestScopedValidation:
     def test_only_selected_agents_are_validated(self, tmp_path, monkeypatch):
         monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
         probed = []
-        monkeypatch.setattr(
-            "build_registry.url_exists", lambda url, **kwargs: probed.append(url) or True
-        )
+        monkeypatch.setattr("build_registry.url_exists", lambda url: probed.append(url) or True)
         write_registry(
             tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
         )
@@ -814,10 +810,7 @@ class TestScopedValidation:
 
         build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
 
-        assert probed == [
-            "https://registry.npmjs.org/@acp/agent-a",
-            "https://example.com/agent-a/license",
-        ]
+        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
         assert not (tmp_path / "dist").exists()
 
     def test_selected_agent_failure_fails_the_build(self, tmp_path, monkeypatch):
@@ -835,3 +828,68 @@ class TestScopedValidation:
         with pytest.raises(SystemExit) as excinfo:
             build_registry(registry_dir=tmp_path, agent_ids={"agent-z"})
         assert excinfo.value.code == 1
+
+
+class TestCheckLicenseUrls:
+    @staticmethod
+    def _probe(monkeypatch, broken: set[str]) -> list[str]:
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        probed: list[str] = []
+
+        def fake_url_exists(url, **kwargs):
+            probed.append(url)
+            return url not in broken
+
+        monkeypatch.setattr("build_registry.url_exists", fake_url_exists)
+        return probed
+
+    def test_all_license_urls_ok(self, tmp_path, monkeypatch, capsys):
+        """Every agent's license URL is probed, and the check passes when all return 200."""
+        probed = self._probe(monkeypatch, broken=set())
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert probed == [
+            "https://example.com/agent-a/license",
+            "https://example.com/agent-b/license",
+        ]
+        assert "All license URLs returned 200" in capsys.readouterr().out
+
+    def test_broken_license_url_fails(self, tmp_path, monkeypatch, capsys):
+        """One broken license URL exits 1, names the agent, and still checks the rest."""
+        probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+
+        with pytest.raises(SystemExit) as excinfo:
+            check_license_urls(registry_dir=tmp_path)
+
+        assert excinfo.value.code == 1
+        assert len(probed) == 2
+        out = capsys.readouterr().out
+        assert "agent-a" in out
+        assert "agent-b" not in out
+
+    def test_agent_without_license_url_skipped(self, tmp_path, monkeypatch):
+        """An agent without license_url is not probed."""
+        probed = self._probe(monkeypatch, broken=set())
+        manifest = agent_manifest("dimcode", "1.0.0")
+        del manifest["license_url"]
+        write_registry(tmp_path, [manifest])
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert probed == []
+
+    def test_build_does_not_probe_license_url(self, tmp_path, monkeypatch):
+        """build_registry leaves license URLs to the scheduled check."""
+        probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+
+        assert "https://example.com/agent-a/license" not in probed

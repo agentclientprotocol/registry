@@ -1,6 +1,6 @@
 # ACP Registry
 
-[![Build Registry](https://github.com/agentclientprotocol/registry/actions/workflows/build-registry.yml/badge.svg?branch=main)](https://github.com/agentclientprotocol/registry/actions/workflows/build-registry.yml?query=branch%3Amain)
+[![Check License URLs](https://github.com/agentclientprotocol/registry/actions/workflows/check-license-urls.yml/badge.svg)](https://github.com/agentclientprotocol/registry/actions/workflows/check-license-urls.yml)
 
 https://agentclientprotocol.com/registry
 
