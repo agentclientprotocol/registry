@@ -1,5 +1,7 @@
 # ACP Registry
 
+[![Build Registry](https://github.com/agentclientprotocol/registry/actions/workflows/build-registry.yml/badge.svg?branch=main)](https://github.com/agentclientprotocol/registry/actions/workflows/build-registry.yml?query=branch%3Amain)
+
 https://agentclientprotocol.com/registry
 
 Registry of agents implementing the [Agent Client Protocol, ACP](https://github.com/agentclientprotocol/agent-client-protocol).
