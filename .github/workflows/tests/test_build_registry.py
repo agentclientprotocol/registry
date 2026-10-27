@@ -176,6 +176,22 @@ class TestValidateLicenseUrl:
 
         assert methods == ["GET"]
 
+    def test_retries_five_times_on_503(self, monkeypatch):
+        """A license URL answering 503 four times and then 200 passes on the fifth try."""
+        self._public_dns(monkeypatch)
+        calls = []
+
+        def fake_open(req, **kwargs):
+            calls.append(req.full_url)
+            if len(calls) < 5:
+                raise urllib.error.HTTPError(req.full_url, 503, "Unavailable", {}, None)
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert len(calls) == 5
+
     def test_url_exists_default_still_accepts_302(self, monkeypatch):
         """url_exists with default statuses still accepts a 302 response."""
         self._public_dns(monkeypatch)
@@ -832,12 +848,16 @@ class TestScopedValidation:
 
 class TestCheckLicenseUrls:
     @staticmethod
-    def _probe(monkeypatch, broken: set[str]) -> list[str]:
+    def _probe(monkeypatch, broken: set[str], recovers: set[str] = frozenset()) -> list[str]:
+        """Stub url_exists; URLs in `recovers` fail only on their first probe."""
         monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
         probed: list[str] = []
 
         def fake_url_exists(url, **kwargs):
             probed.append(url)
+            if url in recovers:
+                return probed.count(url) > 1
             return url not in broken
 
         monkeypatch.setattr("build_registry.url_exists", fake_url_exists)
@@ -859,7 +879,7 @@ class TestCheckLicenseUrls:
         assert "All license URLs returned 200" in capsys.readouterr().out
 
     def test_broken_license_url_fails(self, tmp_path, monkeypatch, capsys):
-        """One broken license URL exits 1, names the agent, and still checks the rest."""
+        """A URL that also fails the recheck exits 1 and names only that agent."""
         probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
         write_registry(
             tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
@@ -869,10 +889,64 @@ class TestCheckLicenseUrls:
             check_license_urls(registry_dir=tmp_path)
 
         assert excinfo.value.code == 1
-        assert len(probed) == 2
+        assert probed == [
+            "https://example.com/agent-a/license",
+            "https://example.com/agent-b/license",
+            "https://example.com/agent-a/license",
+        ]
+        errors = [line for line in capsys.readouterr().out.splitlines() if line.startswith("Error")]
+        assert errors == [
+            "Error: agent-a: License URL did not return 200: https://example.com/agent-a/license"
+        ]
+
+    def test_recheck_waits_then_passes_recovered_url(self, tmp_path, monkeypatch):
+        """A URL down on the first pass but up on the recheck passes, after the recheck delay."""
+        self._probe(monkeypatch, broken=set(), recovers={"https://example.com/agent-a/license"})
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        check_license_urls(registry_dir=tmp_path, recheck_delay=300)
+
+        assert sleeps == [300]
+
+    def test_no_recheck_when_all_pass(self, tmp_path, monkeypatch):
+        """With no failures the check does not wait for a recheck."""
+        self._probe(monkeypatch, broken=set())
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert sleeps == []
+
+    def test_circuit_breaker_aborts_after_consecutive_failures(self, tmp_path, monkeypatch, capsys):
+        """Ten failures in a row abort the run as a network problem, without probing the rest."""
+        ids = [f"agent-{i:02}" for i in range(12)]
+        probed = self._probe(monkeypatch, broken={f"https://example.com/{i}/license" for i in ids})
+        write_registry(tmp_path, [agent_manifest(i, "1.0.0") for i in ids])
+
+        with pytest.raises(SystemExit) as excinfo:
+            check_license_urls(registry_dir=tmp_path)
+
+        assert excinfo.value.code == 1
+        assert len(probed) == 10
+        assert "network is likely down" in capsys.readouterr().out
+
+    def test_circuit_breaker_resets_on_success(self, tmp_path, monkeypatch, capsys):
+        """A passing URL between failures resets the count, so the breaker does not trip."""
+        ids = [f"agent-{i:02}" for i in range(12)]
+        broken = {f"https://example.com/{i}/license" for i in ids if i != "agent-05"}
+        self._probe(monkeypatch, broken=broken)
+        write_registry(tmp_path, [agent_manifest(i, "1.0.0") for i in ids])
+
+        with pytest.raises(SystemExit):
+            check_license_urls(registry_dir=tmp_path)
+
         out = capsys.readouterr().out
-        assert "agent-a" in out
-        assert "agent-b" not in out
+        assert "network is likely down" not in out
+        assert out.count("Error: agent-") == 11
 
     def test_agent_without_license_url_skipped(self, tmp_path, monkeypatch):
         """An agent without license_url is not probed."""
