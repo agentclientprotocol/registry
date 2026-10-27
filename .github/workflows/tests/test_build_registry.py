@@ -3,6 +3,7 @@
 import json
 import shutil
 import tempfile
+import urllib.error
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from build_registry import (
     url_exists,
     validate_icon,
     validate_icon_monochrome,
+    validate_license_url,
     validate_preview,
 )
 from registry_utils import semver_sort_key
@@ -87,6 +89,103 @@ class TestUrlSafety:
 
         assert url_exists("https://example.com/archive.tar.gz")
         assert calls == 2
+
+
+class TestValidateLicenseUrl:
+    URL = "https://example.com/LICENSE"
+
+    @staticmethod
+    def _public_dns(monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("93.184.216.34"),
+        )
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
+
+    def test_200_response_passes(self, monkeypatch):
+        """A license URL answering 200 produces no errors."""
+        self._public_dns(monkeypatch)
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: StubResponse())
+
+        assert validate_license_url({"license_url": self.URL}) == []
+
+    def test_404_response_fails(self, monkeypatch):
+        """A 404 license URL yields one error mentioning the URL."""
+        self._public_dns(monkeypatch)
+
+        def fake_open(req, **kwargs):
+            raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {}, None)
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        errors = validate_license_url({"license_url": self.URL})
+
+        assert len(errors) == 1
+        assert self.URL in errors[0]
+
+    def test_redirect_is_followed_to_200(self, monkeypatch):
+        """A 301 to another https URL that returns 200 passes."""
+        self._public_dns(monkeypatch)
+        target = "https://example.org/license"
+        seen = []
+
+        def fake_open(req, **kwargs):
+            seen.append(req.full_url)
+            if req.full_url == self.URL:
+                raise urllib.error.HTTPError(req.full_url, 301, "Moved", {"Location": target}, None)
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert seen == [self.URL, target]
+
+    def test_missing_license_url_skipped(self, monkeypatch):
+        """An agent without license_url is exempt and makes no request."""
+        self._public_dns(monkeypatch)
+        calls = []
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: calls.append(a))
+
+        assert validate_license_url({"id": "dimcode"}) == []
+        assert calls == []
+
+    def test_skip_url_validation(self, monkeypatch):
+        """SKIP_URL_VALIDATION disables the check and makes no request."""
+        self._public_dns(monkeypatch)
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", True)
+        calls = []
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: calls.append(a))
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert calls == []
+
+    def test_uses_get_request(self, monkeypatch):
+        """The license check issues a GET, not a HEAD."""
+        self._public_dns(monkeypatch)
+        methods = []
+
+        def fake_open(req, **kwargs):
+            methods.append(req.get_method())
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        validate_license_url({"license_url": self.URL})
+
+        assert methods == ["GET"]
+
+    def test_url_exists_default_still_accepts_302(self, monkeypatch):
+        """url_exists with default statuses still accepts a 302 response."""
+        self._public_dns(monkeypatch)
+
+        class Redirect302(StubResponse):
+            status = 302
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: Redirect302())
+
+        assert url_exists(self.URL)
+        assert not url_exists(self.URL, accepted_statuses=(200,))
 
 
 # --- validate_icon_monochrome ---
@@ -634,7 +733,10 @@ class TestPreviewRegistryOutputs:
 
         build_registry(registry_dir=tmp_path)
 
-        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
+        assert probed == [
+            "https://registry.npmjs.org/@acp/agent-a",
+            "https://example.com/agent-a/license",
+        ]
 
 
 class TestPreviewValidationFailures:
@@ -702,7 +804,9 @@ class TestScopedValidation:
     def test_only_selected_agents_are_validated(self, tmp_path, monkeypatch):
         monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
         probed = []
-        monkeypatch.setattr("build_registry.url_exists", lambda url: probed.append(url) or True)
+        monkeypatch.setattr(
+            "build_registry.url_exists", lambda url, **kwargs: probed.append(url) or True
+        )
         write_registry(
             tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
         )
@@ -710,7 +814,10 @@ class TestScopedValidation:
 
         build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
 
-        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
+        assert probed == [
+            "https://registry.npmjs.org/@acp/agent-a",
+            "https://example.com/agent-a/license",
+        ]
         assert not (tmp_path / "dist").exists()
 
     def test_selected_agent_failure_fails_the_build(self, tmp_path, monkeypatch):

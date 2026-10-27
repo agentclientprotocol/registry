@@ -114,6 +114,7 @@ def url_exists(
     method: str = "HEAD",
     retries: int = 3,
     redirects_remaining: int = MAX_URL_REDIRECTS,
+    accepted_statuses: tuple[int, ...] = (200, 301, 302),
 ) -> bool:
     """Check if a URL exists using HEAD or GET request with retries."""
     import time
@@ -125,7 +126,7 @@ def url_exists(
             req = urllib.request.Request(url, method=method)
             req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
             with URL_OPENER.open(req, timeout=15) as response:
-                return response.status in (200, 301, 302)
+                return response.status in accepted_statuses
         except UrlSafetyResolutionError:
             if attempt < retries - 1:
                 time.sleep(2**attempt)
@@ -145,6 +146,7 @@ def url_exists(
                     method=next_method,
                     retries=retries,
                     redirects_remaining=redirects_remaining - 1,
+                    accepted_statuses=accepted_statuses,
                 )
             # Some servers don't support HEAD, try GET
             if method == "HEAD" and e.code in (403, 405):
@@ -153,6 +155,7 @@ def url_exists(
                     method="GET",
                     retries=retries - attempt,
                     redirects_remaining=redirects_remaining,
+                    accepted_statuses=accepted_statuses,
                 )
             if attempt < retries - 1 and e.code in (429, 500, 502, 503, 504):
                 time.sleep(2**attempt)
@@ -229,6 +232,21 @@ def validate_distribution_versions(agent_version: str, distribution: dict) -> li
                 )
 
     return errors
+
+
+def validate_license_url(agent: dict) -> list[str]:
+    """Validate that the license URL (if present) returns HTTP 200."""
+    if SKIP_URL_VALIDATION:
+        return []
+
+    url = agent.get("license_url")
+    if not url:
+        return []
+
+    # GET rather than HEAD: some sites return 404 on HEAD but 200 on GET.
+    if not url_exists(url, method="GET", accepted_statuses=(200,)):
+        return [f"License URL did not return 200: {url}"]
+    return []
 
 
 def validate_distribution_urls(distribution: dict) -> list[str]:
@@ -626,6 +644,13 @@ def process_entry(
             return None, [f"{entry_dir.name} distribution URL validation failed:"] + [
                 f"  - {e}" for e in url_errors
             ]
+
+    # Validate license URL
+    license_errors = validate_license_url(entry)
+    if license_errors:
+        return None, [f"{entry_dir.name} license URL validation failed:"] + [
+            f"  - {e}" for e in license_errors
+        ]
 
     # Validate icon (required)
     icon_path = entry_dir / "icon.svg"
