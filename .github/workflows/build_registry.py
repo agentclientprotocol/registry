@@ -6,6 +6,7 @@ import copy
 import ipaddress
 import json
 import os
+import random
 import re
 import socket
 import sys
@@ -109,11 +110,17 @@ def is_public_https_url(url: str, retry_dns_errors: bool = False) -> bool:
     return bool(addresses)
 
 
+def retry_delay(attempt: int) -> float:
+    """Exponential backoff with jitter, so retries of many URLs do not fire in lockstep."""
+    return 2**attempt + random.uniform(0, 1)
+
+
 def url_exists(
     url: str,
     method: str = "HEAD",
     retries: int = 3,
     redirects_remaining: int = MAX_URL_REDIRECTS,
+    accepted_statuses: tuple[int, ...] = (200, 301, 302),
 ) -> bool:
     """Check if a URL exists using HEAD or GET request with retries."""
     import time
@@ -125,10 +132,10 @@ def url_exists(
             req = urllib.request.Request(url, method=method)
             req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
             with URL_OPENER.open(req, timeout=15) as response:
-                return response.status in (200, 301, 302)
+                return response.status in accepted_statuses
         except UrlSafetyResolutionError:
             if attempt < retries - 1:
-                time.sleep(2**attempt)
+                time.sleep(retry_delay(attempt))
                 continue
             return False
         except urllib.error.HTTPError as e:
@@ -145,6 +152,7 @@ def url_exists(
                     method=next_method,
                     retries=retries,
                     redirects_remaining=redirects_remaining - 1,
+                    accepted_statuses=accepted_statuses,
                 )
             # Some servers don't support HEAD, try GET
             if method == "HEAD" and e.code in (403, 405):
@@ -153,14 +161,15 @@ def url_exists(
                     method="GET",
                     retries=retries - attempt,
                     redirects_remaining=redirects_remaining,
+                    accepted_statuses=accepted_statuses,
                 )
             if attempt < retries - 1 and e.code in (429, 500, 502, 503, 504):
-                time.sleep(2**attempt)
+                time.sleep(retry_delay(attempt))
                 continue
             return False
         except (urllib.error.URLError, TimeoutError, OSError):
             if attempt < retries - 1:
-                time.sleep(2**attempt)
+                time.sleep(retry_delay(attempt))
                 continue
             return False
     return False
@@ -229,6 +238,28 @@ def validate_distribution_versions(agent_version: str, distribution: dict) -> li
                 )
 
     return errors
+
+
+LICENSE_URL_RETRIES = 5
+# A license page down for minutes outlasts the backoff, so failures get a second pass.
+LICENSE_URL_RECHECK_DELAY_SECONDS = 300
+# This many failures in a row means the runner's network is down, not the agents' sites.
+LICENSE_URL_MAX_CONSECUTIVE_FAILURES = 10
+
+
+def validate_license_url(agent: dict) -> list[str]:
+    """Validate that the license URL (if present) returns HTTP 200."""
+    if SKIP_URL_VALIDATION:
+        return []
+
+    url = agent.get("license_url")
+    if not url:
+        return []
+
+    # GET rather than HEAD: some sites return 404 on HEAD but 200 on GET.
+    if not url_exists(url, method="GET", retries=LICENSE_URL_RETRIES, accepted_statuses=(200,)):
+        return [f"License URL did not return 200: {url}"]
+    return []
 
 
 def validate_distribution_urls(distribution: dict) -> list[str]:
@@ -641,6 +672,68 @@ def process_entry(
     return entry, []
 
 
+def check_license_urls(
+    registry_dir: Path | None = None,
+    recheck_delay: float = LICENSE_URL_RECHECK_DELAY_SECONDS,
+) -> None:
+    """Check that every agent's license_url returns HTTP 200; exit 1 if any does not.
+
+    Runs on a schedule rather than in build_registry, so a third-party license
+    page going down does not block unrelated PRs or version updates. A URL fails
+    only if it also fails the recheck after `recheck_delay` seconds.
+    """
+    import time
+
+    if registry_dir is None:
+        registry_dir = Path(__file__).parent.parent.parent
+
+    agents = {}
+    for entry_dir in sorted(registry_dir.iterdir()):
+        if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
+            continue
+        agent_json_path = entry_dir / "agent.json"
+        if not agent_json_path.exists():
+            continue
+        with open(agent_json_path) as f:
+            agents[entry_dir.name] = json.load(f)
+
+    # The breaker runs on the first pass only: the recheck probes nothing but
+    # earlier failures, so failures in a row there say nothing about the network.
+    def failing(names: list[str], breaker: bool) -> dict[str, list[str]]:
+        failures = {}
+        consecutive = 0
+        for name in names:
+            errors = validate_license_url(agents[name])
+            if not errors:
+                consecutive = 0
+                continue
+            failures[name] = errors
+            consecutive += 1
+            if breaker and consecutive >= LICENSE_URL_MAX_CONSECUTIVE_FAILURES:
+                print(
+                    f"Error: {consecutive} license URLs failed in a row (last: {name}); "
+                    "the runner's network is likely down, aborting"
+                )
+                sys.exit(1)
+        return failures
+
+    failures = failing(list(agents), breaker=True)
+    if failures:
+        print(
+            f"{len(failures)} license URL(s) failed, rechecking in {recheck_delay:g}s: "
+            + ", ".join(failures)
+        )
+        time.sleep(recheck_delay)
+        failures = failing(list(failures), breaker=False)
+
+    for name, errors in failures.items():
+        for error in errors:
+            print(f"Error: {name}: {error}")
+    if failures:
+        sys.exit(1)
+    print("All license URLs returned 200")
+
+
 def build_registry(
     dry_run: bool = False,
     registry_dir: Path | None = None,
@@ -851,6 +944,14 @@ if __name__ == "__main__":
         type=str,
         help="Comma-separated agent IDs to validate (implies --dry-run)",
     )
+    parser.add_argument(
+        "--check-license-urls",
+        action="store_true",
+        help="Only check that every license_url returns HTTP 200",
+    )
     args = parser.parse_args()
+    if args.check_license_urls:
+        check_license_urls()
+        sys.exit(0)
     agent_ids = {a.strip() for a in args.agents.split(",") if a.strip()} if args.agents else None
     build_registry(dry_run=args.dry_run, agent_ids=agent_ids)

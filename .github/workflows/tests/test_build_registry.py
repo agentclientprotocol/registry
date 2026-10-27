@@ -3,6 +3,7 @@
 import json
 import shutil
 import tempfile
+import urllib.error
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -11,10 +12,12 @@ import pytest
 from build_registry import (
     HAS_JSONSCHEMA,
     build_registry,
+    check_license_urls,
     is_public_https_url,
     url_exists,
     validate_icon,
     validate_icon_monochrome,
+    validate_license_url,
     validate_preview,
 )
 from registry_utils import semver_sort_key
@@ -87,6 +90,119 @@ class TestUrlSafety:
 
         assert url_exists("https://example.com/archive.tar.gz")
         assert calls == 2
+
+
+class TestValidateLicenseUrl:
+    URL = "https://example.com/LICENSE"
+
+    @staticmethod
+    def _public_dns(monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("93.184.216.34"),
+        )
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
+
+    def test_200_response_passes(self, monkeypatch):
+        """A license URL answering 200 produces no errors."""
+        self._public_dns(monkeypatch)
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: StubResponse())
+
+        assert validate_license_url({"license_url": self.URL}) == []
+
+    def test_404_response_fails(self, monkeypatch):
+        """A 404 license URL yields one error mentioning the URL."""
+        self._public_dns(monkeypatch)
+
+        def fake_open(req, **kwargs):
+            raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {}, None)
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        errors = validate_license_url({"license_url": self.URL})
+
+        assert len(errors) == 1
+        assert self.URL in errors[0]
+
+    def test_redirect_is_followed_to_200(self, monkeypatch):
+        """A 301 to another https URL that returns 200 passes."""
+        self._public_dns(monkeypatch)
+        target = "https://example.org/license"
+        seen = []
+
+        def fake_open(req, **kwargs):
+            seen.append(req.full_url)
+            if req.full_url == self.URL:
+                raise urllib.error.HTTPError(req.full_url, 301, "Moved", {"Location": target}, None)
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert seen == [self.URL, target]
+
+    def test_missing_license_url_skipped(self, monkeypatch):
+        """An agent without license_url is exempt and makes no request."""
+        self._public_dns(monkeypatch)
+        calls = []
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: calls.append(a))
+
+        assert validate_license_url({"id": "dimcode"}) == []
+        assert calls == []
+
+    def test_skip_url_validation(self, monkeypatch):
+        """SKIP_URL_VALIDATION disables the check and makes no request."""
+        self._public_dns(monkeypatch)
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", True)
+        calls = []
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: calls.append(a))
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert calls == []
+
+    def test_uses_get_request(self, monkeypatch):
+        """The license check issues a GET, not a HEAD."""
+        self._public_dns(monkeypatch)
+        methods = []
+
+        def fake_open(req, **kwargs):
+            methods.append(req.get_method())
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        validate_license_url({"license_url": self.URL})
+
+        assert methods == ["GET"]
+
+    def test_retries_five_times_on_503(self, monkeypatch):
+        """A license URL answering 503 four times and then 200 passes on the fifth try."""
+        self._public_dns(monkeypatch)
+        calls = []
+
+        def fake_open(req, **kwargs):
+            calls.append(req.full_url)
+            if len(calls) < 5:
+                raise urllib.error.HTTPError(req.full_url, 503, "Unavailable", {}, None)
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert len(calls) == 5
+
+    def test_url_exists_default_still_accepts_302(self, monkeypatch):
+        """url_exists with default statuses still accepts a 302 response."""
+        self._public_dns(monkeypatch)
+
+        class Redirect302(StubResponse):
+            status = 302
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: Redirect302())
+
+        assert url_exists(self.URL)
+        assert not url_exists(self.URL, accepted_statuses=(200,))
 
 
 # --- validate_icon_monochrome ---
@@ -728,3 +844,126 @@ class TestScopedValidation:
         with pytest.raises(SystemExit) as excinfo:
             build_registry(registry_dir=tmp_path, agent_ids={"agent-z"})
         assert excinfo.value.code == 1
+
+
+class TestCheckLicenseUrls:
+    @staticmethod
+    def _probe(monkeypatch, broken: set[str], recovers: set[str] = frozenset()) -> list[str]:
+        """Stub url_exists; URLs in `recovers` fail only on their first probe."""
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
+        probed: list[str] = []
+
+        def fake_url_exists(url, **kwargs):
+            probed.append(url)
+            if url in recovers:
+                return probed.count(url) > 1
+            return url not in broken
+
+        monkeypatch.setattr("build_registry.url_exists", fake_url_exists)
+        return probed
+
+    def test_all_license_urls_ok(self, tmp_path, monkeypatch, capsys):
+        """Every agent's license URL is probed, and the check passes when all return 200."""
+        probed = self._probe(monkeypatch, broken=set())
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert probed == [
+            "https://example.com/agent-a/license",
+            "https://example.com/agent-b/license",
+        ]
+        assert "All license URLs returned 200" in capsys.readouterr().out
+
+    def test_broken_license_url_fails(self, tmp_path, monkeypatch, capsys):
+        """A URL that also fails the recheck exits 1 and names only that agent."""
+        probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+
+        with pytest.raises(SystemExit) as excinfo:
+            check_license_urls(registry_dir=tmp_path)
+
+        assert excinfo.value.code == 1
+        assert probed == [
+            "https://example.com/agent-a/license",
+            "https://example.com/agent-b/license",
+            "https://example.com/agent-a/license",
+        ]
+        errors = [line for line in capsys.readouterr().out.splitlines() if line.startswith("Error")]
+        assert errors == [
+            "Error: agent-a: License URL did not return 200: https://example.com/agent-a/license"
+        ]
+
+    def test_recheck_waits_then_passes_recovered_url(self, tmp_path, monkeypatch):
+        """A URL down on the first pass but up on the recheck passes, after the recheck delay."""
+        self._probe(monkeypatch, broken=set(), recovers={"https://example.com/agent-a/license"})
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        check_license_urls(registry_dir=tmp_path, recheck_delay=300)
+
+        assert sleeps == [300]
+
+    def test_no_recheck_when_all_pass(self, tmp_path, monkeypatch):
+        """With no failures the check does not wait for a recheck."""
+        self._probe(monkeypatch, broken=set())
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert sleeps == []
+
+    def test_circuit_breaker_aborts_after_consecutive_failures(self, tmp_path, monkeypatch, capsys):
+        """Ten failures in a row abort the run as a network problem, without probing the rest."""
+        ids = [f"agent-{i:02}" for i in range(12)]
+        probed = self._probe(monkeypatch, broken={f"https://example.com/{i}/license" for i in ids})
+        write_registry(tmp_path, [agent_manifest(i, "1.0.0") for i in ids])
+
+        with pytest.raises(SystemExit) as excinfo:
+            check_license_urls(registry_dir=tmp_path)
+
+        assert excinfo.value.code == 1
+        assert len(probed) == 10
+        assert "network is likely down" in capsys.readouterr().out
+
+    def test_circuit_breaker_resets_on_success(self, tmp_path, monkeypatch, capsys):
+        """A passing URL between failures resets the count, so the breaker does not trip."""
+        ids = [f"agent-{i:02}" for i in range(12)]
+        broken = {f"https://example.com/{i}/license" for i in ids if i != "agent-05"}
+        self._probe(monkeypatch, broken=broken)
+        write_registry(tmp_path, [agent_manifest(i, "1.0.0") for i in ids])
+
+        with pytest.raises(SystemExit):
+            check_license_urls(registry_dir=tmp_path)
+
+        out = capsys.readouterr().out
+        assert "network is likely down" not in out
+        assert out.count("Error: agent-") == 11
+
+    def test_agent_without_license_url_skipped(self, tmp_path, monkeypatch):
+        """An agent without license_url is not probed."""
+        probed = self._probe(monkeypatch, broken=set())
+        manifest = agent_manifest("dimcode", "1.0.0")
+        del manifest["license_url"]
+        write_registry(tmp_path, [manifest])
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert probed == []
+
+    def test_build_does_not_probe_license_url(self, tmp_path, monkeypatch):
+        """build_registry leaves license URLs to the scheduled check."""
+        probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+
+        assert "https://example.com/agent-a/license" not in probed
