@@ -1,5 +1,7 @@
 # ACP Registry
 
+[![Check License URLs](https://github.com/agentclientprotocol/registry/actions/workflows/check-license-urls.yml/badge.svg)](https://github.com/agentclientprotocol/registry/actions/workflows/check-license-urls.yml)
+
 https://agentclientprotocol.com/registry
 
 Registry of agents implementing the [Agent Client Protocol, ACP](https://github.com/agentclientprotocol/agent-client-protocol).
@@ -23,7 +25,10 @@ JetBrains IDEs use a dedicated index, plus an opt-in preview channel that serves
 ```
 https://cdn.agentclientprotocol.com/registry/v1/latest/registry-for-jetbrains.json
 https://cdn.agentclientprotocol.com/registry/v1/latest/registry-for-jetbrains-preview.json
+https://cdn.agentclientprotocol.com/registry/v1/latest/registry-for-jetbrains-air.json
 ```
+
+`registry-for-jetbrains-air.json` is intended for JetBrains Air and excludes Gemini CLI.
 
 The preview index is a complete, drop-in replacement for the JetBrains index — agents without a preview channel appear at their stable version. Preview distributions are **not** verified; see [FORMAT.md](FORMAT.md#preview-channel).
 
