@@ -32,7 +32,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from verify_agents import build_agent_command, load_registry, prepare_binary
+from registry_utils import subprocess_group_kwargs, terminate_process_group
+from verify_agents import (
+    build_agent_command,
+    build_agent_process_env,
+    load_registry,
+    prepare_binary,
+)
 
 DEFAULT_INIT_TIMEOUT = 120.0
 DEFAULT_RPC_TIMEOUT = 5.0
@@ -491,14 +497,7 @@ def collect_stderr_tail(proc: subprocess.Popen, max_chars: int = 1200) -> str | 
 
 def stop_process(proc: subprocess.Popen) -> None:
     """Terminate process gracefully, then force kill if needed."""
-    if proc.poll() is not None:
-        return
-    proc.terminate()
-    try:
-        proc.wait(timeout=2)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        proc.wait(timeout=2)
+    terminate_process_group(proc)
 
 
 def probe_params_for_method(
@@ -904,23 +903,20 @@ def probe_agent(
 
     home_dir = sandbox / "home"
     home_dir.mkdir(parents=True, exist_ok=True)
-    full_env = {
-        "HOME": str(home_dir),
-        "TERM": "dumb",
-        **env,
-    }
+    full_env = build_agent_process_env(env, home_dir, sandbox / "tmp")
 
     proc: subprocess.Popen | None = None
     try:
         proc = subprocess.Popen(
             cmd,
             cwd=cwd,
-            env={**dict(os.environ), **full_env},
+            env=full_env,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             bufsize=1,
+            **subprocess_group_kwargs(),
         )
 
         request_id = 1

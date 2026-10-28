@@ -1,84 +1,21 @@
 """Tests for update_versions.py."""
 
-import urllib.error
+import json
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from update_versions import check_agent_version, is_prerelease, make_request
-
-
-class TestMakeRequestServerErrors:
-    """Test that make_request handles server errors (5xx) gracefully."""
-
-    @patch("update_versions.urllib.request.urlopen")
-    def test_502_returns_none(self, mock_urlopen):
-        mock_urlopen.side_effect = urllib.error.HTTPError(
-            url="https://api.github.com/repos/owner/repo/releases/latest",
-            code=502,
-            msg="Bad Gateway",
-            hdrs={},
-            fp=None,
-        )
-        assert make_request("https://api.github.com/repos/owner/repo/releases/latest") is None
-
-    @patch("update_versions.urllib.request.urlopen")
-    def test_503_returns_none(self, mock_urlopen):
-        mock_urlopen.side_effect = urllib.error.HTTPError(
-            url="https://api.github.com/repos/owner/repo/releases/latest",
-            code=503,
-            msg="Service Unavailable",
-            hdrs={},
-            fp=None,
-        )
-        assert make_request("https://api.github.com/repos/owner/repo/releases/latest") is None
-
-    @patch("update_versions.urllib.request.urlopen")
-    def test_500_returns_none(self, mock_urlopen):
-        mock_urlopen.side_effect = urllib.error.HTTPError(
-            url="https://example.com/api",
-            code=500,
-            msg="Internal Server Error",
-            hdrs={},
-            fp=None,
-        )
-        assert make_request("https://example.com/api") is None
-
-    @patch("update_versions.urllib.request.urlopen")
-    def test_404_returns_none(self, mock_urlopen):
-        mock_urlopen.side_effect = urllib.error.HTTPError(
-            url="https://example.com/api",
-            code=404,
-            msg="Not Found",
-            hdrs={},
-            fp=None,
-        )
-        assert make_request("https://example.com/api") is None
-
-    @patch("update_versions.urllib.request.urlopen")
-    def test_403_raises(self, mock_urlopen):
-        mock_urlopen.side_effect = urllib.error.HTTPError(
-            url="https://example.com/api",
-            code=403,
-            msg="Forbidden",
-            hdrs={},
-            fp=None,
-        )
-        with pytest.raises(urllib.error.HTTPError, match="403"):
-            make_request("https://example.com/api")
-
-    @patch("update_versions.urllib.request.urlopen")
-    def test_429_raises(self, mock_urlopen):
-        mock_urlopen.side_effect = urllib.error.HTTPError(
-            url="https://example.com/api",
-            code=429,
-            msg="Too Many Requests",
-            hdrs={},
-            fp=None,
-        )
-        with pytest.raises(urllib.error.HTTPError, match="429"):
-            make_request("https://example.com/api")
+from update_versions import (
+    VersionUpdate,
+    apply_update,
+    check_agent_preview_version,
+    check_agent_version,
+    get_highest_preview_version,
+    get_npm_versions,
+    is_prerelease,
+    main,
+)
 
 
 class TestPrereleaseDetection:
@@ -266,3 +203,400 @@ class TestCheckAgentVersionMultiSourceResolution:
         assert update is None
         assert error is not None
         assert error.error == "Version mismatch across distributions: binary=7.2.1, npx=7.2.4"
+
+
+class TestApplyUpdateSha256Refresh:
+    """apply_update refreshes sha256 fields when the archive URL changes."""
+
+    def _write_agent(self, tmp_path: Path, sha256: str | None) -> Path:
+        target: dict = {
+            "archive": "https://github.com/owner/repo/releases/download/v1.0.0/agent-linux.tar.gz",
+            "cmd": "./agent",
+        }
+        if sha256 is not None:
+            target["sha256"] = sha256
+        agent_data = {
+            "id": "demo",
+            "name": "Demo",
+            "version": "1.0.0",
+            "description": "",
+            "repository": "https://github.com/owner/repo",
+            "distribution": {"binary": {"linux-x86_64": target}},
+        }
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(agent_data))
+        return agent_path
+
+    def _update(self, agent_path: Path) -> VersionUpdate:
+        return VersionUpdate(
+            agent_id="demo",
+            agent_path=agent_path,
+            current_version="1.0.0",
+            latest_version="2.0.0",
+            distribution_type="binary",
+            source_url="https://github.com/owner/repo",
+            repository="https://github.com/owner/repo",
+            channel="stable",
+        )
+
+    @patch("update_versions.get_github_release_digests")
+    def test_refreshes_sha256_from_asset_digest(self, mock_digests, tmp_path: Path):
+        new_digest = "a" * 64
+        mock_digests.return_value = {"agent-linux.tar.gz": new_digest}
+
+        agent_path = self._write_agent(tmp_path, sha256="0" * 64)
+
+        assert apply_update(self._update(agent_path)) is True
+
+        updated = json.loads(agent_path.read_text())
+        target = updated["distribution"]["binary"]["linux-x86_64"]
+        assert target["sha256"] == new_digest
+        assert "v2.0.0" in target["archive"]
+        mock_digests.assert_called_once_with("https://github.com/owner/repo", "2.0.0")
+
+    @patch("update_versions.get_github_release_digests")
+    def test_adds_sha256_when_absent_and_digest_available(self, mock_digests, tmp_path: Path):
+        new_digest = "a" * 64
+        mock_digests.return_value = {"agent-linux.tar.gz": new_digest}
+
+        agent_path = self._write_agent(tmp_path, sha256=None)
+
+        assert apply_update(self._update(agent_path)) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["distribution"]["binary"]["linux-x86_64"]["sha256"] == new_digest
+
+    @patch("update_versions.get_github_release_digests", return_value={})
+    def test_warns_and_leaves_target_untouched_when_no_digest(
+        self, _mock_digests, tmp_path: Path, capsys
+    ):
+        agent_path = self._write_agent(tmp_path, sha256=None)
+
+        assert apply_update(self._update(agent_path)) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert "sha256" not in updated["distribution"]["binary"]["linux-x86_64"]
+        assert "no release digest for demo" in capsys.readouterr().err
+
+    @patch("update_versions.get_github_release_digests")
+    def test_skips_digest_lookup_for_non_github_repo(self, mock_digests, tmp_path: Path, capsys):
+        agent_path = self._write_agent(tmp_path, sha256=None)
+        update = self._update(agent_path)._replace(
+            repository="https://cursor.com/docs/cli/acp",
+        )
+
+        assert apply_update(update) is True
+
+        mock_digests.assert_not_called()
+        assert "no release digest" not in capsys.readouterr().err
+
+
+# --- preview channel ---
+
+
+def preview_agent_data(version: str, preview_version: str | None) -> dict:
+    agent_data: dict = {
+        "id": "codex-acp",
+        "name": "Codex",
+        "version": version,
+        "description": "",
+        "repository": "https://github.com/agentclientprotocol/codex-acp",
+        "distribution": {"npx": {"package": f"@acp/codex-acp@{version}"}},
+    }
+    if preview_version is not None:
+        agent_data["preview"] = {
+            "version": preview_version,
+            "distribution": {"npx": {"package": f"@acp/codex-acp@{preview_version}"}},
+        }
+    return agent_data
+
+
+class TestGetHighestPreviewVersion:
+    def test_picks_highest_preview_by_semver(self):
+        versions = {"1.8.0", "1.9.0-preview.2", "1.9.0-preview.10", "1.10.0"}
+
+        assert get_highest_preview_version(versions) == "1.9.0-preview.10"
+
+    def test_none_when_no_previews_published(self):
+        assert get_highest_preview_version({"1.8.0", "1.9.0"}) is None
+
+    def test_ignores_other_prerelease_shapes(self):
+        assert get_highest_preview_version({"1.9.0-rc.1", "0.1.17rc0"}) is None
+
+
+class TestCheckAgentPreviewVersion:
+    @patch("update_versions.get_npm_versions")
+    def test_bumps_preview_and_leaves_stable_alone(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1", "1.9.0-preview.2"}
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
+
+        stable_update, stable_error = check_agent_version(Path("codex-acp/agent.json"), agent_data)
+        preview_update, preview_error = check_agent_preview_version(
+            Path("codex-acp/agent.json"), agent_data
+        )
+
+        assert (stable_update, stable_error) == (None, None)
+        assert preview_error is None
+        assert preview_update is not None
+        assert preview_update.channel == "preview"
+        assert preview_update.current_version == "1.9.0-preview.1"
+        assert preview_update.latest_version == "1.9.0-preview.2"
+
+    @patch("update_versions.get_npm_versions")
+    def test_stable_release_overtakes_the_preview_line(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.9.1", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.9.1", "1.9.0-preview.1")
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "1.9.1"
+
+    @patch("update_versions.get_npm_versions")
+    def test_next_preview_line_outranks_stable(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.9.1", "1.10.0-preview.1"}
+        agent_data = preview_agent_data("1.9.1", "1.9.1")
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "1.10.0-preview.1"
+
+    @patch("update_versions.get_npm_versions")
+    def test_no_update_when_already_at_the_candidate(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.2"}
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.2")
+
+        assert check_agent_preview_version(Path("codex-acp/agent.json"), agent_data) == (None, None)
+
+    @patch("update_versions.get_npm_versions")
+    def test_no_preview_block_yields_no_preview_update(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.2"}
+        agent_data = preview_agent_data("1.8.0", None)
+
+        assert check_agent_preview_version(Path("codex-acp/agent.json"), agent_data) == (None, None)
+
+    @patch("update_versions.get_npm_versions")
+    def test_no_ordering_error_when_preview_is_behind_stable(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.9.1", "1.9.0-preview.1")
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is None
+
+    @patch("update_versions.get_github_release_versions")
+    @patch("update_versions.get_npm_versions")
+    def test_only_preview_declared_distributions_participate(
+        self, mock_npm_versions, mock_gh_release_versions
+    ):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.8.0", "1.8.0")
+        agent_data["distribution"]["binary"] = {
+            "darwin-aarch64": {
+                "archive": "https://github.com/owner/repo/releases/download/v1.8.0/a.tar.gz",
+                "cmd": "./a",
+            }
+        }
+
+        update, error = check_agent_preview_version(Path("codex-acp/agent.json"), agent_data)
+
+        assert error is None
+        assert update is not None
+        assert update.latest_version == "1.9.0-preview.1"
+        assert update.distribution_type == "npx"
+        mock_gh_release_versions.assert_not_called()
+
+    @patch("update_versions.get_npm_versions")
+    def test_one_fetch_is_shared_across_channels(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.8.0", "1.8.0")
+        cache: dict = {}
+
+        check_agent_version(Path("codex-acp/agent.json"), agent_data, cache)
+        check_agent_preview_version(Path("codex-acp/agent.json"), agent_data, cache)
+
+        mock_npm_versions.assert_called_once_with("@acp/codex-acp")
+
+
+class TestApplyUpdateChannels:
+    def _write(self, tmp_path: Path) -> Path:
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(preview_agent_data("1.8.0", "1.9.0-preview.1"), indent=2))
+        return agent_path
+
+    def _update(self, agent_path: Path, channel: str, latest: str) -> VersionUpdate:
+        return VersionUpdate(
+            agent_id="codex-acp",
+            agent_path=agent_path,
+            current_version="1.9.0-preview.1" if channel == "preview" else "1.8.0",
+            latest_version=latest,
+            distribution_type="npx",
+            source_url="https://registry.npmjs.org/@acp/codex-acp",
+            repository="https://github.com/agentclientprotocol/codex-acp",
+            channel=channel,
+        )
+
+    def test_preview_update_touches_only_the_preview_block(self, tmp_path: Path):
+        agent_path = self._write(tmp_path)
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.0-preview.2")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["version"] == "1.8.0"
+        assert updated["distribution"]["npx"]["package"] == "@acp/codex-acp@1.8.0"
+        assert updated["preview"]["version"] == "1.9.0-preview.2"
+        preview_dist = updated["preview"]["distribution"]
+        assert preview_dist["npx"]["package"] == "@acp/codex-acp@1.9.0-preview.2"
+
+    def test_preview_update_can_pin_a_plain_release(self, tmp_path: Path):
+        agent_path = self._write(tmp_path)
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.1")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["preview"]["version"] == "1.9.1"
+        assert updated["preview"]["distribution"]["npx"]["package"] == "@acp/codex-acp@1.9.1"
+
+    def test_stable_update_leaves_the_preview_block_untouched(self, tmp_path: Path):
+        agent_path = self._write(tmp_path)
+        before = json.loads(agent_path.read_text())["preview"]
+
+        assert apply_update(self._update(agent_path, "stable", "1.8.1")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["version"] == "1.8.1"
+        assert updated["distribution"]["npx"]["package"] == "@acp/codex-acp@1.8.1"
+        assert updated["preview"] == before
+
+    def test_preview_update_fails_without_a_preview_block(self, tmp_path: Path, capsys):
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(preview_agent_data("1.8.0", None), indent=2))
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.0-preview.2")) is False
+        assert "no 'preview' block" in capsys.readouterr().err
+
+    def test_uvx_preview_spec_is_rewritten(self, tmp_path: Path):
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
+        agent_data["preview"]["distribution"] = {"uvx": {"package": "codex-acp==1.9.0-preview.1"}}
+        agent_path = tmp_path / "agent.json"
+        agent_path.write_text(json.dumps(agent_data, indent=2))
+
+        assert apply_update(self._update(agent_path, "preview", "1.9.0-preview.2")) is True
+
+        updated = json.loads(agent_path.read_text())
+        assert updated["preview"]["distribution"]["uvx"]["package"] == "codex-acp==1.9.0-preview.2"
+
+
+class TestNpmDistTagsFallback:
+    """A preview published without `--tag preview` must not surface as stable."""
+
+    @patch("update_versions.make_request")
+    def test_prerelease_dist_tag_is_not_returned(self, mock_request):
+        mock_request.return_value = {"dist-tags": {"latest": "1.9.0-preview.1"}}
+
+        assert get_npm_versions("@acp/codex-acp") is None
+
+    @patch("update_versions.make_request")
+    def test_stable_dist_tag_is_returned(self, mock_request):
+        mock_request.return_value = {"dist-tags": {"latest": "1.9.0"}}
+
+        assert get_npm_versions("@acp/codex-acp") == {"1.9.0"}
+
+    @patch("update_versions.make_request")
+    def test_versions_map_includes_previews(self, mock_request):
+        mock_request.return_value = {
+            "versions": {"1.8.0": {}, "1.9.0-preview.1": {}},
+            "dist-tags": {"latest": "1.8.0"},
+        }
+
+        assert get_npm_versions("@acp/codex-acp") == {"1.8.0", "1.9.0-preview.1"}
+
+    @patch("update_versions.get_npm_versions")
+    def test_stable_channel_ignores_published_previews(self, mock_npm_versions):
+        mock_npm_versions.return_value = {"1.8.0", "1.9.0-preview.1"}
+        agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
+
+        assert check_agent_version(Path("codex-acp/agent.json"), agent_data) == (None, None)
+
+
+class TestPerAgentFaultIsolation:
+    """One agent's check or apply failure must not block other agents' updates."""
+
+    @staticmethod
+    def _write_agents(tmp_path: Path, *agent_ids: str) -> list[tuple[Path, dict]]:
+        agents = []
+        for agent_id in agent_ids:
+            agent_data = {
+                "id": agent_id,
+                "version": "1.0.0",
+                "distribution": {"npx": {"package": f"@acp/{agent_id}@1.0.0"}},
+            }
+            agent_path = tmp_path / agent_id / "agent.json"
+            agent_path.parent.mkdir()
+            agent_path.write_text(json.dumps(agent_data))
+            agents.append((agent_path, agent_data))
+        return agents
+
+    @staticmethod
+    def _run_main(capsys, *args: str) -> tuple[int, dict]:
+        argv = ["update_versions.py", "--json", "--channels", "stable", *args]
+        with patch("sys.argv", argv), pytest.raises(SystemExit) as excinfo:
+            main()
+        return excinfo.value.code, json.loads(capsys.readouterr().out)
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.find_all_agents")
+    def test_unexpected_check_exception_is_isolated(
+        self, mock_find_agents, mock_npm_versions, tmp_path: Path, capsys
+    ):
+        mock_find_agents.return_value = self._write_agents(tmp_path, "broken", "healthy")
+
+        def npm_versions(package_name: str) -> set[str]:
+            if package_name == "@acp/broken":
+                raise RuntimeError("HTTP 403")
+            return {"1.0.0", "1.1.0"}
+
+        mock_npm_versions.side_effect = npm_versions
+
+        code, result = self._run_main(capsys, "--apply")
+
+        assert code == 1
+        assert [u["agent_id"] for u in result["updates"]] == ["healthy"]
+        assert [e["agent_id"] for e in result["errors"]] == ["broken"]
+        assert json.loads((tmp_path / "healthy" / "agent.json").read_text())["version"] == "1.1.0"
+
+    @patch("update_versions.apply_update")
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.find_all_agents")
+    def test_failed_apply_is_excluded_from_applied_updates(
+        self, mock_find_agents, mock_npm_versions, mock_apply, tmp_path: Path, capsys
+    ):
+        mock_find_agents.return_value = self._write_agents(tmp_path, "broken", "healthy")
+        mock_npm_versions.return_value = {"1.0.0", "1.1.0"}
+        mock_apply.side_effect = lambda update: update.agent_id == "healthy"
+
+        code, result = self._run_main(capsys, "--apply")
+
+        assert code == 1
+        assert [u["agent_id"] for u in result["updates"]] == ["healthy"]
+        assert result["errors"] == [
+            {"agent_id": "broken", "error": "stable: failed to apply update"}
+        ]
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.find_all_agents")
+    def test_dry_run_reports_updates_despite_other_errors(
+        self, mock_find_agents, mock_npm_versions, tmp_path: Path, capsys
+    ):
+        mock_find_agents.return_value = self._write_agents(tmp_path, "broken", "healthy")
+        mock_npm_versions.side_effect = lambda name: None if name == "@acp/broken" else {"1.1.0"}
+
+        code, result = self._run_main(capsys)
+
+        assert code == 2
+        assert [u["agent_id"] for u in result["updates"]] == ["healthy"]
+        assert [e["agent_id"] for e in result["errors"]] == ["broken"]

@@ -24,6 +24,7 @@
      "website": "https://example.com/docs",
      "authors": ["Your Name <email@example.com>"],
      "license": "MIT",
+     "license_url": "https://github.com/your-org/your-repo/blob/main/LICENSE",
      "distribution": {
        // At least one distribution method required
      }
@@ -66,6 +67,7 @@ For standalone executables. At least one platform is required; providing builds 
     "binary": {
       "darwin-aarch64": {
         "archive": "https://github.com/.../darwin-arm64.tar.gz",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "cmd": "./your-binary",
         "args": ["acp"]
       },
@@ -132,7 +134,10 @@ Supported platforms: `darwin-aarch64`, `darwin-x86_64`, `linux-aarch64`, `linux-
 | `name`         | string | Display name                                   |
 | `version`      | string | Semantic version                               |
 | `description`  | string | Brief description                              |
+| `license_url`  | string | URL to the license text or terms of service     |
 | `distribution` | object | At least one distribution method               |
+
+DimCode (`id: dimcode`) is exempt from the `license_url` requirement.
 
 ## Optional Fields
 
@@ -187,6 +192,7 @@ Entries are validated against the [JSON Schema](agent.schema.json).
 
 - At least one distribution method required (`binary`, `npx`, or `uvx`)
 - Binary distributions require `archive` and `cmd` fields per platform
+- Binary distributions should pin the archive SHA-256 checksum with `sha256` field
 - Package distributions (`npx`, `uvx`) require `package` field
 
 **Platforms** (for binary):
