@@ -1,34 +1,48 @@
 {
   "id": "kiro",
-  "name": "Kiro",
-  "version": "2.2.0",
+  "name": "Kiro CLI",
+  "version": "2.35.1",
   "description": "The Kiro coding agent",
   "repository": "https://github.com/kirodotdev/Kiro",
+  "website": "https://kiro.dev/docs/cli/acp/",
   "authors": [
-    "amazon"
+    "Amazon"
   ],
   "license": "proprietary",
+  "license_url": "https://kiro.dev/license/",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/2.2.0/Kiro%20CLI.dmg",
-        "cmd": "./kiro-cli acp"
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.35.1/kirocli-universal-darwin.tar.gz",
+        "sha256": "fb0f92d6b6705a7e896b8f4bba233726c5b20f838bd1ff985ae7adb5fe2e861f",
+        "cmd": "./kirocli/bin/kiro-cli",
+        "args": [
+          "acp"
+        ]
       },
       "darwin-x86_64": {
-        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/2.2.0/Kiro%20CLI.dmg",
-        "cmd": "./kiro-cli acp"
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.35.1/kirocli-universal-darwin.tar.gz",
+        "sha256": "fb0f92d6b6705a7e896b8f4bba233726c5b20f838bd1ff985ae7adb5fe2e861f",
+        "cmd": "./kirocli/bin/kiro-cli",
+        "args": [
+          "acp"
+        ]
       },
       "linux-aarch64": {
-        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/2.2.0/kirocli-aarch64-linux.tar.gz",
-        "cmd": "./kiro-cli acp"
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.35.1/kirocli-aarch64-linux.tar.gz",
+        "sha256": "933d53ed2636c5035fb775e725f73987888e7b398a0bdb09a4b5f035b7e0bf40",
+        "cmd": "./kirocli/bin/kiro-cli",
+        "args": [
+          "acp"
+        ]
       },
       "linux-x86_64": {
-        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/2.2.0/kirocli-x86_64-linux.tar.gz",
-        "cmd": "./kiro-cli acp"
-      },
-      "windows-x86_64": {
-        "archive": "https://desktop-release.q.us-east-1.amazonaws.com/2.2.0/kiro-cli-x86_64-pc-windows-msvc.msi",
-        "cmd": "./kiro-cli acp"
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.35.1/kirocli-x86_64-linux.tar.gz",
+        "sha256": "b4ec8f61c466dbfb06b73972fa746f4f96bf19abe2d4307af3cd988bde751b56",
+        "cmd": "./kirocli/bin/kiro-cli",
+        "args": [
+          "acp"
+        ]
       }
     }
   }
