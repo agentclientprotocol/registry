@@ -10,7 +10,7 @@
   "license_url": "https://github.com/madhu-sv/garuda/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "@garuda-agent/garuda@0.16.1",
+      "package": "@garuda-agent/garuda@0.17.0",
       "args": ["acp"]
     }
   }
