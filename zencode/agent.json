@@ -1,7 +1,7 @@
 {
   "id": "zencode",
   "name": "ZenCODE",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Native-Swift coding agent: one binary with no Node runtime, sub-agents with per-task model bindings, any OpenAI-compatible endpoint or local DS4 inference.",
   "repository": "https://github.com/gerardogrisolini/ZenCODE",
   "website": "https://github.com/gerardogrisolini/ZenCODE/blob/main/Docs/why-zen.md",
@@ -11,20 +11,8 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/gerardogrisolini/ZenCODE/releases/download/v3.0.1/zen-3.0.1-macos-arm64.tar.gz",
-        "sha256": "08e8f5155a9e5c786f6d4bab34bf6df118c4c21f4c2e6527259634e042463b5e",
-        "cmd": "./zen",
-        "args": ["--acp"]
-        },
-      "linux-aarch64": {
-        "archive": "https://github.com/gerardogrisolini/ZenCODE/releases/download/v3.0.1/zen-3.0.1-linux-arm64.tar.gz",
-        "sha256": "ead5e2cb7204ef46b9fc96381cd6b198d7ed26007302df0b4e00e5a6688a73ca",
-        "cmd": "./zen",
-        "args": ["--acp"]
-        },
-      "linux-x86_64": {
-        "archive": "https://github.com/gerardogrisolini/ZenCODE/releases/download/v3.0.1/zen-3.0.1-linux-x86_64.tar.gz",
-        "sha256": "ccae77d48cc06c5afa058d6a4320aae5564e0a66f9ff638cf5b862e10a6e133c",
+        "archive": "https://github.com/gerardogrisolini/ZenCODE/releases/download/v3.1.0/zen-3.1.0-macos-arm64.tar.gz",
+        "sha256": "aadb4cd3d6678f9e6023ae34328a338ddf85f624c400bbd298da609ad9cfc7b6",
         "cmd": "./zen",
         "args": ["--acp"]
       }
