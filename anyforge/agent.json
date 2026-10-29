@@ -1,0 +1,16 @@
+{
+  "id": "anyforge",
+  "name": "AnyForge",
+  "version": "0.9.2",
+  "description": "AnyForge's hosted Oracle for your programs, initiatives, crews and codebases",
+  "website": "https://anyforge.ai/docs?page=acp",
+  "authors": ["AnyForge"],
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+  "distribution": {
+    "npx": {
+      "package": "@anyforge/control@0.9.2",
+      "args": ["acp"]
+    }
+  }
+}
