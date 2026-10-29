@@ -809,21 +809,28 @@ def build_registry(
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp"}
 
-    def patch_agent_for_jetbrains(agent):
+    # Agents flagged as bundled in the Air and preview registries; only Air reads the preview one.
+    AIR_BUNDLED_IDS = {"claude-acp", "codex-acp", "junie", "github-copilot"}
+
+    def patch_agent_for_jetbrains(agent, bundled_ids):
         patched = copy.deepcopy(agent)
         if patched["id"] == "claude-acp":
             assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
             patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
-        if patched["id"] in JETBRAINS_BUNDLED_IDS:
+        if patched["id"] in bundled_ids:
             patched["bundled"] = True
         return patched
 
     jetbrains_agents = [
-        patch_agent_for_jetbrains(strip_preview(a))
+        patch_agent_for_jetbrains(strip_preview(a), JETBRAINS_BUNDLED_IDS)
         for a in agents
         if a["id"] not in JETBRAINS_EXCLUDE_IDS
     ]
-    air_agents = [a for a in jetbrains_agents if a["id"] not in AIR_EXCLUDE_IDS]
+    air_agents = [
+        patch_agent_for_jetbrains(strip_preview(a), AIR_BUNDLED_IDS)
+        for a in agents
+        if a["id"] not in JETBRAINS_EXCLUDE_IDS | AIR_EXCLUDE_IDS
+    ]
 
     # Preview registry: a complete, drop-in replacement for the JetBrains registry
     # where every previewed agent resolves to the highest of its two channels.
@@ -835,7 +842,7 @@ def build_registry(
         preview_entry = resolve_preview_entry(a)
         if preview_entry["version"] != a["version"]:
             distinct_preview_ids.append(a["id"])
-        jetbrains_preview_agents.append(patch_agent_for_jetbrains(preview_entry))
+        jetbrains_preview_agents.append(patch_agent_for_jetbrains(preview_entry, AIR_BUNDLED_IDS))
 
     def preview_summary() -> str:
         if not distinct_preview_ids:
