@@ -1,0 +1,65 @@
+{
+  "id": "moca",
+  "name": "Mo Coding Agent",
+  "version": "0.7.10",
+  "description": "Coding agent for the terminal in one static Go binary",
+  "repository": "https://github.com/adeotek/moca",
+  "website": "https://github.com/adeotek/moca",
+  "authors": [
+    "adeotek"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/adeotek/moca/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/adeotek/moca/releases/download/v0.7.10/moca-v0.7.10-darwin-arm64.tar.gz",
+        "sha256": "490c4f3baf668bf8019c933d4a9f90e9fc706b3daa40d9c305e439139f66074d",
+        "cmd": "./moca",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/adeotek/moca/releases/download/v0.7.10/moca-v0.7.10-darwin-amd64.tar.gz",
+        "sha256": "49c135a09f9df9fda84bd54c58ce81c3b4b2b009b9127250c769c2a0d224ab4d",
+        "cmd": "./moca",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/adeotek/moca/releases/download/v0.7.10/moca-v0.7.10-linux-arm64.tar.gz",
+        "sha256": "659f34282aff456d2d2240aefc1bfa461c6457a84b7ed5ec5dc9585f9fe11b9b",
+        "cmd": "./moca",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/adeotek/moca/releases/download/v0.7.10/moca-v0.7.10-linux-amd64.tar.gz",
+        "sha256": "9f983d46516f1792198518995fbf3c403f7ef5ad834851a0f953fb84c0de0a71",
+        "cmd": "./moca",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/adeotek/moca/releases/download/v0.7.10/moca-v0.7.10-windows-arm64.zip",
+        "sha256": "c8ccd8a2fdc4a740b6c2e7076821d9b316b5b0119f01fc070298cd8893bb18d5",
+        "cmd": "moca.exe",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/adeotek/moca/releases/download/v0.7.10/moca-v0.7.10-windows-amd64.zip",
+        "sha256": "5cd503a0a28a6c077dab969887187e9a44bb34fde478d35d136d531692e53027",
+        "cmd": "moca.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
