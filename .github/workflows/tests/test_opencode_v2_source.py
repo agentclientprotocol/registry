@@ -116,7 +116,8 @@ def test_v1_keeps_github_release_source(tmp_path):
     with (
         patch.object(opencode_v2, "make_request") as v2_feed,
         patch(
-            "update_versions.get_github_release_versions", return_value={v1["version"]}
+            "custom_agent_sources.opencode.get_github_release_versions",
+            return_value={v1["version"]},
         ) as github,
     ):
         update, error = check_agent_version(entry_path, v1)
