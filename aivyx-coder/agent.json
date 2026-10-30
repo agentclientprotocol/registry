@@ -1,0 +1,25 @@
+{
+  "id": "aivyx-coder",
+  "name": "aivyx-coder",
+  "version": "0.6.4",
+  "description": "A terminal coding agent for local LLMs only (Lemonade, Ollama, llama.cpp, vLLM) -- never calls a cloud API.",
+  "repository": "https://github.com/Aivyx-Agent/aivyx-coder",
+  "license": "BUSL-1.1",
+  "license_url": "https://github.com/Aivyx-Agent/aivyx-coder/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Aivyx-Agent/aivyx-coder/releases/download/v0.6.4/aivyx-coder-v0.6.4-darwin-aarch64.tar.gz",
+        "sha256": "bf1ca16c2ab86ea85ec3494da9d8d1eb1f0fbd5c763d50724691532252a633ce",
+        "cmd": "./aivyx-coder-v0.6.4-darwin-aarch64/aivyx-coder",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Aivyx-Agent/aivyx-coder/releases/download/v0.6.4/aivyx-coder-v0.6.4-x86_64-linux-musl.tar.gz",
+        "sha256": "304d00583892239157c9505756526c58eb6fb2d8a234847335784c5fe6573b03",
+        "cmd": "./aivyx-coder-v0.6.4-x86_64-linux-musl/aivyx-coder",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
