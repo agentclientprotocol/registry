@@ -1,7 +1,7 @@
 {
   "id": "opencode",
   "name": "OpenCode",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "The open source coding agent",
   "repository": "https://github.com/anomalyco/opencode",
   "website": "https://opencode.ai",
@@ -14,52 +14,52 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.3/opencode-darwin-arm64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.4/opencode-darwin-arm64.zip",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "65db03573e5717e6da245ae3e5c2ffa35915b90689d37c43d4e1ade4d47f55f9"
+        "sha256": "4e093cae2931773c354896d98e7da0cfa3607c110aeaf255ba07f9c2d2238219"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.3/opencode-darwin-x64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.4/opencode-darwin-x64.zip",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "e6b67deeb327ad25eff94bb3c39d8b15466c3de0224e3a0a47a385b69a266d4c"
+        "sha256": "2be9b7671f94a9636b85ff31fcfce613f197c5204ec90291982d692010d072fd"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.3/opencode-linux-arm64.tar.gz",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.4/opencode-linux-arm64.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "72aac82c021268f6cc9810de913f8d47d05626b1ad974d7f5dc5b087e1ad0f68"
+        "sha256": "81edcae078f36356cde3cf57d0cc6627896b18d1bddf47317cb025c56fcffd93"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.3/opencode-linux-x64.tar.gz",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.4/opencode-linux-x64.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "ef3aeeaf5522b10d69a3da7bbd6e6d8d259f845833d96b8310767d3407b18a35"
+        "sha256": "1b70ce4a88e27c3643c2bb61c757dfe173b4e3629926ce808d45f3774d87826e"
       },
       "windows-aarch64": {
-        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.3/opencode-windows-arm64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.4/opencode-windows-arm64.zip",
         "cmd": "./opencode.exe",
         "args": [
           "acp"
         ],
-        "sha256": "e120b9ef22471693e7b65d4d0362b1d491e66eb205c7b44a966a3df372d607df"
+        "sha256": "ad20a596f664bce9fccd87215e138c4bc4f823162d50b6779f5cee8d74100bd0"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.3/opencode-windows-x64.zip",
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.4/opencode-windows-x64.zip",
         "cmd": "./opencode.exe",
         "args": [
           "acp"
         ],
-        "sha256": "48db8b9a57b8524948f61f1e0c770b6762ce840992bebf03ffca43d896844baf"
+        "sha256": "8255fa4808b9ed1bfbc5a4f50c800cabc3a88e66f0d67d0f87bd38cce32f7321"
       }
     }
   }
