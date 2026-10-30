@@ -6,6 +6,7 @@ import copy
 import ipaddress
 import json
 import os
+import random
 import re
 import socket
 import sys
@@ -16,11 +17,14 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from registry_utils import (
+    UVX_VERSION_PATTERN,
     extract_npm_package_name,
     extract_npm_package_version,
     extract_pypi_package_name,
     normalize_version,
+    resolve_preview_entry,
     should_skip_dir,
+    strip_preview,
 )
 
 try:
@@ -31,7 +35,7 @@ except ImportError:
     HAS_JSONSCHEMA = False
 
 REGISTRY_VERSION = "1.0.0"
-REQUIRED_FIELDS = {"id", "name", "version", "description", "distribution"}
+REQUIRED_FIELDS = {"id", "name", "version", "description", "license_url", "distribution"}
 VALID_DISTRIBUTION_TYPES = {"binary", "npx", "uvx"}
 VALID_PLATFORMS = {
     "darwin-aarch64",
@@ -43,6 +47,10 @@ VALID_PLATFORMS = {
 }
 REQUIRED_OS_FAMILIES = {"darwin", "linux", "windows"}
 REJECTED_ARCHIVE_EXTENSIONS = (".dmg", ".pkg", ".deb", ".rpm", ".msi", ".appimage")
+
+# `preview.version` holds either an X.Y.Z-preview.N prerelease or, when the stable
+# channel has overtaken the preview line, a plain X.Y.Z release.
+PREVIEW_CHANNEL_VERSION_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+(-preview\.[0-9]+)?")
 
 # Can be overridden via environment variable
 DEFAULT_BASE_URL = "https://cdn.agentclientprotocol.com/registry/v1/latest"
@@ -102,11 +110,17 @@ def is_public_https_url(url: str, retry_dns_errors: bool = False) -> bool:
     return bool(addresses)
 
 
+def retry_delay(attempt: int) -> float:
+    """Exponential backoff with jitter, so retries of many URLs do not fire in lockstep."""
+    return 2**attempt + random.uniform(0, 1)
+
+
 def url_exists(
     url: str,
     method: str = "HEAD",
     retries: int = 3,
     redirects_remaining: int = MAX_URL_REDIRECTS,
+    accepted_statuses: tuple[int, ...] = (200, 301, 302),
 ) -> bool:
     """Check if a URL exists using HEAD or GET request with retries."""
     import time
@@ -118,10 +132,10 @@ def url_exists(
             req = urllib.request.Request(url, method=method)
             req.add_header("User-Agent", "ACP-Registry-Validator/1.0")
             with URL_OPENER.open(req, timeout=15) as response:
-                return response.status in (200, 301, 302)
+                return response.status in accepted_statuses
         except UrlSafetyResolutionError:
             if attempt < retries - 1:
-                time.sleep(2**attempt)
+                time.sleep(retry_delay(attempt))
                 continue
             return False
         except urllib.error.HTTPError as e:
@@ -138,6 +152,7 @@ def url_exists(
                     method=next_method,
                     retries=retries,
                     redirects_remaining=redirects_remaining - 1,
+                    accepted_statuses=accepted_statuses,
                 )
             # Some servers don't support HEAD, try GET
             if method == "HEAD" and e.code in (403, 405):
@@ -146,14 +161,15 @@ def url_exists(
                     method="GET",
                     retries=retries - attempt,
                     redirects_remaining=redirects_remaining,
+                    accepted_statuses=accepted_statuses,
                 )
             if attempt < retries - 1 and e.code in (429, 500, 502, 503, 504):
-                time.sleep(2**attempt)
+                time.sleep(retry_delay(attempt))
                 continue
             return False
         except (urllib.error.URLError, TimeoutError, OSError):
             if attempt < retries - 1:
-                time.sleep(2**attempt)
+                time.sleep(retry_delay(attempt))
                 continue
             return False
     return False
@@ -212,7 +228,7 @@ def validate_distribution_versions(agent_version: str, distribution: dict) -> li
             errors.append(f"uvx package uses '@latest' - use explicit version instead: {package}")
         # Extract version from uvx package
         # (formats: package==version, package>=version, package@version)
-        version_match = re.search(r"[=@]+([\d.]+)", package)
+        version_match = re.search(rf"[=@]+({UVX_VERSION_PATTERN})", package)
         if version_match:
             pkg_version = version_match.group(1)
             if pkg_version != agent_version:
@@ -222,6 +238,28 @@ def validate_distribution_versions(agent_version: str, distribution: dict) -> li
                 )
 
     return errors
+
+
+LICENSE_URL_RETRIES = 5
+# A license page down for minutes outlasts the backoff, so failures get a second pass.
+LICENSE_URL_RECHECK_DELAY_SECONDS = 300
+# This many failures in a row means the runner's network is down, not the agents' sites.
+LICENSE_URL_MAX_CONSECUTIVE_FAILURES = 10
+
+
+def validate_license_url(agent: dict) -> list[str]:
+    """Validate that the license URL (if present) returns HTTP 200."""
+    if SKIP_URL_VALIDATION:
+        return []
+
+    url = agent.get("license_url")
+    if not url:
+        return []
+
+    # GET rather than HEAD: some sites return 404 on HEAD but 200 on GET.
+    if not url_exists(url, method="GET", retries=LICENSE_URL_RETRIES, accepted_statuses=(200,)):
+        return [f"License URL did not return 200: {url}"]
+    return []
 
 
 def validate_distribution_urls(distribution: dict) -> list[str]:
@@ -438,6 +476,39 @@ def validate_against_schema(agent: dict, schema: dict) -> list[str]:
     return errors
 
 
+def validate_preview(agent: dict) -> list[str]:
+    """Validate the optional `preview` block.
+
+    Offline checks only. The preview channel is explicitly unverified: nothing
+    here touches the network. Allowed keys, distribution types and per-type
+    field shapes are enforced by agent.schema.json; the one check kept here is
+    that the package spec pins exactly `preview.version`. There is deliberately
+    no ordering constraint against the stable `version` - see resolve_preview_entry.
+    """
+    preview = agent.get("preview")
+    if preview is None:
+        return []
+    if not isinstance(preview, dict):
+        return ["Field 'preview' must be an object"]
+
+    errors = []
+
+    version = preview.get("version")
+    if not isinstance(version, str) or not PREVIEW_CHANNEL_VERSION_RE.fullmatch(version):
+        errors.append(f"Field 'preview.version' ({version}) must be X.Y.Z-preview.N or plain X.Y.Z")
+        version = None
+
+    distribution = preview.get("distribution")
+    if not isinstance(distribution, dict) or not distribution:
+        errors.append("Field 'preview.distribution' must be a non-empty object")
+    elif version is not None:
+        errors.extend(
+            f"preview: {error}" for error in validate_distribution_versions(version, distribution)
+        )
+
+    return errors
+
+
 def validate_agent(agent: dict, agent_dir: str, schema: dict | None = None) -> list[str]:
     """Validate agent.json and return list of errors."""
     errors = []
@@ -451,6 +522,10 @@ def validate_agent(agent: dict, agent_dir: str, schema: dict | None = None) -> l
 
     # Check required fields
     missing = REQUIRED_FIELDS - set(agent.keys())
+    # ignored dimcode
+    # as it's present at the moment of license_url mandatory requirement introduction
+    if agent.get("id") == "dimcode":
+        missing.discard("license_url")
     if missing:
         errors.append(f"Missing required fields: {', '.join(sorted(missing))}")
 
@@ -528,6 +603,9 @@ def validate_agent(agent: dict, agent_dir: str, schema: dict | None = None) -> l
                     if "package" not in pkg_dist:
                         errors.append(f"Distribution '{dist_type}' missing 'package' field")
 
+    # Validate the optional preview channel (offline checks only)
+    errors.extend(validate_preview(agent))
+
     return errors
 
 
@@ -594,13 +672,84 @@ def process_entry(
     return entry, []
 
 
-def build_registry(dry_run: bool = False):
+def check_license_urls(
+    registry_dir: Path | None = None,
+    recheck_delay: float = LICENSE_URL_RECHECK_DELAY_SECONDS,
+) -> None:
+    """Check that every agent's license_url returns HTTP 200; exit 1 if any does not.
+
+    Runs on a schedule rather than in build_registry, so a third-party license
+    page going down does not block unrelated PRs or version updates. A URL fails
+    only if it also fails the recheck after `recheck_delay` seconds.
+    """
+    import time
+
+    if registry_dir is None:
+        registry_dir = Path(__file__).parent.parent.parent
+
+    agents = {}
+    for entry_dir in sorted(registry_dir.iterdir()):
+        if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
+            continue
+        agent_json_path = entry_dir / "agent.json"
+        if not agent_json_path.exists():
+            continue
+        with open(agent_json_path) as f:
+            agents[entry_dir.name] = json.load(f)
+
+    # The breaker runs on the first pass only: the recheck probes nothing but
+    # earlier failures, so failures in a row there say nothing about the network.
+    def failing(names: list[str], breaker: bool) -> dict[str, list[str]]:
+        failures = {}
+        consecutive = 0
+        for name in names:
+            errors = validate_license_url(agents[name])
+            if not errors:
+                consecutive = 0
+                continue
+            failures[name] = errors
+            consecutive += 1
+            if breaker and consecutive >= LICENSE_URL_MAX_CONSECUTIVE_FAILURES:
+                print(
+                    f"Error: {consecutive} license URLs failed in a row (last: {name}); "
+                    "the runner's network is likely down, aborting"
+                )
+                sys.exit(1)
+        return failures
+
+    failures = failing(list(agents), breaker=True)
+    if failures:
+        print(
+            f"{len(failures)} license URL(s) failed, rechecking in {recheck_delay:g}s: "
+            + ", ".join(failures)
+        )
+        time.sleep(recheck_delay)
+        failures = failing(list(failures), breaker=False)
+
+    for name, errors in failures.items():
+        for error in errors:
+            print(f"Error: {name}: {error}")
+    if failures:
+        sys.exit(1)
+    print("All license URLs returned 200")
+
+
+def build_registry(
+    dry_run: bool = False,
+    registry_dir: Path | None = None,
+    agent_ids: set[str] | None = None,
+):
     """Build registry.json from agent directories.
 
     Args:
         dry_run: If True, validate and report what would be built without writing to dist/.
+        registry_dir: Registry root to scan (defaults to the repository root).
+        agent_ids: If set, validate only these agents; implies dry_run.
     """
-    registry_dir = Path(__file__).parent.parent.parent
+    if agent_ids is not None:
+        dry_run = True
+    if registry_dir is None:
+        registry_dir = Path(__file__).parent.parent.parent
     base_url = get_base_url()
     agents = []
     seen_ids = {}
@@ -614,6 +763,8 @@ def build_registry(dry_run: bool = False):
 
     for entry_dir in sorted(registry_dir.iterdir()):
         if not entry_dir.is_dir() or should_skip_dir(entry_dir.name):
+            continue
+        if agent_ids is not None and entry_dir.name not in agent_ids:
             continue
 
         agent_json_path = entry_dir / "agent.json"
@@ -631,6 +782,13 @@ def build_registry(dry_run: bool = False):
         agents.append(entry)
         print(f"Added agent: {entry['id']} v{entry['version']}")
 
+    if agent_ids is not None:
+        for missing_id in sorted(
+            i for i in agent_ids if not (registry_dir / i / "agent.json").is_file()
+        ):
+            print(f"Error: agent '{missing_id}' not found")
+            has_errors = True
+
     if has_errors:
         print("\nBuild failed due to validation errors")
         sys.exit(1)
@@ -640,10 +798,13 @@ def build_registry(dry_run: bool = False):
 
     # Agents excluded from registry.json (default registry)
     DEFAULT_EXCLUDE_IDS = {"github-copilot"}
-    default_agents = [a for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
+    default_agents = [strip_preview(a) for a in agents if a["id"] not in DEFAULT_EXCLUDE_IDS]
 
     # Agents excluded from registry-for-jetbrains.json
     JETBRAINS_EXCLUDE_IDS = {"github-copilot-cli"}
+
+    # Gemini CLI is not supported in JetBrains Air.
+    AIR_EXCLUDE_IDS = {"gemini"}
 
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp"}
@@ -658,8 +819,28 @@ def build_registry(dry_run: bool = False):
         return patched
 
     jetbrains_agents = [
-        patch_agent_for_jetbrains(a) for a in agents if a["id"] not in JETBRAINS_EXCLUDE_IDS
+        patch_agent_for_jetbrains(strip_preview(a))
+        for a in agents
+        if a["id"] not in JETBRAINS_EXCLUDE_IDS
     ]
+    air_agents = [a for a in jetbrains_agents if a["id"] not in AIR_EXCLUDE_IDS]
+
+    # Preview registry: a complete, drop-in replacement for the JetBrains registry
+    # where every previewed agent resolves to the highest of its two channels.
+    jetbrains_preview_agents = []
+    distinct_preview_ids = []
+    for a in agents:
+        if a["id"] in JETBRAINS_EXCLUDE_IDS:
+            continue
+        preview_entry = resolve_preview_entry(a)
+        if preview_entry["version"] != a["version"]:
+            distinct_preview_ids.append(a["id"])
+        jetbrains_preview_agents.append(patch_agent_for_jetbrains(preview_entry))
+
+    def preview_summary() -> str:
+        if not distinct_preview_ids:
+            return "identical to the stable JetBrains registry"
+        return f"ahead of stable: {', '.join(sorted(distinct_preview_ids))}"
 
     if dry_run:
         print(f"\nDry run: validated {len(agents)} agents successfully")
@@ -670,6 +851,14 @@ def build_registry(dry_run: bool = False):
         print(
             f"  registry-for-jetbrains.json would contain "
             f"{len(jetbrains_agents)} agents (excluded: {', '.join(sorted(JETBRAINS_EXCLUDE_IDS))})"
+        )
+        print(
+            f"  registry-for-jetbrains-preview.json would contain "
+            f"{len(jetbrains_preview_agents)} agents ({preview_summary()})"
+        )
+        print(
+            f"  registry-for-jetbrains-air.json would contain {len(air_agents)} agents"
+            f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
         )
         return
 
@@ -692,6 +881,21 @@ def build_registry(dry_run: bool = False):
     jetbrains_output_path = dist_dir / "registry-for-jetbrains.json"
     with open(jetbrains_output_path, "w") as f:
         json.dump(jetbrains_registry, f, indent=2)
+        f.write("\n")
+
+    # Write registry-for-jetbrains-preview.json
+    jetbrains_preview_registry = {
+        "version": REGISTRY_VERSION,
+        "agents": jetbrains_preview_agents,
+    }
+    jetbrains_preview_output_path = dist_dir / "registry-for-jetbrains-preview.json"
+    with open(jetbrains_preview_output_path, "w") as f:
+        json.dump(jetbrains_preview_registry, f, indent=2)
+        f.write("\n")
+
+    air_registry = {"version": REGISTRY_VERSION, "agents": air_agents}
+    with open(dist_dir / "registry-for-jetbrains-air.json", "w") as f:
+        json.dump(air_registry, f, indent=2)
         f.write("\n")
 
     # Copy icons to dist
@@ -718,6 +922,14 @@ def build_registry(dry_run: bool = False):
         f"  registry-for-jetbrains.json: {len(jetbrains_agents)} agents"
         f" (excluded: {', '.join(sorted(JETBRAINS_EXCLUDE_IDS))})"
     )
+    print(
+        f"  registry-for-jetbrains-preview.json: {len(jetbrains_preview_agents)} agents"
+        f" ({preview_summary()})"
+    )
+    print(
+        f"  registry-for-jetbrains-air.json: {len(air_agents)} agents"
+        f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
+    )
 
 
 if __name__ == "__main__":
@@ -727,5 +939,19 @@ if __name__ == "__main__":
         action="store_true",
         help="Validate all agents without writing to dist/",
     )
+    parser.add_argument(
+        "--agents",
+        type=str,
+        help="Comma-separated agent IDs to validate (implies --dry-run)",
+    )
+    parser.add_argument(
+        "--check-license-urls",
+        action="store_true",
+        help="Only check that every license_url returns HTTP 200",
+    )
     args = parser.parse_args()
-    build_registry(dry_run=args.dry_run)
+    if args.check_license_urls:
+        check_license_urls()
+        sys.exit(0)
+    agent_ids = {a.strip() for a in args.agents.split(",") if a.strip()} if args.agents else None
+    build_registry(dry_run=args.dry_run, agent_ids=agent_ids)

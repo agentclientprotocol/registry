@@ -9,6 +9,7 @@
     "Augment Code <support@augmentcode.com>"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/augmentcode/auggie/blob/main/LICENSE.md",
   "icon": "./icon.svg",
   "distribution": {
     "npx": {

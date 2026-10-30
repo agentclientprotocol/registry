@@ -9,6 +9,7 @@
     "Poolside <feedback@poolside.ai>"
   ],
   "license": "proprietary",
+  "license_url": "https://github.com/poolsideai/pool/blob/main/LICENSE.md",
   "distribution": {
     "binary": {
       "darwin-aarch64": {

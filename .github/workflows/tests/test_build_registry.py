@@ -1,10 +1,30 @@
 """Tests for build_registry icon validation and dry-run."""
 
+import json
+import shutil
 import tempfile
+import urllib.error
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from build_registry import is_public_https_url, url_exists, validate_icon, validate_icon_monochrome
+import pytest
+
+from build_registry import (
+    HAS_JSONSCHEMA,
+    build_registry,
+    check_license_urls,
+    is_public_https_url,
+    url_exists,
+    validate_icon,
+    validate_icon_monochrome,
+    validate_license_url,
+    validate_preview,
+)
+from registry_utils import semver_sort_key
+
+requires_jsonschema = pytest.mark.skipif(
+    not HAS_JSONSCHEMA, reason="schema-only rule needs jsonschema installed"
+)
 
 
 def socket_result(ip: str):
@@ -70,6 +90,119 @@ class TestUrlSafety:
 
         assert url_exists("https://example.com/archive.tar.gz")
         assert calls == 2
+
+
+class TestValidateLicenseUrl:
+    URL = "https://example.com/LICENSE"
+
+    @staticmethod
+    def _public_dns(monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr(
+            "build_registry.socket.getaddrinfo",
+            lambda *args, **kwargs: socket_result("93.184.216.34"),
+        )
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
+
+    def test_200_response_passes(self, monkeypatch):
+        """A license URL answering 200 produces no errors."""
+        self._public_dns(monkeypatch)
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: StubResponse())
+
+        assert validate_license_url({"license_url": self.URL}) == []
+
+    def test_404_response_fails(self, monkeypatch):
+        """A 404 license URL yields one error mentioning the URL."""
+        self._public_dns(monkeypatch)
+
+        def fake_open(req, **kwargs):
+            raise urllib.error.HTTPError(req.full_url, 404, "Not Found", {}, None)
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        errors = validate_license_url({"license_url": self.URL})
+
+        assert len(errors) == 1
+        assert self.URL in errors[0]
+
+    def test_redirect_is_followed_to_200(self, monkeypatch):
+        """A 301 to another https URL that returns 200 passes."""
+        self._public_dns(monkeypatch)
+        target = "https://example.org/license"
+        seen = []
+
+        def fake_open(req, **kwargs):
+            seen.append(req.full_url)
+            if req.full_url == self.URL:
+                raise urllib.error.HTTPError(req.full_url, 301, "Moved", {"Location": target}, None)
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert seen == [self.URL, target]
+
+    def test_missing_license_url_skipped(self, monkeypatch):
+        """An agent without license_url is exempt and makes no request."""
+        self._public_dns(monkeypatch)
+        calls = []
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: calls.append(a))
+
+        assert validate_license_url({"id": "dimcode"}) == []
+        assert calls == []
+
+    def test_skip_url_validation(self, monkeypatch):
+        """SKIP_URL_VALIDATION disables the check and makes no request."""
+        self._public_dns(monkeypatch)
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", True)
+        calls = []
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: calls.append(a))
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert calls == []
+
+    def test_uses_get_request(self, monkeypatch):
+        """The license check issues a GET, not a HEAD."""
+        self._public_dns(monkeypatch)
+        methods = []
+
+        def fake_open(req, **kwargs):
+            methods.append(req.get_method())
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        validate_license_url({"license_url": self.URL})
+
+        assert methods == ["GET"]
+
+    def test_retries_five_times_on_503(self, monkeypatch):
+        """A license URL answering 503 four times and then 200 passes on the fifth try."""
+        self._public_dns(monkeypatch)
+        calls = []
+
+        def fake_open(req, **kwargs):
+            calls.append(req.full_url)
+            if len(calls) < 5:
+                raise urllib.error.HTTPError(req.full_url, 503, "Unavailable", {}, None)
+            return StubResponse()
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", fake_open)
+
+        assert validate_license_url({"license_url": self.URL}) == []
+        assert len(calls) == 5
+
+    def test_url_exists_default_still_accepts_302(self, monkeypatch):
+        """url_exists with default statuses still accepts a 302 response."""
+        self._public_dns(monkeypatch)
+
+        class Redirect302(StubResponse):
+            status = 302
+
+        monkeypatch.setattr("build_registry.URL_OPENER.open", lambda *a, **k: Redirect302())
+
+        assert url_exists(self.URL)
+        assert not url_exists(self.URL, accepted_statuses=(200,))
 
 
 # --- validate_icon_monochrome ---
@@ -297,3 +430,540 @@ class TestValidateIcon:
             )
             errors = validate_icon(p)
             assert any("HTML comments" in e for e in errors)
+
+
+# --- preview channel ---
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+VALID_ICON = (
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">'
+    '<path fill="currentColor" d="M0 0z"/>'
+    "</svg>"
+)
+
+
+def npx_preview(agent_id: str, version: str) -> dict:
+    return {
+        "version": version,
+        "distribution": {"npx": {"package": f"@acp/{agent_id}@{version}"}},
+    }
+
+
+def agent_manifest(agent_id: str, version: str, preview: dict | None = None, **extra) -> dict:
+    manifest = {
+        "id": agent_id,
+        "name": agent_id,
+        "version": version,
+        "description": f"{agent_id} test agent",
+        "license_url": f"https://example.com/{agent_id}/license",
+        "distribution": {"npx": {"package": f"@acp/{agent_id}@{version}"}},
+    }
+    manifest.update(extra)
+    if preview is not None:
+        manifest["preview"] = preview
+    return manifest
+
+
+def write_registry(root: Path, manifests: list[dict]) -> Path:
+    shutil.copy(REPO_ROOT / "agent.schema.json", root / "agent.schema.json")
+    for manifest in manifests:
+        entry_dir = root / manifest["id"]
+        entry_dir.mkdir(parents=True, exist_ok=True)
+        (entry_dir / "agent.json").write_text(json.dumps(manifest, indent=2) + "\n")
+        (entry_dir / "icon.svg").write_text(VALID_ICON)
+    return root
+
+
+def read_registries(root: Path) -> dict[str, dict]:
+    return {
+        name: json.loads((root / "dist" / f"{name}.json").read_text())
+        for name in (
+            "registry",
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        )
+    }
+
+
+def by_id(registry: dict) -> dict[str, dict]:
+    return {agent["id"]: agent for agent in registry["agents"]}
+
+
+@pytest.fixture(autouse=True)
+def _skip_url_validation(monkeypatch):
+    monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", True)
+
+
+class TestValidatePreview:
+    def test_no_preview_block(self):
+        assert validate_preview(agent_manifest("agent-a", "1.8.0")) == []
+
+    def test_valid_preview_block(self):
+        agent = agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", "1.9.0-preview.1"))
+
+        assert validate_preview(agent) == []
+
+    def test_plain_release_preview_version(self):
+        agent = agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", "1.9.1"))
+
+        assert validate_preview(agent) == []
+
+    @pytest.mark.parametrize(
+        "version",
+        ["1.9-preview.1", "1.9.0-preview", "1.9.0-rc.1", "1.9.0+preview.1", "latest"],
+    )
+    def test_malformed_preview_version(self, version):
+        agent = agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", version))
+
+        errors = validate_preview(agent)
+
+        assert any("preview.version" in e for e in errors)
+
+    def test_package_spec_disagreeing_with_preview_version(self):
+        agent = agent_manifest(
+            "agent-a",
+            "1.8.0",
+            {
+                "version": "1.9.0-preview.2",
+                "distribution": {"npx": {"package": "@acp/agent-a@1.9.0-preview.1"}},
+            },
+        )
+
+        errors = validate_preview(agent)
+
+        assert any("doesn't match" in e for e in errors)
+
+    def test_empty_preview_distribution(self):
+        agent = agent_manifest(
+            "agent-a", "1.8.0", {"version": "1.9.0-preview.1", "distribution": {}}
+        )
+
+        errors = validate_preview(agent)
+
+        assert any("preview.distribution" in e for e in errors)
+
+    def test_uvx_preview_spec_matching_preview_version(self):
+        agent = agent_manifest(
+            "agent-a",
+            "1.8.0",
+            {
+                "version": "1.9.0-preview.1",
+                "distribution": {"uvx": {"package": "acp-agent-a==1.9.0-preview.1"}},
+            },
+        )
+
+        assert validate_preview(agent) == []
+
+    def test_no_ordering_constraint_against_stable(self):
+        agent = agent_manifest("agent-a", "1.9.1", npx_preview("agent-a", "1.9.0-preview.1"))
+
+        assert validate_preview(agent) == []
+
+
+class TestPreviewRegistryOutputs:
+    def test_writes_four_registries(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", "1.9.0-preview.2")),
+                agent_manifest("agent-b", "2.0.0"),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+
+        registries = read_registries(tmp_path)
+        assert set(registries) == {
+            "registry",
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        }
+
+    def test_air_registry_excludes_only_gemini(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest("gemini", "1.0.0"),
+                agent_manifest("gemini-custom", "1.0.0"),
+                agent_manifest("antigravity-acp", "1.4.1"),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+
+        registries = read_registries(tmp_path)
+        jetbrains_agents = by_id(registries["registry-for-jetbrains"])
+        assert registries["registry-for-jetbrains-air"] == {
+            "version": registries["registry-for-jetbrains"]["version"],
+            "agents": [jetbrains_agents["antigravity-acp"], jetbrains_agents["gemini-custom"]],
+        }
+        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview"):
+            assert "gemini" in by_id(registries[name])
+
+    def test_public_registries_hide_the_preview_channel(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", "1.9.0-preview.2"))],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-air"):
+            entry = by_id(registries[name])["agent-a"]
+            assert "preview" not in entry
+            assert entry["version"] == "1.8.0"
+            assert entry["distribution"]["npx"]["package"] == "@acp/agent-a@1.8.0"
+
+    def test_preview_registry_substitutes_version_and_distribution(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest(
+                    "agent-a",
+                    "1.8.0",
+                    npx_preview("agent-a", "1.9.0-preview.2"),
+                    repository="https://github.com/acp/agent-a",
+                    authors=["ACP"],
+                    license="proprietary",
+                )
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        stable = by_id(registries["registry-for-jetbrains"])["agent-a"]
+        preview = by_id(registries["registry-for-jetbrains-preview"])["agent-a"]
+
+        assert "preview" not in preview
+        assert preview["version"] == "1.9.0-preview.2"
+        assert preview["distribution"]["npx"]["package"] == "@acp/agent-a@1.9.0-preview.2"
+        for field in ("id", "name", "description", "repository", "authors", "license", "icon"):
+            assert preview[field] == stable[field]
+
+    def test_agent_without_preview_block_uses_stable_entry(self, tmp_path):
+        write_registry(tmp_path, [agent_manifest("agent-b", "2.0.0")])
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        assert (
+            by_id(registries["registry-for-jetbrains-preview"])["agent-b"]
+            == by_id(registries["registry-for-jetbrains"])["agent-b"]
+        )
+
+    def test_stable_ahead_of_preview_line_serves_stable(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [agent_manifest("agent-a", "1.9.1", npx_preview("agent-a", "1.9.0-preview.1"))],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        entry = by_id(registries["registry-for-jetbrains-preview"])["agent-a"]
+        assert entry["version"] == "1.9.1"
+        assert entry["distribution"]["npx"]["package"] == "@acp/agent-a@1.9.1"
+        assert "preview" not in entry
+
+    def test_preview_version_never_below_stable(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", "1.9.0-preview.2")),
+                agent_manifest("agent-b", "2.0.0"),
+                agent_manifest("agent-c", "1.9.1", npx_preview("agent-c", "1.9.0-preview.1")),
+                agent_manifest("agent-d", "1.9.0", npx_preview("agent-d", "1.9.1")),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        stable = by_id(registries["registry-for-jetbrains"])
+        preview = by_id(registries["registry-for-jetbrains-preview"])
+        assert set(stable) == set(preview)
+        for agent_id, entry in preview.items():
+            assert semver_sort_key(entry["version"]) >= semver_sort_key(stable[agent_id]["version"])
+
+    def test_jetbrains_patches_apply_to_the_preview_registry(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest(
+                    "claude-acp", "0.73.0", npx_preview("claude-acp", "0.74.0-preview.1")
+                ),
+                agent_manifest("github-copilot-cli", "1.0.0"),
+                agent_manifest("github-copilot", "1.0.0"),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        preview_agents = by_id(registries["registry-for-jetbrains-preview"])
+        claude = preview_agents["claude-acp"]
+        assert claude["bundled"] is True
+        assert "--hide-claude-auth" in claude["distribution"]["npx"]["args"]
+        assert claude["version"] == "0.74.0-preview.1"
+        assert "github-copilot-cli" not in preview_agents
+        assert "github-copilot" in preview_agents
+        assert "github-copilot" not in by_id(registries["registry"])
+
+    def test_preview_may_declare_a_distribution_type_the_base_entry_lacks(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest(
+                    "agent-a",
+                    "1.8.0",
+                    {
+                        "version": "1.9.0-preview.1",
+                        "distribution": {"uvx": {"package": "acp-agent-a==1.9.0-preview.1"}},
+                    },
+                )
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        entry = by_id(registries["registry-for-jetbrains-preview"])["agent-a"]
+        assert entry["distribution"] == {"uvx": {"package": "acp-agent-a==1.9.0-preview.1"}}
+
+    def test_no_network_probe_for_preview_artifacts(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        probed: list[str] = []
+
+        def record(url, *args, **kwargs):
+            probed.append(url)
+            return True
+
+        monkeypatch.setattr("build_registry.url_exists", record)
+        write_registry(
+            tmp_path,
+            [agent_manifest("agent-a", "1.8.0", npx_preview("agent-a", "1.9.0-preview.2"))],
+        )
+
+        build_registry(registry_dir=tmp_path)
+
+        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
+
+
+class TestPreviewValidationFailures:
+    def _build_fails(self, tmp_path, manifest) -> None:
+        write_registry(tmp_path, [manifest])
+        with pytest.raises(SystemExit) as excinfo:
+            build_registry(registry_dir=tmp_path)
+        assert excinfo.value.code == 1
+
+    @requires_jsonschema
+    def test_extra_key_in_preview_block(self, tmp_path):
+        preview = npx_preview("agent-a", "1.9.0-preview.1")
+        preview["name"] = "Agent A Preview"
+
+        self._build_fails(tmp_path, agent_manifest("agent-a", "1.8.0", preview))
+
+    def test_preview_without_distribution(self, tmp_path):
+        self._build_fails(
+            tmp_path, agent_manifest("agent-a", "1.8.0", {"version": "1.9.0-preview.1"})
+        )
+
+    def test_empty_preview_distribution(self, tmp_path):
+        self._build_fails(
+            tmp_path,
+            agent_manifest("agent-a", "1.8.0", {"version": "1.9.0-preview.1", "distribution": {}}),
+        )
+
+    @requires_jsonschema
+    def test_binary_preview_distribution(self, tmp_path):
+        self._build_fails(
+            tmp_path,
+            agent_manifest(
+                "agent-a",
+                "1.8.0",
+                {
+                    "version": "1.9.0-preview.1",
+                    "distribution": {
+                        "darwin-aarch64": {
+                            "archive": "https://example.com/a-1.9.0-preview.1.tar.gz",
+                            "cmd": "agent-a",
+                        }
+                    },
+                },
+            ),
+        )
+
+    def test_preview_package_spec_version_mismatch(self, tmp_path):
+        self._build_fails(
+            tmp_path,
+            agent_manifest(
+                "agent-a",
+                "1.8.0",
+                {
+                    "version": "1.9.0-preview.2",
+                    "distribution": {"npx": {"package": "@acp/agent-a@1.9.0-preview.1"}},
+                },
+            ),
+        )
+
+    def test_prerelease_in_root_version(self, tmp_path):
+        self._build_fails(tmp_path, agent_manifest("agent-a", "1.9.0-preview.1"))
+
+
+class TestScopedValidation:
+    def test_only_selected_agents_are_validated(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        probed = []
+        monkeypatch.setattr("build_registry.url_exists", lambda url: probed.append(url) or True)
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+        (tmp_path / "agent-b" / "icon.svg").write_text("not an svg")
+
+        build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+
+        assert probed == ["https://registry.npmjs.org/@acp/agent-a"]
+        assert not (tmp_path / "dist").exists()
+
+    def test_selected_agent_failure_fails_the_build(self, tmp_path, monkeypatch):
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr("build_registry.url_exists", lambda url: False)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        with pytest.raises(SystemExit) as excinfo:
+            build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+        assert excinfo.value.code == 1
+
+    def test_unknown_agent_fails_the_build(self, tmp_path):
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        with pytest.raises(SystemExit) as excinfo:
+            build_registry(registry_dir=tmp_path, agent_ids={"agent-z"})
+        assert excinfo.value.code == 1
+
+
+class TestCheckLicenseUrls:
+    @staticmethod
+    def _probe(monkeypatch, broken: set[str], recovers: set[str] = frozenset()) -> list[str]:
+        """Stub url_exists; URLs in `recovers` fail only on their first probe."""
+        monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", False)
+        monkeypatch.setattr("time.sleep", lambda *args, **kwargs: None)
+        probed: list[str] = []
+
+        def fake_url_exists(url, **kwargs):
+            probed.append(url)
+            if url in recovers:
+                return probed.count(url) > 1
+            return url not in broken
+
+        monkeypatch.setattr("build_registry.url_exists", fake_url_exists)
+        return probed
+
+    def test_all_license_urls_ok(self, tmp_path, monkeypatch, capsys):
+        """Every agent's license URL is probed, and the check passes when all return 200."""
+        probed = self._probe(monkeypatch, broken=set())
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert probed == [
+            "https://example.com/agent-a/license",
+            "https://example.com/agent-b/license",
+        ]
+        assert "All license URLs returned 200" in capsys.readouterr().out
+
+    def test_broken_license_url_fails(self, tmp_path, monkeypatch, capsys):
+        """A URL that also fails the recheck exits 1 and names only that agent."""
+        probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0"), agent_manifest("agent-b", "1.0.0")]
+        )
+
+        with pytest.raises(SystemExit) as excinfo:
+            check_license_urls(registry_dir=tmp_path)
+
+        assert excinfo.value.code == 1
+        assert probed == [
+            "https://example.com/agent-a/license",
+            "https://example.com/agent-b/license",
+            "https://example.com/agent-a/license",
+        ]
+        errors = [line for line in capsys.readouterr().out.splitlines() if line.startswith("Error")]
+        assert errors == [
+            "Error: agent-a: License URL did not return 200: https://example.com/agent-a/license"
+        ]
+
+    def test_recheck_waits_then_passes_recovered_url(self, tmp_path, monkeypatch):
+        """A URL down on the first pass but up on the recheck passes, after the recheck delay."""
+        self._probe(monkeypatch, broken=set(), recovers={"https://example.com/agent-a/license"})
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        check_license_urls(registry_dir=tmp_path, recheck_delay=300)
+
+        assert sleeps == [300]
+
+    def test_no_recheck_when_all_pass(self, tmp_path, monkeypatch):
+        """With no failures the check does not wait for a recheck."""
+        self._probe(monkeypatch, broken=set())
+        sleeps: list[float] = []
+        monkeypatch.setattr("time.sleep", sleeps.append)
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert sleeps == []
+
+    def test_circuit_breaker_aborts_after_consecutive_failures(self, tmp_path, monkeypatch, capsys):
+        """Ten failures in a row abort the run as a network problem, without probing the rest."""
+        ids = [f"agent-{i:02}" for i in range(12)]
+        probed = self._probe(monkeypatch, broken={f"https://example.com/{i}/license" for i in ids})
+        write_registry(tmp_path, [agent_manifest(i, "1.0.0") for i in ids])
+
+        with pytest.raises(SystemExit) as excinfo:
+            check_license_urls(registry_dir=tmp_path)
+
+        assert excinfo.value.code == 1
+        assert len(probed) == 10
+        assert "network is likely down" in capsys.readouterr().out
+
+    def test_circuit_breaker_resets_on_success(self, tmp_path, monkeypatch, capsys):
+        """A passing URL between failures resets the count, so the breaker does not trip."""
+        ids = [f"agent-{i:02}" for i in range(12)]
+        broken = {f"https://example.com/{i}/license" for i in ids if i != "agent-05"}
+        self._probe(monkeypatch, broken=broken)
+        write_registry(tmp_path, [agent_manifest(i, "1.0.0") for i in ids])
+
+        with pytest.raises(SystemExit):
+            check_license_urls(registry_dir=tmp_path)
+
+        out = capsys.readouterr().out
+        assert "network is likely down" not in out
+        assert out.count("Error: agent-") == 11
+
+    def test_agent_without_license_url_skipped(self, tmp_path, monkeypatch):
+        """An agent without license_url is not probed."""
+        probed = self._probe(monkeypatch, broken=set())
+        manifest = agent_manifest("dimcode", "1.0.0")
+        del manifest["license_url"]
+        write_registry(tmp_path, [manifest])
+
+        check_license_urls(registry_dir=tmp_path)
+
+        assert probed == []
+
+    def test_build_does_not_probe_license_url(self, tmp_path, monkeypatch):
+        """build_registry leaves license URLs to the scheduled check."""
+        probed = self._probe(monkeypatch, broken={"https://example.com/agent-a/license"})
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.0.0")])
+
+        build_registry(registry_dir=tmp_path, agent_ids={"agent-a"})
+
+        assert "https://example.com/agent-a/license" not in probed
