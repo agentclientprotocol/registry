@@ -734,6 +734,24 @@ def check_license_urls(
     print("All license URLs returned 200")
 
 
+# The managed runtimes that only the JetBrains registries carry. JetBrains IDEs download
+# the Node.js archive of `node.version` and verify it against `node.sha256`. Update both
+# together, with the hashes from https://nodejs.org/dist/v<version>/SHASUMS256.txt.
+JETBRAINS_ENVIRONMENTS = {
+    "node": {
+        "version": "24.22.1",
+        "sha256": {
+            "darwin-aarch64": "89c682593d76cd44233fa53b1563264e7de9cbb189cad169135c5b4fadfbc0a7",
+            "darwin-x86_64": "d132557e7ee2b85af08b0c8c34338e65c6430f2238d01f727728ef42dc83b035",
+            "linux-aarch64": "33c37be234ba8bee041961047b19160f4d7d0f164e8e246f78bdd10feff148b3",
+            "linux-x86_64": "eb6728e77c576a35162c122c45ccadf224d89ff00abc8dae46cc2897c6002d7c",
+            "windows-aarch64": "a0c807319fede24c4a0d8f84564c82a619bd313b16b10c007c383c2609e99171",
+            "windows-x86_64": "d2046d28c2c3dcd211ac5145c0bf30e2047ef9dfb306693c8c6e2eccd8b95fa5",
+        },
+    }
+}
+
+
 def build_registry(
     dry_run: bool = False,
     registry_dir: Path | None = None,
@@ -873,27 +891,29 @@ def build_registry(
         json.dump(registry, f, indent=2)
         f.write("\n")
 
+    # The JetBrains outputs carry the managed runtimes. registry.json stays unchanged.
+    def jetbrains_registry_of(jetbrains_registry_agents):
+        return {
+            "version": REGISTRY_VERSION,
+            "agents": jetbrains_registry_agents,
+            "environments": JETBRAINS_ENVIRONMENTS,
+        }
+
     # Write registry-for-jetbrains.json
-    jetbrains_registry = {
-        "version": REGISTRY_VERSION,
-        "agents": jetbrains_agents,
-    }
+    jetbrains_registry = jetbrains_registry_of(jetbrains_agents)
     jetbrains_output_path = dist_dir / "registry-for-jetbrains.json"
     with open(jetbrains_output_path, "w") as f:
         json.dump(jetbrains_registry, f, indent=2)
         f.write("\n")
 
     # Write registry-for-jetbrains-preview.json
-    jetbrains_preview_registry = {
-        "version": REGISTRY_VERSION,
-        "agents": jetbrains_preview_agents,
-    }
+    jetbrains_preview_registry = jetbrains_registry_of(jetbrains_preview_agents)
     jetbrains_preview_output_path = dist_dir / "registry-for-jetbrains-preview.json"
     with open(jetbrains_preview_output_path, "w") as f:
         json.dump(jetbrains_preview_registry, f, indent=2)
         f.write("\n")
 
-    air_registry = {"version": REGISTRY_VERSION, "agents": air_agents}
+    air_registry = jetbrains_registry_of(air_agents)
     with open(dist_dir / "registry-for-jetbrains-air.json", "w") as f:
         json.dump(air_registry, f, indent=2)
         f.write("\n")
