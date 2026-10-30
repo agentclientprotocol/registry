@@ -1,0 +1,47 @@
+{
+  "id": "rpi-acp",
+  "name": "rpi",
+  "version": "0.1.7",
+  "description": "Rust coding agent (rpi) exposed over the Agent Client Protocol",
+  "repository": "https://github.com/pi-rust/rpi-package",
+  "website": "https://github.com/pi-rust/rpi-package/tree/main/packages/rpi-acp",
+  "authors": [
+    "BigFish"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/pi-rust/rpi-package/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/pi-rust/rpi-package/releases/download/rpi-packages-feb33392c0b3/rpi-acp-macos-aarch64.tar.gz",
+        "cmd": "./rpi-acp-bridge",
+        "args": [],
+        "sha256": "7eb3333e357bafee48d587879667d163388292f0381b8feed05702c1113130ca"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/pi-rust/rpi-package/releases/download/rpi-packages-feb33392c0b3/rpi-acp-macos-x86_64.tar.gz",
+        "cmd": "./rpi-acp-bridge",
+        "args": [],
+        "sha256": "d22cb7b4619f7a69e3b3b322b4e01feb076ec11adbf43052216ade82c8cc6830"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/pi-rust/rpi-package/releases/download/rpi-packages-feb33392c0b3/rpi-acp-linux-aarch64.tar.gz",
+        "cmd": "./rpi-acp-bridge",
+        "args": [],
+        "sha256": "add6fa2f6eccbaa8210315731256e4556534609d5a4efff5b7b3a4537db6a55f"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/pi-rust/rpi-package/releases/download/rpi-packages-feb33392c0b3/rpi-acp-linux-x86_64.tar.gz",
+        "cmd": "./rpi-acp-bridge",
+        "args": [],
+        "sha256": "0af33062bd4b02b546b011bc855a5105bec828123f06fb3feaf0ea1d05e71ef7"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/pi-rust/rpi-package/releases/download/rpi-packages-feb33392c0b3/rpi-acp-windows-x86_64.zip",
+        "cmd": "./rpi-acp-bridge.exe",
+        "args": [],
+        "sha256": "8e586515538c6b98a9709dcf4b7e2c8b2d4cbc1d20872a1ad2c1b28810a78ce4"
+      }
+    }
+  }
+}
