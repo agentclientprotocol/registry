@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-label="Oh My Pi">
+  <g fill="currentColor">
+    <rect x="1" y="1.1" width="14" height="1.7" rx="0.3"/>
+    <rect x="3" y="2.8" width="1.7" height="12.1" rx="0.3"/>
+    <rect x="10.3" y="2.8" width="1.7" height="7.1" rx="0.3"/>
+    <rect x="9.6" y="10.1" width="3.3" height="2.7" rx="0.5" opacity="0.85"/>
+  </g>
+</svg>
