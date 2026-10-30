@@ -1,0 +1,56 @@
+{
+  "id": "atomcode",
+  "name": "AtomCode",
+  "version": "5.0.5",
+  "description": "Open-source terminal AI coding agent written in Rust",
+  "repository": "https://atomgit.com/atomgit_atomcode/atomcode",
+  "website": "https://atomgit.com/atomgit_atomcode/atomcode",
+  "authors": [
+    "AtomGit"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://atomgit.com/atomgit_atomcode/atomcode/releases/download/v5.0.5/atomcode-v5.0.5-darwin-arm64",
+        "cmd": "./atomcode-v5.0.5-darwin-arm64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "36dcde65d973bb0c21ff1078df549a245c7eba5a6408a56ae21dfd9bf86b977b"
+      },
+      "darwin-x86_64": {
+        "archive": "https://atomgit.com/atomgit_atomcode/atomcode/releases/download/v5.0.5/atomcode-v5.0.5-darwin-x64",
+        "cmd": "./atomcode-v5.0.5-darwin-x64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "b0d4988fa0b64c7cfba948ecf454a16441a8e2a7b3b2035774645cb407fd9215"
+      },
+      "linux-aarch64": {
+        "archive": "https://atomgit.com/atomgit_atomcode/atomcode/releases/download/v5.0.5/atomcode-v5.0.5-linux-arm64",
+        "cmd": "./atomcode-v5.0.5-linux-arm64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "2349bb758a0cf0e5096452303733c192af720a01f6086eb9a5761e791189b3a8"
+      },
+      "linux-x86_64": {
+        "archive": "https://atomgit.com/atomgit_atomcode/atomcode/releases/download/v5.0.5/atomcode-v5.0.5-linux-x64",
+        "cmd": "./atomcode-v5.0.5-linux-x64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "eb725e87fd96e635c0f5b349530d58dd9a1465984b7235252a8ae4a5a8c431a9"
+      },
+      "windows-x86_64": {
+        "archive": "https://atomgit.com/atomgit_atomcode/atomcode/releases/download/v5.0.5/atomcode-v5.0.5-windows-x64.exe",
+        "cmd": "./atomcode-v5.0.5-windows-x64.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "9b2af0cfbefa82b1b00da063085a116e094d5dcfb8b1e588e7bd71f2b68e557f"
+      }
+    }
+  }
+}
