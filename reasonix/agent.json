@@ -1,0 +1,21 @@
+{
+  "id": "reasonix",
+  "name": "Reasonix",
+  "version": "1.39.4",
+  "description": "DeepSeek-native coding agent with cache-first context and verified delivery",
+  "repository": "https://github.com/esengine/DeepSeek-Reasonix",
+  "website": "https://reasonix.io",
+  "authors": [
+    "esengine"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/esengine/DeepSeek-Reasonix/blob/main-v2/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "reasonix@1.39.4",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
