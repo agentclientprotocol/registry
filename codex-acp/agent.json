@@ -17,10 +17,10 @@
     }
   },
   "preview": {
-    "version": "2.5.1-preview.11",
+    "version": "2.5.1-preview.12",
     "distribution": {
       "npx": {
-        "package": "@agentclientprotocol/codex-acp@2.5.1-preview.11"
+        "package": "@agentclientprotocol/codex-acp@2.5.1-preview.12"
       }
     }
   }
