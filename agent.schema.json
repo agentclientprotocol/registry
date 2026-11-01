@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cdn.agentclientprotocol.com/registry/v1/latest/agent.schema.json",
+  "title": "ACP Agent",
+  "description": "Schema for ACP agent registry entries",
+  "type": "object",
+  "required": ["id", "name", "version", "description", "distribution"],
+  "if": {
+    "properties": {
+      "id": { "const": "dimcode" }
+    },
+    "required": ["id"]
+  },
+  "else": {
+    "required": ["license_url"]
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique agent identifier (lowercase, hyphens allowed)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the stable release channel"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Brief description of the agent"
+    },
+    "repository": {
+      "type": "string",
+      "format": "uri",
+      "description": "Source code repository URL"
+    },
+    "website": {
+      "type": "string",
+      "format": "uri",
+      "description": "Project homepage or documentation URL"
+    },
+    "authors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of authors"
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier or 'proprietary'"
+    },
+    "license_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the license text or terms of service"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon URL (set automatically by the build from the required icon.svg file)"
+    },
+    "distribution": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "binary": {
+          "$ref": "#/definitions/binaryDistribution"
+        },
+        "npx": {
+          "$ref": "#/definitions/packageDistribution"
+        },
+        "uvx": {
+          "$ref": "#/definitions/packageDistribution"
+        }
+      },
+      "additionalProperties": false
+    },
+    "preview": {
+      "$ref": "#/definitions/previewChannel"
+    }
+  },
+  "definitions": {
+    "previewChannel": {
+      "type": "object",
+      "description": "Optional preview (unstable) release channel. Holds only the version and the artifact locations; all other metadata is shared with the stable entry.",
+      "required": ["version", "distribution"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-preview\\.[0-9]+)?$",
+          "description": "Newest known version for the preview channel: X.Y.Z-preview.N, or a plain X.Y.Z release when the stable channel is ahead of the preview line"
+        },
+        "distribution": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Preview artifact locations.",
+          "properties": {
+            "binary": {
+              "$ref": "#/definitions/binaryDistribution"
+            },
+            "npx": {
+              "$ref": "#/definitions/packageDistribution"
+            },
+            "uvx": {
+              "$ref": "#/definitions/packageDistribution"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "binaryDistribution": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/definitions/binaryTarget"
+      },
+      "propertyNames": {
+        "enum": [
+          "darwin-aarch64",
+          "darwin-x86_64",
+          "linux-aarch64",
+          "linux-x86_64",
+          "windows-aarch64",
+          "windows-x86_64"
+        ]
+      }
+    },
+    "binaryTarget": {
+      "type": "object",
+      "required": ["archive", "cmd"],
+      "properties": {
+        "archive": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to download archive (.zip, .tar.gz, .tgz, .tar.bz2, .tbz2, or raw binary). Installer formats (.dmg, .pkg, .deb, .rpm) are not supported."
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$",
+          "description": "Optional SHA-256 checksum of the archive (hex-encoded, 64 characters)"
+        },
+        "cmd": {
+          "type": "string",
+          "description": "Command to execute after extraction"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Command line arguments"
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Environment variables"
+        }
+      },
+      "additionalProperties": false
+    },
+    "packageDistribution": {
+      "type": "object",
+      "required": ["package"],
+      "properties": {
+        "package": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Package name (with optional version)"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Command line arguments"
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Environment variables"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

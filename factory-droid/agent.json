@@ -1,0 +1,26 @@
+{
+  "id": "factory-droid",
+  "name": "Factory Droid",
+  "version": "1.1.0",
+  "description": "Factory Droid - AI coding agent powered by Factory AI",
+  "website": "https://factory.ai/product/cli",
+  "authors": [
+    "Factory AI"
+  ],
+  "license": "proprietary",
+  "license_url": "https://factory.ai/legal/terms",
+  "distribution": {
+    "npx": {
+      "package": "droid@1.1.0",
+      "args": [
+        "exec",
+        "--output-format",
+        "acp-daemon"
+      ],
+      "env": {
+        "DROID_DISABLE_AUTO_UPDATE": "true",
+        "FACTORY_DROID_AUTO_UPDATE_ENABLED": "false"
+      }
+    }
+  }
+}

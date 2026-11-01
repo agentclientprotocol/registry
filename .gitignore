@@ -1,0 +1,33 @@
+# Generated files
+dist/
+
+# Verification sandboxes
+.sandbox/
+.matrix-sandbox/
+.docker-state/
+.sandbox-*/
+.matrix-sandbox-*/
+
+# Local protocol-matrix/debug output
+.protocol-matrix-*/
+.tmp-*/
+.tmp-*.out
+.tmp-*.err
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

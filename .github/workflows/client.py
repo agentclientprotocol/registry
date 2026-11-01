@@ -1,0 +1,320 @@
+#!/usr/bin/env python3
+"""ACP client module for auth verification.
+
+Spawns agent process and performs raw JSON-RPC handshake to verify auth methods.
+No SDK dependency - just raw JSON parsing to preserve _meta fields.
+"""
+
+import json
+import os
+import subprocess
+import tempfile
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+
+from registry_utils import sanitize_agent_env, subprocess_group_kwargs, terminate_process_group
+
+AGENT_ENV_PASSTHROUGH = {
+    "CI",
+    "COMSPEC",
+    "NPM_CONFIG_CACHE",
+    "NODE_EXTRA_CA_CERTS",
+    "PATH",
+    "PATHEXT",
+    "PYTHON_KEYRING_BACKEND",
+    "PYTHON_KEYRING_DISABLED",
+    "REQUESTS_CA_BUNDLE",
+    "SSL_CERT_DIR",
+    "SSL_CERT_FILE",
+    "SystemRoot",
+    "TMP",
+    "TMPDIR",
+    "TEMP",
+    "UV_CACHE_DIR",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME",
+}
+
+
+@dataclass
+class AuthMethod:
+    """Auth method with type inferred from _meta."""
+
+    id: str
+    name: str
+    type: str | None = None
+    description: str | None = None
+
+
+@dataclass
+class AuthCheckResult:
+    """Result of auth verification."""
+
+    success: bool
+    auth_methods: list[AuthMethod] = field(default_factory=list)
+    error: str | None = None
+    stderr_tail: str | None = None
+    duration_seconds: float | None = None
+    process_exit_code: int | None = None
+
+
+def parse_auth_methods(auth_methods_raw: list[dict]) -> list[AuthMethod]:
+    """Parse authMethods from initialize response.
+
+    Type detection priority:
+    1. Direct "type" field on the auth method
+    2. "_meta" keys: "terminal-auth" -> "terminal", "agent-auth" -> "agent"
+    3. Default to "agent" if not specified (per AUTHENTICATION.md)
+    """
+    auth_methods = []
+
+    for method in auth_methods_raw:
+        # 1. Check direct "type" field
+        auth_type = method.get("type")
+
+        # 2. Check _meta for terminal-auth or agent-auth
+        if not auth_type:
+            meta = method.get("_meta", {})
+            if isinstance(meta, dict):
+                if "terminal-auth" in meta:
+                    auth_type = "terminal"
+                elif "agent-auth" in meta:
+                    auth_type = "agent"
+
+        # 3. Default to "agent" per AUTHENTICATION.md
+        if not auth_type:
+            auth_type = "agent"
+
+        auth_methods.append(
+            AuthMethod(
+                id=method.get("id", ""),
+                name=method.get("name", ""),
+                type=auth_type,
+                description=method.get("description"),
+            )
+        )
+
+    return auth_methods
+
+
+def validate_auth_methods(auth_methods: list[AuthMethod]) -> tuple[bool, str]:
+    """Validate that at least one auth method has type 'agent' or 'terminal'."""
+    if not auth_methods:
+        return False, "No authMethods in response"
+
+    valid_types = {"agent", "terminal"}
+    methods_with_valid_type = [m for m in auth_methods if m.type in valid_types]
+
+    if not methods_with_valid_type:
+        types_found = [m.type for m in auth_methods]
+        return False, f"No auth method with type 'agent' or 'terminal'. Found types: {types_found}"
+
+    return True, f"Found {len(methods_with_valid_type)} valid auth method(s)"
+
+
+def send_jsonrpc(proc: subprocess.Popen, method: str, params: dict, msg_id: int = 1) -> None:
+    """Send a JSON-RPC message to the process (raw JSON, newline-delimited)."""
+    request = {
+        "jsonrpc": "2.0",
+        "id": msg_id,
+        "method": method,
+        "params": params,
+    }
+    message = json.dumps(request) + "\n"
+    proc.stdin.write(message)
+    proc.stdin.flush()
+
+
+def read_jsonrpc(proc: subprocess.Popen, timeout: float) -> dict | None:
+    """Read a JSON-RPC response from the process (raw JSON, newline-delimited)."""
+    import select
+
+    ready, _, _ = select.select([proc.stdout], [], [], timeout)
+    if not ready:
+        return None
+
+    line = proc.stdout.readline()
+    if not line:
+        return None
+
+    try:
+        return json.loads(line)
+    except json.JSONDecodeError as e:
+        raise ValueError(
+            f"ACP spec violation: agent wrote non-JSON to stdout: {line.rstrip()!r}\n"
+            f"Per the ACP spec, agents MUST NOT write anything to stdout "
+            f"that is not a valid ACP message. "
+            f"Diagnostic output should go to stderr."
+        ) from e
+
+
+def _collect_proc_diagnostics(proc: subprocess.Popen) -> tuple[str | None, int | None]:
+    """Collect stderr tail and exit code from a process (non-blocking).
+
+    Returns:
+        (stderr_tail, exit_code) — either may be None if unavailable.
+    """
+    import select
+
+    exit_code = proc.poll()
+
+    stderr_tail: str | None = None
+    try:
+        ready, _, _ = select.select([proc.stderr], [], [], 0.5)
+        if ready:
+            data = proc.stderr.read(8192)
+            if data:
+                stderr_tail = data[-4000:]
+    except Exception:
+        pass
+
+    return stderr_tail, exit_code
+
+
+def run_auth_check(
+    cmd: list[str],
+    cwd: Path,
+    env: dict[str, str] | None = None,
+    timeout: float = 60.0,
+    home_dir: Path | None = None,
+    prepend_path: list[str] | None = None,
+) -> AuthCheckResult:
+    """Verify an agent supports ACP authentication.
+
+    Args:
+        cmd: Command to spawn the agent
+        cwd: Working directory for the agent process
+        env: Environment variables (HOME should be overridden for isolation)
+        timeout: Handshake timeout in seconds
+
+    Returns:
+        AuthCheckResult with success status and auth methods
+    """
+    # Build isolated environment without leaking GitHub Actions credentials or workspace paths.
+    full_env = {
+        name: value
+        for name in AGENT_ENV_PASSTHROUGH
+        if (value := os.environ.get(name)) not in (None, "")
+    }
+    full_env["TERM"] = "dumb"
+    full_env.update(sanitize_agent_env(env))
+
+    # Use a temporary directory as HOME if not specified
+    if home_dir is None:
+        home_dir = Path(tempfile.mkdtemp(prefix="acp-auth-check-"))
+    else:
+        home_dir.mkdir(parents=True, exist_ok=True)
+    full_env["HOME"] = str(home_dir)
+
+    if prepend_path:
+        base_path = full_env.get("PATH", os.environ.get("PATH", ""))
+        full_env["PATH"] = os.pathsep.join([*prepend_path, base_path])
+
+    proc = None
+    t0 = time.monotonic()
+    try:
+        # Make binary executable if needed
+        exe_path = Path(cmd[0])
+        if exe_path.exists() and not os.access(exe_path, os.X_OK):
+            exe_path.chmod(exe_path.stat().st_mode | 0o755)
+
+        # Start agent process
+        proc = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            env=full_env,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=0,
+            **subprocess_group_kwargs(),
+        )
+
+        # Send initialize request with capabilities
+        send_jsonrpc(
+            proc,
+            "initialize",
+            {
+                "protocolVersion": 1,
+                "clientInfo": {"name": "ACP Registry Validator", "version": "1.0.0"},
+                "clientCapabilities": {
+                    "terminal": True,
+                    "fs": {
+                        "readTextFile": True,
+                        "writeTextFile": True,
+                    },
+                    "_meta": {
+                        "terminal_output": True,
+                        "terminal-auth": True,
+                    },
+                },
+            },
+        )
+
+        # Read response
+        response = read_jsonrpc(proc, timeout)
+
+        if response is None:
+            duration = time.monotonic() - t0
+            stderr_tail, exit_code = _collect_proc_diagnostics(proc)
+            return AuthCheckResult(
+                success=False,
+                error=f"Timeout after {timeout}s waiting for initialize response",
+                stderr_tail=stderr_tail,
+                duration_seconds=duration,
+                process_exit_code=exit_code,
+            )
+
+        if "error" in response:
+            duration = time.monotonic() - t0
+            stderr_tail, exit_code = _collect_proc_diagnostics(proc)
+            return AuthCheckResult(
+                success=False,
+                error=f"Agent error: {response['error']}",
+                stderr_tail=stderr_tail,
+                duration_seconds=duration,
+                process_exit_code=exit_code,
+            )
+
+        result = response.get("result", {})
+        auth_methods_raw = result.get("authMethods", [])
+
+        # Parse auth methods
+        auth_methods = parse_auth_methods(auth_methods_raw)
+
+        # Validate
+        is_valid, message = validate_auth_methods(auth_methods)
+
+        if is_valid:
+            return AuthCheckResult(
+                success=True,
+                auth_methods=auth_methods,
+            )
+
+        duration = time.monotonic() - t0
+        stderr_tail, exit_code = _collect_proc_diagnostics(proc)
+        return AuthCheckResult(
+            success=False,
+            auth_methods=auth_methods,
+            error=message,
+            stderr_tail=stderr_tail,
+            duration_seconds=duration,
+            process_exit_code=exit_code,
+        )
+
+    except Exception as e:
+        duration = time.monotonic() - t0
+        stderr_tail, exit_code = _collect_proc_diagnostics(proc) if proc else (None, None)
+        return AuthCheckResult(
+            success=False,
+            error=f"Error during auth check: {type(e).__name__}: {e}",
+            stderr_tail=stderr_tail,
+            duration_seconds=duration,
+            process_exit_code=exit_code,
+        )
+    finally:
+        if proc:
+            terminate_process_group(proc)
