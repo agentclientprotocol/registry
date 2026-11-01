@@ -1,7 +1,7 @@
 {
   "id": "t3-deepseek-superagent",
   "name": "T3 DeepSeek Super-Agent",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A policy-gated proactive ACP agent for T3 sessions.",
   "repository": "https://github.com/WakPd/t3-deepseek-superagent",
   "authors": ["WakPd"],
@@ -9,7 +9,7 @@
   "license_url": "https://github.com/WakPd/t3-deepseek-superagent/blob/master/LICENSE",
   "distribution": {
     "npx": {
-      "package": "t3-deepseek-superagent-harness@0.1.0",
+      "package": "t3-deepseek-superagent-harness@0.1.1",
       "args": ["--acp"]
     }
   }
