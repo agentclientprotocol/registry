@@ -1,6 +1,6 @@
 {
   "id": "github-copilot",
-  "name": "Copilot",
+  "name": "GitHub Copilot",
   "version": "1.565.1",
   "description": "GitHub's AI pair programmer",
   "repository": "https://github.com/github/copilot-language-server-release",
