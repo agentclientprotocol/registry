@@ -1,6 +1,6 @@
 {
   "id": "github-copilot-cli",
-  "name": "Copilot",
+  "name": "GitHub Copilot",
   "version": "1.0.105",
   "description": "GitHub's AI pair programmer",
   "repository": "https://github.com/github/copilot-cli",
