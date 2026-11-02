@@ -1,0 +1,16 @@
+{
+  "id": "ai-game-developer",
+  "name": "AI Game Dev",
+  "version": "0.25.11",
+  "description": "Engine-aware AI game developer for Unity, Godot and Unreal: works in your game project and drives the open editor through its tools.",
+  "website": "https://ai-game.dev",
+  "authors": ["Ivan Murzak"],
+  "license": "proprietary",
+  "license_url": "https://ai-game.dev/legal/terms",
+  "distribution": {
+    "npx": {
+      "package": "@baizor/gamedev@0.25.11",
+      "args": ["acp"]
+    }
+  }
+}
