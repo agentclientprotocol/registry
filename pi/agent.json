@@ -1,0 +1,17 @@
+{
+  "id": "pi",
+  "name": "pi Coding Agent",
+  "version": "0.4.0",
+  "description": "pi coding agent for ACP clients, powered by pi's SDK",
+  "repository": "https://github.com/victor-software-house/pi-acp",
+  "website": "https://pi.dev",
+  "authors": [
+    "Victor Araújo <victor@victor-software-house.com>"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "@victor-software-house/pi-acp@0.4.0"
+    }
+  }
+}
