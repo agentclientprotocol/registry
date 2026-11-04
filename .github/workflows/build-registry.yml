@@ -69,6 +69,8 @@ jobs:
           check-latest: true
 
       - name: Validate and build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: uv run --with jsonschema .github/workflows/build_registry.py
 
       - name: List agents for auth matrix
