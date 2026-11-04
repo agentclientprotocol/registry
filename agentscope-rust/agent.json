@@ -1,0 +1,47 @@
+{
+  "id": "agentscope-rust",
+  "name": "AgentScope Rust",
+  "version": "0.1.0",
+  "description": "ACP-native coding agent with multi-provider models, tool permissions, session persistence and subagents.",
+  "repository": "https://github.com/Endlessworld/agentscope-rust",
+  "website": "https://github.com/Endlessworld/agentscope-rust/blob/main/crates/agentscope-extensions-acp/README.md",
+  "authors": [
+    "Endlessworld"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/Endlessworld/agentscope-rust/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Endlessworld/agentscope-rust/releases/download/v0.1.0/agentscope-acp-darwin-aarch64.tar.gz",
+        "cmd": "./acp_harness_agent",
+        "sha256": "ae0a15db5676d6f73be92ca36e18a78d8cd85acf8c33e7d7f899482c63ed7b83"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Endlessworld/agentscope-rust/releases/download/v0.1.0/agentscope-acp-darwin-x86_64.tar.gz",
+        "cmd": "./acp_harness_agent",
+        "sha256": "4c72809e7a21a1ab63df52b86069681a373b7f592242828959b822db1c7809da"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/Endlessworld/agentscope-rust/releases/download/v0.1.0/agentscope-acp-linux-aarch64.tar.gz",
+        "cmd": "./acp_harness_agent",
+        "sha256": "ff9667e81810d0e00df99a39cdb6279f6e42a1a054a301a4a0be1e1f454179b2"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Endlessworld/agentscope-rust/releases/download/v0.1.0/agentscope-acp-linux-x86_64.tar.gz",
+        "cmd": "./acp_harness_agent",
+        "sha256": "26c29446ffa094bd5681f9fea7fdf792dfc4f9a15cece1d1e33ec86064016f29"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/Endlessworld/agentscope-rust/releases/download/v0.1.0/agentscope-acp-windows-aarch64.zip",
+        "cmd": "./acp_harness_agent.exe",
+        "sha256": "f20ea4bec3d3ad47d3a74114b4ddd77eeea17c1d7d023af22990e21f6da2fce5"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/Endlessworld/agentscope-rust/releases/download/v0.1.0/agentscope-acp-windows-x86_64.zip",
+        "cmd": "./acp_harness_agent.exe",
+        "sha256": "35e4f8808cc1e93db0a1f1b7b2b90b0d4da7d58e7498ad139759c06e1390c5ce"
+      }
+    }
+  }
+}
