@@ -494,6 +494,50 @@ def by_id(registry: dict) -> dict[str, dict]:
 @pytest.fixture(autouse=True)
 def _skip_url_validation(monkeypatch):
     monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", True)
+    monkeypatch.setattr("air_registry_order.make_request", lambda *args, **kwargs: None)
+
+
+def test_only_air_output_uses_stars(tmp_path, monkeypatch):
+    requests = []
+
+    def request(url, **kwargs):
+        requests.append(url)
+        return {"stargazers_count": 20 if url.endswith("agent-b") else 1}
+
+    monkeypatch.setattr("air_registry_order.make_request", request)
+    write_registry(
+        tmp_path,
+        [
+            agent_manifest("agent-a", "1.0.0", repository="https://github.com/acp/agent-a"),
+            agent_manifest("agent-b", "1.0.0", repository="https://github.com/acp/agent-b"),
+            agent_manifest("agent-c", "1.0.0"),
+        ],
+    )
+    build_registry(registry_dir=tmp_path)
+    registries = read_registries(tmp_path)
+
+    assert [a["id"] for a in registries["registry-for-jetbrains-air"]["agents"]] == [
+        "agent-b",
+        "agent-a",
+        "agent-c",
+    ]
+    for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview"):
+        assert [a["id"] for a in registries[name]["agents"]] == ["agent-a", "agent-b", "agent-c"]
+    assert len(requests) == 2
+
+
+def test_dry_run_does_not_fetch_stars(tmp_path, monkeypatch):
+    def unexpected_request(*args, **kwargs):
+        pytest.fail("Dry runs must not fetch repository stars")
+
+    monkeypatch.setattr("air_registry_order.make_request", unexpected_request)
+    write_registry(
+        tmp_path,
+        [agent_manifest("agent-a", "1.0.0", repository="https://github.com/acp/agent-a")],
+    )
+
+    build_registry(dry_run=True, registry_dir=tmp_path)
+    assert not (tmp_path / "dist").exists()
 
 
 class TestValidatePreview:
