@@ -11,6 +11,7 @@ import pytest
 
 from build_registry import (
     HAS_JSONSCHEMA,
+    JETBRAINS_ENVIRONMENTS,
     build_registry,
     check_license_urls,
     is_public_https_url,
@@ -581,6 +582,20 @@ class TestPreviewRegistryOutputs:
             "registry-for-jetbrains-air",
         }
 
+    def test_only_jetbrains_registries_carry_the_environments(self, tmp_path):
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.8.0")])
+
+        build_registry(registry_dir=tmp_path)
+
+        registries = read_registries(tmp_path)
+        assert "environments" not in registries["registry"]
+        for name in (
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        ):
+            assert registries[name]["environments"] == JETBRAINS_ENVIRONMENTS
+
     def test_air_registry_excludes_only_gemini(self, tmp_path):
         write_registry(
             tmp_path,
@@ -598,6 +613,7 @@ class TestPreviewRegistryOutputs:
         assert registries["registry-for-jetbrains-air"] == {
             "version": registries["registry-for-jetbrains"]["version"],
             "agents": [jetbrains_agents["antigravity-acp"], jetbrains_agents["gemini-custom"]],
+            "environments": JETBRAINS_ENVIRONMENTS,
         }
         for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview"):
             assert "gemini" in by_id(registries[name])
