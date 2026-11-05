@@ -47,6 +47,24 @@
           "acp",
           "--agent-engine=v3"
         ]
+      },
+      "linux-aarch64-musl": {
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.37.1/kirocli-aarch64-linux-musl.zip",
+        "sha256": "9dd4cd08b7b7232892a344eb01e111e38918509dd4d999f37c5297e4afccd352",
+        "cmd": "./kirocli/bin/kiro-cli-chat",
+        "args": [
+          "acp",
+          "--agent-engine=v3"
+        ]
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://prod.download.cli.kiro.dev/stable/2.37.1/kirocli-x86_64-linux-musl.zip",
+        "sha256": "f75d0f8ba18834fd4badf7e9acfa4c88ec7fbccadaa0967cb4954e47b2ddf610",
+        "cmd": "./kirocli/bin/kiro-cli-chat",
+        "args": [
+          "acp",
+          "--agent-engine=v3"
+        ]
       }
     }
   }
