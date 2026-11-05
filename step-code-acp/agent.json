@@ -1,0 +1,26 @@
+{
+  "id": "step-code-acp",
+  "name": "Step Code ACP",
+  "version": "0.2.3",
+  "description": "Community ACP adapter for the installed Step Code CLI. Requires Step Code and your own configured account.",
+  "repository": "https://github.com/FrankyYouChill/step-code-acp",
+  "authors": [
+    "FrankyYouChill"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/FrankyYouChill/step-code-acp/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/FrankyYouChill/step-code-acp/releases/download/v0.2.3/step-code-acp-0.2.3-darwin-aarch64.tar.gz",
+        "cmd": "./step-code-acp",
+        "sha256": "d05432c50f046342840eef22bc66cc5616b2e2be3253026705261e1ac110f9d8"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/FrankyYouChill/step-code-acp/releases/download/v0.2.3/step-code-acp-0.2.3-linux-x86_64.tar.gz",
+        "cmd": "./step-code-acp",
+        "sha256": "7c4ad6cbd5bd9351cb97b4dea1acbaac732b84568c8242fafeb45cf8d62816ef"
+      }
+    }
+  }
+}
