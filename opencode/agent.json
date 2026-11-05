@@ -45,6 +45,22 @@
         ],
         "sha256": "09f44302c10fd036912f59c81fd1aef5df45dd06f649197f9dfc9bbe2a79614e"
       },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.5/opencode-linux-arm64-musl.tar.gz",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "bbf927e3f7a92040f25fd78436c251f41deb25cefac1c906e79c01aa572bf73b"
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.5/opencode-linux-x64-musl.tar.gz",
+        "cmd": "./opencode",
+        "args": [
+          "acp"
+        ],
+        "sha256": "889389e99ffa39fa41d512b2c9c15316522d97398fb912503ef667f80e22a827"
+      },
       "windows-aarch64": {
         "archive": "https://github.com/anomalyco/opencode/releases/download/v2.2.5/opencode-windows-arm64.zip",
         "cmd": "./opencode.exe",

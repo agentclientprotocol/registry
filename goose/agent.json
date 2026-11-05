@@ -44,6 +44,22 @@
         ],
         "sha256": "e54036f3b7f95d3b0d7854c09465af5ef52a28c7fa03d2497d0ea68a6382282d"
       },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/block/goose/releases/download/v1.57.0/goose-aarch64-unknown-linux-musl.tar.bz2",
+        "cmd": "./goose",
+        "args": [
+          "acp"
+        ],
+        "sha256": "26dc9be443e92760c4b74c85a0c9be327ac8b48f74cca0985398e8dfdbb7e0d4"
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/block/goose/releases/download/v1.57.0/goose-x86_64-unknown-linux-musl.tar.bz2",
+        "cmd": "./goose",
+        "args": [
+          "acp"
+        ],
+        "sha256": "90ac71084236e1a896098e26a4cb9c3e090de6eba30782886d64de839924a966"
+      },
       "windows-x86_64": {
         "archive": "https://github.com/block/goose/releases/download/v1.57.0/goose-x86_64-pc-windows-msvc.zip",
         "cmd": "./goose-package\\goose.exe",

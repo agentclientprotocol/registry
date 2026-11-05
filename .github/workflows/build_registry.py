@@ -41,7 +41,9 @@ VALID_PLATFORMS = {
     "darwin-aarch64",
     "darwin-x86_64",
     "linux-aarch64",
+    "linux-aarch64-musl",
     "linux-x86_64",
+    "linux-x86_64-musl",
     "windows-aarch64",
     "windows-x86_64",
 }

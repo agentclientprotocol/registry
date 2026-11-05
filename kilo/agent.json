@@ -45,6 +45,22 @@
         ],
         "sha256": "4c08aa46dd87453a329f48b0f00d34d0fa7b8f0ac910fe8937814d4e8582de08"
       },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.8.27/kilo-linux-arm64-musl.tar.gz",
+        "cmd": "./kilo",
+        "args": [
+          "acp"
+        ],
+        "sha256": "b527c57bc4226ca36f314d61d31cb3ace6a06188fbead1d9c7ddf56a9a63e6d8"
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.8.27/kilo-linux-x64-musl.tar.gz",
+        "cmd": "./kilo",
+        "args": [
+          "acp"
+        ],
+        "sha256": "ef06e63c72e0ed9874eabe094359b1d112fb778c6013ceffd3aaa537e6fc8101"
+      },
       "windows-x86_64": {
         "archive": "https://github.com/Kilo-Org/kilocode/releases/download/v7.8.27/kilo-windows-x64.zip",
         "cmd": "./kilo.exe",
