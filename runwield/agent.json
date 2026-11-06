@@ -1,0 +1,58 @@
+{
+  "id": "runwield",
+  "name": "RunWield",
+  "version": "0.10.0",
+  "description": "Coding harness with plan review, role-based execution, validation, and durable work records.",
+  "repository": "https://github.com/gandazgul/runwield",
+  "website": "https://runwield.dev/",
+  "authors": [
+    "Carlos Ravelo"
+  ],
+  "license": "proprietary",
+  "license_url": "https://github.com/gandazgul/runwield/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/gandazgul/runwield/releases/download/v0.10.0/wld-v0.10.0-darwin-arm64.tar.gz",
+        "cmd": "./wld",
+        "args": [
+          "acp"
+        ],
+        "sha256": "459ee40c1e90b72acdb33932a315c320790fef746017f92f0cdeb04dc07d3526"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/gandazgul/runwield/releases/download/v0.10.0/wld-v0.10.0-darwin-x64.tar.gz",
+        "cmd": "./wld",
+        "args": [
+          "acp"
+        ],
+        "sha256": "69c5e8cd948c7652f00b502df88bf44c8b95834a7e0e5afa117ccce04c874089"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/gandazgul/runwield/releases/download/v0.10.0/wld-v0.10.0-linux-arm64.tar.gz",
+        "cmd": "./wld",
+        "args": [
+          "acp"
+        ],
+        "sha256": "da2ffd45e5caeaef1b87f756a496507e6638b91de47c960ea543428537634813"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/gandazgul/runwield/releases/download/v0.10.0/wld-v0.10.0-linux-x64.tar.gz",
+        "cmd": "./wld",
+        "args": [
+          "acp"
+        ],
+        "sha256": "d671dfe9f3eb2e36c2bc3e4ec21ebfc58fea83441845299ad15a3f50fdbfdfb0"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/gandazgul/runwield/releases/download/v0.10.0/wld-v0.10.0-windows-x64.tar.gz",
+        "cmd": "./wld.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "c7f60e5b7ccbdce733e0b892e1d548d11507de72e632f9ef6bcf72a5ce37eff6"
+      }
+    }
+  }
+}
