@@ -1,0 +1,15 @@
+{
+  "id": "elbow",
+  "name": "Elbow",
+  "version": "0.1.0",
+  "description": "A coding agent that picks the right model for each task, for more intelligence per engineer",
+  "website": "https://elbow.dev",
+  "authors": ["Keyholdr, Inc."],
+  "license": "proprietary",
+  "license_url": "https://unpkg.com/@elbow-dev/acp@0.1.0/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@elbow-dev/acp@0.1.0"
+    }
+  }
+}
