@@ -1,0 +1,17 @@
+{
+  "id": "megha-codex",
+  "name": "megha for Codex Cloud",
+  "version": "0.1.1",
+  "description": "Run threads on Codex Cloud from your editor, signed in with your existing codex CLI login.",
+  "repository": "https://github.com/kausthubh-coder/megha",
+  "website": "https://t3-megha.vercel.app",
+  "authors": ["Kausthubh Nandimandalam"],
+  "license": "MIT",
+  "license_url": "https://github.com/kausthubh-coder/megha/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "t3-megha@0.1.1",
+      "args": ["--backend", "codex"]
+    }
+  }
+}
