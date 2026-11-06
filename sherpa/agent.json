@@ -1,0 +1,38 @@
+{
+  "id": "sherpa",
+  "name": "Sherpa",
+  "version": "1.1.0",
+  "description": "A coding agent for any model provider, local ones included, that asks before anything that writes or executes",
+  "repository": "https://github.com/hbenabdallah/sherpa",
+  "authors": ["Houssem Eddine BENABDALLAH"],
+  "license": "PolyForm-Shield-1.0.0",
+  "license_url": "https://github.com/hbenabdallah/sherpa/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.1.0/sherpa-1.1.0-macos-aarch64.tar.gz",
+        "sha256": "1c16c8231001bc12a31fa405b73d04a43a58447436a4cd60bf23a526daca4169",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.1.0/sherpa-1.1.0-macos-x86_64.tar.gz",
+        "sha256": "1e56b016f9cda2b159eeb566f61e851589ea2833fbdc25ca39fd4db9aa9979b4",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.1.0/sherpa-1.1.0-linux-aarch64.tar.gz",
+        "sha256": "f6adedac4785ed5af97701ff10d6780efd1aa791d083823a9b58ceb5a00bc048",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.1.0/sherpa-1.1.0-linux-x86_64.tar.gz",
+        "sha256": "303c0165b4dc0cba92616163b5d9b9e782af5deead1af421074d3013d37d2cca",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      }
+    }
+  }
+}
