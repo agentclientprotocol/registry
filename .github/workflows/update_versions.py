@@ -33,7 +33,7 @@ from common import (
     UpdateError,
     VersionUpdate,
 )
-from custom_agent_sources import CustomSourceFn, antigravity, junie, opencode_v2
+from custom_agent_sources import CustomSourceFn, antigravity, junie, opencode_v2, reason
 from github_api import (
     get_github_release_digests,
     get_github_release_versions,
@@ -64,6 +64,7 @@ CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
     ("junie", "preview"): junie.get_preview_release,
     ("opencode-v2", "stable"): opencode_v2.get_stable_release,
     ("antigravity-acp", "stable"): antigravity.get_stable_release,
+    ("reason", "stable"): reason.get_stable_release,
 }
 
 
