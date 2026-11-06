@@ -757,6 +757,31 @@ class TestPreviewRegistryOutputs:
         assert "github-copilot" in preview_agents
         assert "github-copilot" not in by_id(registries["registry"])
 
+    def test_bundled_set_per_registry(self, tmp_path):
+        write_registry(
+            tmp_path,
+            [
+                agent_manifest("claude-acp", "1.0.0"),
+                agent_manifest("codex-acp", "1.0.0", npx_preview("codex-acp", "1.1.0-preview.1")),
+                agent_manifest("junie", "1.0.0"),
+                agent_manifest("github-copilot", "1.0.0"),
+                agent_manifest("agent-a", "1.0.0"),
+            ],
+        )
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        def bundled(name: str) -> set[str]:
+            return {a["id"] for a in registries[name]["agents"] if a.get("bundled")}
+
+        air_bundled = {"claude-acp", "codex-acp", "junie", "github-copilot"}
+        assert bundled("registry-for-jetbrains-air") == air_bundled
+        assert bundled("registry-for-jetbrains-preview") == air_bundled
+        assert bundled("registry-for-jetbrains") == {"claude-acp"}
+        assert bundled("registry") == set()
+        assert not any("bundled" in a for a in registries["registry"]["agents"])
+
     def test_preview_may_declare_a_distribution_type_the_base_entry_lacks(self, tmp_path):
         write_registry(
             tmp_path,
