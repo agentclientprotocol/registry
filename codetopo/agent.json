@@ -1,0 +1,40 @@
+{
+  "id": "codetopo",
+  "name": "codetopo",
+  "version": "0.4.0",
+  "description": "Read-only code-graph agent: indexes a repository into a deterministic graph of symbols, calls, imports, and heritage, then answers structural questions (descendants, blast radius, paths, diagnostics) with a tamper-evident audit chain and HMAC-signed proof certificates for snapshots.",
+  "repository": "https://github.com/nrupala/codetopo",
+  "website": "https://aimlds.org/codetopo",
+  "authors": ["Nrupal Akolkar"],
+  "license": "AGPL-3.0-or-later",
+  "license_url": "https://github.com/nrupala/codetopo/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/nrupala/codetopo/releases/download/v0.4.0/codetopo-acp-darwin-aarch64.tar.gz",
+        "sha256": "fc0fa58aac5c3bcd4417a9a4e2d19de22e4e60258abb4aba4a59e7492d41ebfe",
+        "cmd": "./codetopo-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/nrupala/codetopo/releases/download/v0.4.0/codetopo-acp-darwin-x86_64.tar.gz",
+        "sha256": "f6d03bb3a0cbfbc44dbb57636f3ddb034a112577fc4981d02de411a6ba73a737",
+        "cmd": "./codetopo-acp"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/nrupala/codetopo/releases/download/v0.4.0/codetopo-acp-linux-aarch64.tar.gz",
+        "sha256": "c50e345d9e7ed5452530f21988b968fa4df997045d940677a7818319e677431d",
+        "cmd": "./codetopo-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/nrupala/codetopo/releases/download/v0.4.0/codetopo-acp-linux-x86_64.tar.gz",
+        "sha256": "9d9baedd1f3d1895b933222f18755223d52e2e809bfd45eaa5581d2dcfe3a89e",
+        "cmd": "./codetopo-acp"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/nrupala/codetopo/releases/download/v0.4.0/codetopo-acp-windows-x86_64.zip",
+        "sha256": "b5df4144859382e58edbeb1f2ba2906852de7fef7869e99d304724c9d0a3309c",
+        "cmd": "codetopo-acp.exe"
+      }
+    }
+  }
+}
