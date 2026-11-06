@@ -1,0 +1,29 @@
+{
+    "id": "hydra-acp",
+    "name": "Hydra",
+    "version": "0.1.84",
+    "description": "Multi-client session daemon. Spawn agents, attach over WSS, multiplex sessions across editors.",
+    "authors": ["Sam Magnuson"],
+    "license": "MIT",
+    "icon": "icon.svg",
+    "repository": "https://github.com/smagnuso/hydra-acp",
+    "website": "https://github.com/smagnuso/hydra-acp",
+    "distribution": {
+        "npx": {
+            "package": "@hydra-acp/cli",
+            "args": ["shim"]
+        }
+    },
+    "capabilities": {
+        "session": {
+            "attach": {},
+            "list": true,
+            "proxy": true
+        },
+        "transport": {
+            "stdio": true,
+            "websocket": true
+        }
+    }
+}
+
