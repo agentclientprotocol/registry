@@ -1,0 +1,17 @@
+{
+  "id": "boldcreate",
+  "name": "BoldCreate",
+  "version": "0.1.0",
+  "description": "BoldCreate coding agent for your editor",
+  "website": "https://boldcreate.ai",
+  "authors": [
+    "Syncfusion"
+  ],
+  "license": "UNLICENSED",
+  "license_url": "https://boldcreate.ai/license",
+  "distribution": {
+    "npx": {
+      "package": "@boldcreate/acp@0.1.0"
+    }
+  }
+}
