@@ -1,0 +1,28 @@
+{
+  "id": "paragon-agent",
+  "name": "Paragon Agent",
+  "version": "1.0.2",
+  "description": "Digital Paragon coding agent: reads your project, edits files after your approval and runs commands, on DeepSeek, Qwen and other models via a Digital Paragon plan or your own keys",
+  "website": "https://ai.digital-paragon.ru",
+  "authors": [
+    "Digital Paragon <support@digital-paragon.ru>"
+  ],
+  "license": "proprietary",
+  "license_url": "https://digital-paragon.ru/user-agreement.pdf",
+  "distribution": {
+    "binary": {
+      "windows-x86_64": {
+        "archive": "https://ai.digital-paragon.ru/updates/paragon-agent-acp-win32-x64-1.0.2.zip",
+        "sha256": "8ae185c5103192c927e99fd76775a9ad31ce5b823dca3a6ae15c73023ac0cbfa",
+        "cmd": "./paragon-agent-acp/paragon-agent-acp.exe",
+        "args": []
+      },
+      "linux-x86_64": {
+        "archive": "https://ai.digital-paragon.ru/updates/paragon-agent-acp-linux-x64-1.0.2.tar.gz",
+        "sha256": "e4516d4b33ee64bba7df161f420075f75e54afbb7494ecfacd36d2dc985c07cd",
+        "cmd": "./paragon-agent-acp/paragon-agent-acp",
+        "args": []
+      }
+    }
+  }
+}
