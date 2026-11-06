@@ -1,0 +1,34 @@
+{
+  "id": "hive",
+  "name": "Hive",
+  "version": "0.2.0",
+  "description": "Native Rust YOLO coding agent",
+  "repository": "https://github.com/xn0tdev/hive",
+  "authors": ["gotlib"],
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/xn0tdev/hive/releases/download/v0.2.0/hive-aarch64-apple-darwin.tar.gz",
+        "cmd": "./hive",
+        "args": ["--acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/xn0tdev/hive/releases/download/v0.2.0/hive-x86_64-apple-darwin.tar.gz",
+        "cmd": "./hive",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/xn0tdev/hive/releases/download/v0.2.0/hive-x86_64-unknown-linux-gnu.tar.gz",
+        "cmd": "./hive",
+        "args": ["--acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/xn0tdev/hive/releases/download/v0.2.0/hive-x86_64-pc-windows-msvc.zip",
+        "cmd": "hive.exe",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
