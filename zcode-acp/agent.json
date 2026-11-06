@@ -1,0 +1,29 @@
+{
+  "id": "zcode-acp",
+  "name": "ZCode ACP",
+  "version": "0.9.1",
+  "description": "ACP bridge for ZCode — Zhipu's GLM coding agent on the desktop. Drives the locally installed and signed-in ZCode engine over its native app-server protocol (streaming thinking/output, tool cards, permissions, session list/resume/fork, native sub-agents); the model list mirrors the engine registry, so your own ZCode subscription plans show up and are switchable. No API keys are proxied. macOS; requires the ZCode desktop app and Python 3.",
+  "repository": "https://github.com/Liang-HZ/zcode-acp",
+  "authors": [
+    "Liang-HZ"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/Liang-HZ/zcode-acp/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Liang-HZ/zcode-acp/releases/download/v0.9.1/zcode-acp-0.9.1.tar.gz",
+        "sha256": "02c376345d993fdcdbcbf6ee75a5843671b99c4c09e3396536431559e77411de",
+        "cmd": "./bin/zcode-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Liang-HZ/zcode-acp/releases/download/v0.9.1/zcode-acp-0.9.1.tar.gz",
+        "sha256": "02c376345d993fdcdbcbf6ee75a5843671b99c4c09e3396536431559e77411de",
+        "cmd": "./bin/zcode-acp"
+      }
+    },
+    "uvx": {
+      "package": "zcode-acp==0.9.1"
+    }
+  }
+}
