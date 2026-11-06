@@ -1,0 +1,20 @@
+{
+  "id": "siada-cli",
+  "name": "Siada CLI",
+  "version": "1.7.21",
+  "description": "Context-aware coding agent with cross-session persistent memory, specialized sub-agents, and cross-platform shell execution.",
+  "repository": "https://github.com/liauto-siada/siada-cli",
+  "website": "https://github.com/liauto-siada/siada-cli",
+  "authors": [
+    "Siada Team"
+  ],
+  "license": "Apache-2.0",
+  "distribution": {
+    "uvx": {
+      "package": "siada-cli==1.7.21",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
