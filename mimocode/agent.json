@@ -1,0 +1,42 @@
+{
+  "id": "mimocode",
+  "name": "MiMo Code",
+  "version": "0.1.3",
+  "description": "MiMo Code: Where Models and Agents Co-Evolve — terminal-native AI coding assistant with persistent memory, intelligent context management, and self-improvement.",
+  "repository": "https://github.com/XiaomiMiMo/MiMo-Code",
+  "website": "https://mimo.xiaomi.com/mimocode",
+  "authors": [
+    "Xiaomi MiMo"
+  ],
+  "license": "MIT",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.1.3/mimocode-darwin-arm64.zip",
+        "cmd": "./mimocode",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.1.3/mimocode-darwin-x64.zip",
+        "cmd": "./mimocode",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.1.3/mimocode-linux-arm64.tar.gz",
+        "cmd": "./mimocode",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.1.3/mimocode-linux-x64.tar.gz",
+        "cmd": "./mimocode",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/XiaomiMiMo/MiMo-Code/releases/download/v0.1.3/mimocode-windows-x64.zip",
+        "cmd": "./mimocode.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
