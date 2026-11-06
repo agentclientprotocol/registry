@@ -1,0 +1,22 @@
+{
+  "id": "codewhale",
+  "name": "Codewhale",
+  "version": "0.10.2",
+  "description": "Open-source Rust terminal coding agent supporting hosted and local models.",
+  "repository": "https://github.com/codewhale-hq/Codewhale",
+  "website": "https://codewhale.net",
+  "authors": [
+    "Hunter Bown"
+  ],
+  "license": "MIT",
+  "distribution": {
+    "npx": {
+      "package": "codewhale@0.10.2",
+      "args": [
+        "serve",
+        "--acp"
+      ]
+    }
+  },
+  "license_url": "https://github.com/codewhale-hq/Codewhale/blob/main/LICENSE"
+}
