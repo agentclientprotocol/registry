@@ -1,0 +1,28 @@
+{
+  "id": "raven",
+  "name": "Raven",
+  "version": "0.6.7",
+  "description": "Privacy-first local coding-agent harness for Ollama / OpenAI-compatible endpoints",
+  "repository": "https://github.com/raythurman2386/raven",
+  "authors": [
+    "Raymond Thurman"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/raythurman2386/raven/blob/master/LICENSE",
+  "distribution": {
+    "binary": {
+      "linux-aarch64": {
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.6.7/raven-0.6.7-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "3ee2a4fdd6343a0e6ba7a30450676579337f739e9f01aa70dfd7d42df7d47f2c",
+        "cmd": "./raven",
+        "args": ["--acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/raythurman2386/raven/releases/download/v0.6.7/raven-0.6.7-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "d5748386c048493e70de71377eeda55cd1c676cc13510a21a92a0598456b1603",
+        "cmd": "./raven",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
