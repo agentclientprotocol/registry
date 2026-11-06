@@ -1,0 +1,18 @@
+{
+  "id": "kiro-acp-bridge",
+  "name": "Kiro Bridge",
+  "version": "0.1.2",
+  "description": "Adds native model, reasoning-effort and agent selectors plus dynamic slash commands to Kiro CLI over ACP",
+  "repository": "https://github.com/AbduRahmanS/kiro-acp-bridge",
+  "website": "https://github.com/AbduRahmanS/kiro-acp-bridge#readme",
+  "authors": [
+    "Abdrahamane Sarambounou <abdrahaman.dev@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/AbduRahmanS/kiro-acp-bridge/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "kiro-acp-bridge@0.1.2"
+    }
+  }
+}
