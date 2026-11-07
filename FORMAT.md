@@ -165,3 +165,27 @@ builds require the musl loader and any other runtime libraries they depend on.
 A musl target has the same fields as any other binary target (`archive`, `cmd`,
 and optional `sha256`, `args`, and `env`). A publisher whose existing Linux
 artifact also supports musl can declare that same artifact under both keys.
+
+## OpenCode ID consolidation
+
+Use `opencode` (display name **OpenCode**) for new installations. It tracks the
+stable GitHub releases, including OpenCode 2. The former `opencode-v2` entry is
+now a generated compatibility entry named **OpenCode (legacy ID)**.
+
+All four published indexes retain `opencode-v2`, its complete distribution and
+`opencode-v2.svg`. Existing clients can continue resolving, installing, launching
+and updating that ID without understanding a new registry field. Its version,
+platforms, archive URLs, checksums and launch settings are copied from `opencode`
+at build time. There is only one source manifest, icon and release updater to
+maintain; the separate OpenCode V2 feed updater is removed. The auth verifier and
+protocol matrix also resolve the compatibility entry from the canonical manifest.
+Scoped validation and version checks accept `opencode-v2`; a version check updates
+only the canonical `opencode` manifest.
+
+The compatibility entry remains visible in clients that list every registry
+entry. Do not remove it until supported clients can migrate saved agent IDs.
+The registry does not rename local installations, settings or conversation
+records, and does not guarantee that a conversation saved under `opencode-v2`
+will appear under `opencode`. Keep the legacy installation for those conversations;
+select **OpenCode** for new work. OpenCode's own configuration and credentials are
+not migrated by this change. Neither published entry is a V1 installation.

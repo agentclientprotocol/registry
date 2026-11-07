@@ -28,6 +28,7 @@ from registry_utils import (
     should_skip_dir,
     subprocess_group_kwargs,
     terminate_process_group,
+    with_compatibility_entries,
 )
 
 # Import auth client (only needed when --auth-check is used)
@@ -1001,7 +1002,7 @@ def load_registry(registry_dir: Path) -> list[dict]:
         print(f"  ({len(quarantine)} agent(s) quarantined)")
         print()
 
-    return agents
+    return [entry for entry in with_compatibility_entries(agents) if entry["id"] not in quarantine]
 
 
 def main():
