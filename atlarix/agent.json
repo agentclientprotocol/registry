@@ -1,8 +1,8 @@
 {
   "id": "atlarix",
   "name": "Atlarix",
-  "version": "15.9.2",
-  "description": "AI coding agent with any model: Atlarix Auto, Atlarix Core, your own API key or local models. Build, Explore, Plan, Debug and Review modes; every edit and command waits for your approval.",
+  "version": "15.13.3",
+  "description": "AI coding agent with any model: Atlarix Auto, Atlarix Core, your own API key or local models. Ask, Plan, Build, Debug and Review modes; it asks before it changes a file.",
   "repository": "https://github.com/AmariahAK/atlarix-releases",
   "website": "https://www.atlarix.dev/cli",
   "authors": [
@@ -13,7 +13,7 @@
   "icon": "./icon.svg",
   "distribution": {
     "npx": {
-      "package": "atlarix@15.9.2",
+      "package": "atlarix@15.13.3",
       "args": [
         "acp"
       ]
