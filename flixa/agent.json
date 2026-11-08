@@ -1,0 +1,16 @@
+{
+  "id": "flixa",
+  "name": "Flixa",
+  "version": "0.8.1",
+  "description": "AI-powered coding agent for Zed using the Flixa API.",
+  "repository": "https://github.com/deniai-app/flixa",
+  "website": "https://deniai.app",
+  "authors": ["Deni AI"],
+  "license": "MIT",
+  "license_url": "https://github.com/deniai-app/flixa/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@deniai/flixa-zed@0.8.1"
+    }
+  }
+}
