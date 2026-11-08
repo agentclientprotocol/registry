@@ -1,0 +1,47 @@
+{
+  "id": "aster",
+  "name": "Aster",
+  "version": "0.7.1",
+  "description": "Terminal coding agent that reviews changes, edits files, and runs commands with any OpenAI-compatible provider, served over ACP on stdio.",
+  "repository": "https://github.com/Zfinix/aster",
+  "website": "https://github.com/Zfinix/aster",
+  "authors": [
+    "chiziaruhoma"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/Zfinix/aster/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.7.1/aster-0.7.1-aarch64-apple-darwin.tar.gz",
+        "sha256": "1e233db3b65adc1e2d924608c804a7e4b0cf727a83130212644d070888bbded5",
+        "cmd": "./aster-0.7.1-aarch64-apple-darwin/aster",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.7.1/aster-0.7.1-x86_64-apple-darwin.tar.gz",
+        "sha256": "72bfc9d3e7226fe9647e4f24ae602c271a7208ceb9ba5888c487d4dedb52db2a",
+        "cmd": "./aster-0.7.1-x86_64-apple-darwin/aster",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.7.1/aster-0.7.1-aarch64-unknown-linux-gnu.tar.gz",
+        "sha256": "623a7616e0bdc9863493bfd00d8be570facd753dfc35687fad12be321ac92951",
+        "cmd": "./aster-0.7.1-aarch64-unknown-linux-gnu/aster",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.7.1/aster-0.7.1-x86_64-unknown-linux-gnu.tar.gz",
+        "sha256": "308a51d0d7628bbc67d31c171d41f55c2d7af5bcba893c9752ded73fc38968a4",
+        "cmd": "./aster-0.7.1-x86_64-unknown-linux-gnu/aster",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/Zfinix/aster/releases/download/cli-v0.7.1/aster-0.7.1-x86_64-pc-windows-msvc.zip",
+        "sha256": "36698d577c947f05f4788a48c67f882eda00984413fcd03c295963d67561c871",
+        "cmd": "aster-0.7.1-x86_64-pc-windows-msvc/aster.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
