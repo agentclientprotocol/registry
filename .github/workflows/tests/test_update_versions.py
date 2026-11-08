@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from update_versions import (
     VersionUpdate,
     apply_update,
@@ -12,6 +14,7 @@ from update_versions import (
     get_highest_preview_version,
     get_npm_versions,
     is_prerelease,
+    main,
 )
 
 
@@ -518,3 +521,82 @@ class TestNpmDistTagsFallback:
         agent_data = preview_agent_data("1.8.0", "1.9.0-preview.1")
 
         assert check_agent_version(Path("codex-acp/agent.json"), agent_data) == (None, None)
+
+
+class TestPerAgentFaultIsolation:
+    """One agent's check or apply failure must not block other agents' updates."""
+
+    @staticmethod
+    def _write_agents(tmp_path: Path, *agent_ids: str) -> list[tuple[Path, dict]]:
+        agents = []
+        for agent_id in agent_ids:
+            agent_data = {
+                "id": agent_id,
+                "version": "1.0.0",
+                "distribution": {"npx": {"package": f"@acp/{agent_id}@1.0.0"}},
+            }
+            agent_path = tmp_path / agent_id / "agent.json"
+            agent_path.parent.mkdir()
+            agent_path.write_text(json.dumps(agent_data))
+            agents.append((agent_path, agent_data))
+        return agents
+
+    @staticmethod
+    def _run_main(capsys, *args: str) -> tuple[int, dict]:
+        argv = ["update_versions.py", "--json", "--channels", "stable", *args]
+        with patch("sys.argv", argv), pytest.raises(SystemExit) as excinfo:
+            main()
+        return excinfo.value.code, json.loads(capsys.readouterr().out)
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.find_all_agents")
+    def test_unexpected_check_exception_is_isolated(
+        self, mock_find_agents, mock_npm_versions, tmp_path: Path, capsys
+    ):
+        mock_find_agents.return_value = self._write_agents(tmp_path, "broken", "healthy")
+
+        def npm_versions(package_name: str) -> set[str]:
+            if package_name == "@acp/broken":
+                raise RuntimeError("HTTP 403")
+            return {"1.0.0", "1.1.0"}
+
+        mock_npm_versions.side_effect = npm_versions
+
+        code, result = self._run_main(capsys, "--apply")
+
+        assert code == 1
+        assert [u["agent_id"] for u in result["updates"]] == ["healthy"]
+        assert [e["agent_id"] for e in result["errors"]] == ["broken"]
+        assert json.loads((tmp_path / "healthy" / "agent.json").read_text())["version"] == "1.1.0"
+
+    @patch("update_versions.apply_update")
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.find_all_agents")
+    def test_failed_apply_is_excluded_from_applied_updates(
+        self, mock_find_agents, mock_npm_versions, mock_apply, tmp_path: Path, capsys
+    ):
+        mock_find_agents.return_value = self._write_agents(tmp_path, "broken", "healthy")
+        mock_npm_versions.return_value = {"1.0.0", "1.1.0"}
+        mock_apply.side_effect = lambda update: update.agent_id == "healthy"
+
+        code, result = self._run_main(capsys, "--apply")
+
+        assert code == 1
+        assert [u["agent_id"] for u in result["updates"]] == ["healthy"]
+        assert result["errors"] == [
+            {"agent_id": "broken", "error": "stable: failed to apply update"}
+        ]
+
+    @patch("update_versions.get_npm_versions")
+    @patch("update_versions.find_all_agents")
+    def test_dry_run_reports_updates_despite_other_errors(
+        self, mock_find_agents, mock_npm_versions, tmp_path: Path, capsys
+    ):
+        mock_find_agents.return_value = self._write_agents(tmp_path, "broken", "healthy")
+        mock_npm_versions.side_effect = lambda name: None if name == "@acp/broken" else {"1.1.0"}
+
+        code, result = self._run_main(capsys)
+
+        assert code == 2
+        assert [u["agent_id"] for u in result["updates"]] == ["healthy"]
+        assert [e["agent_id"] for e in result["errors"]] == ["broken"]

@@ -33,7 +33,7 @@ from common import (
     UpdateError,
     VersionUpdate,
 )
-from custom_agent_sources import CustomSourceFn, junie
+from custom_agent_sources import CustomSourceFn, antigravity, junie, opencode_v2
 from github_api import (
     get_github_release_digests,
     get_github_release_versions,
@@ -62,6 +62,8 @@ AGENT_DIRS = [
 # discovered through npm/PyPI/GitHub Releases. See custom_agent_sources/__init__.py.
 CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
     ("junie", "preview"): junie.get_preview_release,
+    ("opencode-v2", "stable"): opencode_v2.get_stable_release,
+    ("antigravity-acp", "stable"): antigravity.get_stable_release,
 }
 
 
@@ -620,7 +622,10 @@ def main():
         for channel in CHANNELS:
             if channel not in channels:
                 continue
-            update, error = checkers[channel](agent_path, agent_data, fetch_cache)
+            try:
+                update, error = checkers[channel](agent_path, agent_data, fetch_cache)
+            except Exception as e:  # one agent's unexpected failure must not abort the others
+                update, error = None, UpdateError(agent_id, f"{channel}: unexpected error: {e!r}")
             if error:
                 agent_errors.append(error)
             elif update:
@@ -640,6 +645,33 @@ def main():
             if not messages:
                 messages.append(f"OK ({agent_data.get('version', 'unknown')})")
             print("; ".join(messages))
+
+    # Apply updates if requested; one agent's failure only drops that agent's update
+    if args.apply and updates:
+        log = sys.stderr if args.json else sys.stdout
+        print(file=log)
+        print("Applying updates...", file=log)
+        applied: list[VersionUpdate] = []
+        for update in updates:
+            print(
+                f"  Updating {update.agent_id} ({update.channel})...", end=" ", flush=True, file=log
+            )
+            try:
+                ok = apply_update(update)
+            except Exception as e:
+                print(f"Error applying {update.agent_id}: {e!r}", file=sys.stderr)
+                ok = False
+            if ok:
+                applied.append(update)
+                print("OK", file=log)
+            else:
+                errors.append(
+                    UpdateError(update.agent_id, f"{update.channel}: failed to apply update")
+                )
+                print("FAILED", file=log)
+        print(file=log)
+        print(f"Applied {len(applied)} updates, {len(updates) - len(applied)} failed", file=log)
+        updates = applied
 
     # Output results
     if args.json:
@@ -669,7 +701,7 @@ def main():
 
         if updates:
             print()
-            print("Updates available:")
+            print("Updates applied:" if args.apply else "Updates available:")
             for u in updates:
                 print(
                     f"  - {u.agent_id} ({u.channel}): {u.current_version} -> "
@@ -681,31 +713,6 @@ def main():
             print("Errors:")
             for e in errors:
                 print(f"  - {e.agent_id}: {e.error}")
-
-    # Apply updates if requested
-    if args.apply and updates:
-        print()
-        print("Applying updates...")
-        applied = 0
-        failed = 0
-        for update in updates:
-            if not args.json:
-                print(f"  Updating {update.agent_id}...", end=" ", flush=True)
-            if apply_update(update):
-                applied += 1
-                if not args.json:
-                    print("OK")
-            else:
-                failed += 1
-                if not args.json:
-                    print("FAILED")
-
-        print()
-        print(f"Applied {applied} updates, {failed} failed")
-
-        # Exit with error if any updates failed
-        if failed > 0:
-            sys.exit(1)
 
     # Exit with special code if updates are available (for CI)
     if updates and not args.apply:
