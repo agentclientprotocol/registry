@@ -12,6 +12,48 @@
   "license": "proprietary",
   "license_url": "https://github.com/agentclientprotocol/claude-agent-acp/blob/main/LICENSE",
   "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-darwin-arm64.zip",
+        "cmd": "./claude-agent-acp",
+        "sha256": "b5f316a20d61c4950ec57296121d3c6fc33b04776a388634ca694343f96d77b5"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-darwin-x64.zip",
+        "cmd": "./claude-agent-acp",
+        "sha256": "35e55ab584663c5ecde3f7de098a0f60a30aca8d3126f7838f4aed6ab2af3f14"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-linux-arm64.tar.gz",
+        "cmd": "./claude-agent-acp",
+        "sha256": "24096e79c0db76738022f036cc7ccc0bb5176af511827ea1d3da1e62430521f2"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-linux-x64.tar.gz",
+        "cmd": "./claude-agent-acp",
+        "sha256": "abfce3f9875d7ec1d04799fe90023de7bca28f1c109717206b5f071be10657d7"
+      },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-linux-arm64-musl.tar.gz",
+        "cmd": "./claude-agent-acp",
+        "sha256": "21259ddee778d538e01bade264565ae9c44d8d537cfa4f0797a888a71ea76525"
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-linux-x64-musl.tar.gz",
+        "cmd": "./claude-agent-acp",
+        "sha256": "3b814c2a0d45e7ce6ebfe6e254344214811c529c0852f69db6c77c07a97b95d8"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-windows-arm64.zip",
+        "cmd": "./claude-agent-acp.exe",
+        "sha256": "61bbb4f9457236769061d3004169bf162936a9ffc87445fbbacf67effa2c3701"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.101.0/claude-agent-acp-windows-x64.zip",
+        "cmd": "./claude-agent-acp.exe",
+        "sha256": "2b498c0a4e7da2291c24a693aedd46f1cbcbf3f1bd858983cbe951b9627b9495"
+      }
+    },
     "npx": {
       "package": "@agentclientprotocol/claude-agent-acp@0.101.0"
     }
