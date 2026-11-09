@@ -1,49 +1,49 @@
 {
   "id": "rakitsu",
   "name": "Rakitsu",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A YAML-configurable AI agent runtime with a built-in ACP chat agent.",
   "repository": "https://github.com/SK-ENT/rakitsu",
   "website": "https://rakitsu.com",
   "license": "BUSL-1.1",
-  "license_url": "https://github.com/SK-ENT/rakitsu/blob/v0.3.1/LICENSE",
+  "license_url": "https://github.com/SK-ENT/rakitsu/blob/v0.3.2/LICENSE",
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.1/rakitsu-darwin-arm64",
-        "sha256": "67dc0e7aae5cb5204add431c85118b006c6f0dcd64f861e2b28b2ebf31c7b05b",
+        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.2/rakitsu-darwin-arm64",
+        "sha256": "23aa5d983d811f797988cf2684826a481968492957e0111d247452e48d27d361",
         "cmd": "./rakitsu-darwin-arm64",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.1/rakitsu-darwin-amd64",
-        "sha256": "5dced3244317c1e5004cc0661432bd10e0372e72b83aa355b36ff12646b23d1b",
+        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.2/rakitsu-darwin-amd64",
+        "sha256": "2a983465252501ff8f9872c5c3cc836bf3264517fbd3e692d31da41812f9ec01",
         "cmd": "./rakitsu-darwin-amd64",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.1/rakitsu-linux-arm64",
-        "sha256": "da60c3de0628356752630142867fcca1463fb82bbe36ce479ed1e617ed0c72cd",
+        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.2/rakitsu-linux-arm64",
+        "sha256": "947b75d55359931cd2ce7f696ee0285e3832c1e27337c6bcc00d008eea8984d9",
         "cmd": "./rakitsu-linux-arm64",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.1/rakitsu-linux-amd64",
-        "sha256": "fdbdaedfcf8441ca6201d7ce94b71f2e0c7e9ad56164460bb0b23c8f814c9e61",
+        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.2/rakitsu-linux-amd64",
+        "sha256": "548bf01cfa19417036e492228b564ba10e91e66d01adfba00b22a1e9d8b13966",
         "cmd": "./rakitsu-linux-amd64",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.1/rakitsu-windows-amd64.exe",
-        "sha256": "59bb41362624b78fd64a792384bab2a99f7b4641f7ae129f7bbbad039116d9ff",
+        "archive": "https://github.com/SK-ENT/rakitsu/releases/download/v0.3.2/rakitsu-windows-amd64.exe",
+        "sha256": "569e0d79854f207944a366c0d8081f766f4f95275ed3779aad5cf16aee22e693",
         "cmd": "./rakitsu-windows-amd64.exe",
         "args": [
           "acp"
