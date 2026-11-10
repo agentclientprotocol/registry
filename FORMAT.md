@@ -142,6 +142,26 @@ For binary distribution, use these platform identifiers:
 - `darwin-aarch64` - macOS Apple Silicon
 - `darwin-x86_64` - macOS Intel
 - `linux-aarch64` - Linux ARM64
+- `linux-aarch64-musl` - Linux ARM64 with musl libc (e.g. Alpine Linux)
 - `linux-x86_64` - Linux x86_64
+- `linux-x86_64-musl` - Linux x86_64 with musl libc (e.g. Alpine Linux)
 - `windows-aarch64` - Windows ARM64
 - `windows-x86_64` - Windows x86_64
+
+The existing `linux-aarch64` and `linux-x86_64` keys remain the default Linux
+targets, typically for glibc. They do not imply musl compatibility.
+
+Clients should detect the host libc and select the matching target. On musl,
+use the corresponding `-musl` target; if it is absent, treat the binary
+distribution as unavailable rather than falling back to a potentially
+incompatible default Linux build. Other distribution types may still be used.
+On glibc, prefer the unsuffixed Linux target by default.
+
+The `-musl` suffix describes the build's libc requirements, not an exclusive
+host restriction. Other Linux systems may opt into a musl build when compatible.
+Statically linked builds can often run on either libc; dynamically linked musl
+builds require the musl loader and any other runtime libraries they depend on.
+
+A musl target has the same fields as any other binary target (`archive`, `cmd`,
+and optional `sha256`, `args`, and `env`). A publisher whose existing Linux
+artifact also supports musl can declare that same artifact under both keys.

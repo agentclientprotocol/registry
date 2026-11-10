@@ -1,10 +1,10 @@
 {
   "id": "github-copilot",
-  "name": "Copilot",
-  "version": "1.558.0",
+  "name": "GitHub Copilot",
+  "version": "1.568.0",
   "description": "GitHub's AI pair programmer",
   "repository": "https://github.com/github/copilot-language-server-release",
-  "website": "https://github.com/features/copilot/cli/",
+  "website": "https://github.com/github/copilot-language-server-release",
   "authors": [
     "GitHub"
   ],
@@ -12,7 +12,7 @@
   "license_url": "https://github.com/github/copilot-language-server-release/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "@github/copilot-language-server@1.558.0",
+      "package": "@github/copilot-language-server@1.568.0",
       "args": [
         "--acp"
       ]

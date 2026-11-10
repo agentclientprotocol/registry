@@ -1,5 +1,7 @@
 # ACP Registry
 
+[![Check License URLs](https://github.com/agentclientprotocol/registry/actions/workflows/check-license-urls.yml/badge.svg)](https://github.com/agentclientprotocol/registry/actions/workflows/check-license-urls.yml)
+
 https://agentclientprotocol.com/registry
 
 Registry of agents implementing the [Agent Client Protocol, ACP](https://github.com/agentclientprotocol/agent-client-protocol).
