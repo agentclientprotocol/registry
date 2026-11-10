@@ -1,7 +1,7 @@
 {
   "id": "kimchi",
   "name": "Kimchi",
-  "version": "1.29.0",
+  "version": "1.32.0",
   "description": "Coding agent powered by multi-model orchestration",
   "repository": "https://github.com/getkimchi/kimchi",
   "website": "https://kimchi.dev",
@@ -13,8 +13,8 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.29.0/kimchi_darwin_arm64.tar.gz",
-        "sha256": "b365948d76ccee391c5378e043dade1b6423652aac95e53cd6824d1b715dcf91",
+        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.32.0/kimchi_darwin_arm64.tar.gz",
+        "sha256": "ccdf163edab8052f6d54ad4d4f5d8721a27de5cc35ad147463a0ee3ae3c2a8d8",
         "cmd": "./bin/kimchi",
         "args": [
           "--mode",
@@ -22,8 +22,8 @@
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.29.0/kimchi_darwin_amd64.tar.gz",
-        "sha256": "ecde897611bb02a9049518ca4884509a0388e94fa62e59983e2a0591a1409ec5",
+        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.32.0/kimchi_darwin_amd64.tar.gz",
+        "sha256": "e20dcc593371fd2bce63c6569f96b36799858e808c5aae467556c4c8f88ad3c9",
         "cmd": "./bin/kimchi",
         "args": [
           "--mode",
@@ -31,8 +31,8 @@
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.29.0/kimchi_linux_arm64.tar.gz",
-        "sha256": "2c6e95e1d782e75ef2c0024d5c8415b99e9e571dda114b514724feef7da2ab45",
+        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.32.0/kimchi_linux_arm64.tar.gz",
+        "sha256": "7f5b77b317cd0509235b0c15516eb14883f73fc8ee9b88c867e1e3fe05139c21",
         "cmd": "./bin/kimchi",
         "args": [
           "--mode",
@@ -40,8 +40,8 @@
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.29.0/kimchi_linux_amd64.tar.gz",
-        "sha256": "de77b9a8d0383fe45c2a2c85bb7b9fb6bcf5f2aba9c7546214dcc64501b41f74",
+        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.32.0/kimchi_linux_amd64.tar.gz",
+        "sha256": "972738c0c546a60f4fdbb497af3e93290587d1138e148550f0b74ace976271f8",
         "cmd": "./bin/kimchi",
         "args": [
           "--mode",
@@ -49,8 +49,8 @@
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.29.0/kimchi_windows_amd64.zip",
-        "sha256": "86047c7a65395e325f34ed99b24b404c4b4fec49b3be645c550560e0624cebf8",
+        "archive": "https://github.com/getkimchi/kimchi/releases/download/v1.32.0/kimchi_windows_amd64.zip",
+        "sha256": "f8edd0a7ba9435b93375d2ebb0ce6f48611de36aa59a109463c8257874743d47",
         "cmd": "./bin/kimchi.exe",
         "args": [
           "--mode",
