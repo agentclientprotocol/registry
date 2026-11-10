@@ -8,6 +8,7 @@
     "Syncfusion"
   ],
   "license": "MIT",
+  "license_url": "https://unpkg.com/boldcreate-acp@0.1.0/LICENSE",
   "distribution": {
     "npx": {
       "package": "@boldcreate-acp@0.1.0"
