@@ -1,7 +1,7 @@
 {
   "id": "opencode-v2",
   "name": "OpenCode V2",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "The open source coding agent, version 2",
   "repository": "https://github.com/anomalyco/opencode",
   "website": "https://opencode.ai",
@@ -14,68 +14,68 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-darwin-arm64.zip",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-darwin-arm64.zip",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "15491608f6b0bc4debe5eac35eab629a2b07ea9a1fbac68ad53bcea59fcc4b45"
+        "sha256": "811c42be9cad489ea8c411ead49e06f691deee4957ba9a0a56a159a7d6c1abdc"
       },
       "darwin-x86_64": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-darwin-x64.zip",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-darwin-x64.zip",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "b2962dc445d873df56ae7d3ba7e66502b046bbc4dafa820eca18d0303a98a29c"
+        "sha256": "3e4ea96ece041218cc74bc7c7d5cd202ff1f7983e32fc7ab6c58d532445e7961"
       },
       "linux-aarch64": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-linux-arm64.tar.gz",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-linux-arm64.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "f2d27600c367e45057d6a16f6a5c2aa8d77b41a9b10d4bc3d849c2f88870e944"
+        "sha256": "c1682057f0815cb2abdd6e00305f1146ebaf1c167f0335cdb74ddc80008120e7"
       },
       "linux-x86_64": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-linux-x64.tar.gz",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-linux-x64.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "08bb21d6326ce740d91cce7ebe88a6536933f6e1e30353b91a06b01f25da306c"
+        "sha256": "89a6cee227b54bc011179c528a5e63176032462b1a5e21723b616801cddc2ca7"
       },
       "linux-aarch64-musl": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-linux-arm64-musl.tar.gz",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-linux-arm64-musl.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "ef1907a3ac88f92669fbbe4f7a94b7117208b63b5cc02b2cc2db29243e744291"
+        "sha256": "a03405f94ae02db7acb0870cf32030bab86460dc7faf524780e9cae305526b96"
       },
       "linux-x86_64-musl": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-linux-x64-musl.tar.gz",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-linux-x64-musl.tar.gz",
         "cmd": "./opencode",
         "args": [
           "acp"
         ],
-        "sha256": "97ce1345a1fdbfb105d9cdf23c57385ac30ed1495ef329dbdbf09c917b479f21"
+        "sha256": "c1801a36bf61e03eafac8d7f4521a200e4d3cd76cf43b36621cb78b460b851ee"
       },
       "windows-aarch64": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-windows-arm64.zip",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-windows-arm64.zip",
         "cmd": "./opencode.exe",
         "args": [
           "acp"
         ],
-        "sha256": "d2cf2b4de31203e6984263d40fc70206d6a62e800b4b4492a809f28cae862139"
+        "sha256": "4b2b22b4da843d126182853847974e02d7729e51046b396352cfe651fafb08d6"
       },
       "windows-x86_64": {
-        "archive": "https://opencode.ai/files/bin/2.2.6/opencode-windows-x64.zip",
+        "archive": "https://opencode.ai/files/bin/2.2.7/opencode-windows-x64.zip",
         "cmd": "./opencode.exe",
         "args": [
           "acp"
         ],
-        "sha256": "f75c16b33b8523fe1ff41e7d97e3ae654a47d59a0e327def24db2d9291bb24be"
+        "sha256": "91398e0e2c2bc72f6c93dbdae426a0710884ed3277a08558200753c7a995daa8"
       }
     }
   }
