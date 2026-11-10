@@ -7,11 +7,11 @@
   "authors": [
     "Syncfusion"
   ],
-  "license": "UNLICENSED",
-  "license_url": "https://boldcreate.ai/license",
+  "license": "MIT",
+  "license_url": "https://boldcreate.ai/license/MIT",
   "distribution": {
     "npx": {
-      "package": "@boldcreate/acp@0.1.0"
+      "package": "@boldcreate-acp@0.1.0"
     }
   }
 }
