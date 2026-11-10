@@ -111,7 +111,7 @@ The `preview` key never appears in any published registry. It is stripped from `
 }
 ```
 
-`registry-for-jetbrains-preview.json` is a complete, drop-in replacement for `registry-for-jetbrains.json`: agents without a `preview` block appear at their stable version, so a client points at one URL and never merges two files.
+`registry-for-jetbrains-preview.json` is a complete, drop-in replacement for `registry-for-jetbrains.json`: agents without a `preview` block appear at their stable version, so a client points at one URL and never merges two files. It uses the Air set of `bundled` agents, not the JetBrains set.
 
 ### The preview channel is unverified
 
