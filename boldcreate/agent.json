@@ -8,7 +8,6 @@
     "Syncfusion"
   ],
   "license": "MIT",
-  "license_url": "https://boldcreate.ai/license/MIT",
   "distribution": {
     "npx": {
       "package": "@boldcreate-acp@0.1.0"
