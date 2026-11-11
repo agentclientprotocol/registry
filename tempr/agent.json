@@ -1,7 +1,7 @@
 {
   "id": "tempr",
   "name": "Tempr",
-  "version": "0.9.23",
+  "version": "0.9.24",
   "description": "Tempr's coding agent, on your own AI provider keys",
   "website": "https://temprhq.io/docs/cli-editors",
   "authors": ["Tempr"],
@@ -10,38 +10,38 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://temprhq.io/cli/v0.9.23/tempr-0.9.23-osx-arm64.tar.gz",
-        "sha256": "e10a1a02a95685697753abdd5ecac4f5f1fda352b8ea83d37576cb1c6239baf8",
+        "archive": "https://temprhq.io/cli/v0.9.24/tempr-0.9.24-osx-arm64.tar.gz",
+        "sha256": "606ed23b1db9344d037c054909eb1427fde1dda0ec5e90b239e1083ed9e9aefb",
         "cmd": "./tempr",
         "args": ["acp"]
       },
       "darwin-x86_64": {
-        "archive": "https://temprhq.io/cli/v0.9.23/tempr-0.9.23-osx-x64.tar.gz",
-        "sha256": "30017f16435788b93c80ab8efb8382785076a011b21585cc8461e963a48b70f4",
+        "archive": "https://temprhq.io/cli/v0.9.24/tempr-0.9.24-osx-x64.tar.gz",
+        "sha256": "87a287a4f28290110d7141745f010a68fa3aa474553326e845d696f438215009",
         "cmd": "./tempr",
         "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://temprhq.io/cli/v0.9.23/tempr-0.9.23-linux-arm64.tar.gz",
-        "sha256": "e788d08a28281b748310b8db55b602b8f452f8b006fa78f740a7144f1ef53200",
+        "archive": "https://temprhq.io/cli/v0.9.24/tempr-0.9.24-linux-arm64.tar.gz",
+        "sha256": "9eb3d3c880c1abc07f534854d21a1dece60f8b340bdfebba7e1d4e73dbf301d6",
         "cmd": "./tempr",
         "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://temprhq.io/cli/v0.9.23/tempr-0.9.23-linux-x64.tar.gz",
-        "sha256": "725db1df8ecf6e69e82997cb1d4236a37549f1a04be009cc54dd43a10161ef72",
+        "archive": "https://temprhq.io/cli/v0.9.24/tempr-0.9.24-linux-x64.tar.gz",
+        "sha256": "d59fb77dfdc0abe2e47efbc5e719564cc3c6810f6fc1496f716dab65ac63dc9c",
         "cmd": "./tempr",
         "args": ["acp"]
       },
       "windows-aarch64": {
-        "archive": "https://temprhq.io/cli/v0.9.23/tempr-0.9.23-win-arm64.zip",
-        "sha256": "58e62f16ca448d23bda448f75a107c39b4fb7cb9a0336d561bd502192ffdb740",
+        "archive": "https://temprhq.io/cli/v0.9.24/tempr-0.9.24-win-arm64.zip",
+        "sha256": "ff4746ff3fd1e81039eb100bb027b69a8789ef8e5afb3afd14f2964e3a557ea6",
         "cmd": "./tempr.exe",
         "args": ["acp"]
       },
       "windows-x86_64": {
-        "archive": "https://temprhq.io/cli/v0.9.23/tempr-0.9.23-win-x64.zip",
-        "sha256": "6583ae84afa5fb13ccccc9cc3da0e498c6c0d566b32c7de5c12b9ac8b3ceb6b6",
+        "archive": "https://temprhq.io/cli/v0.9.24/tempr-0.9.24-win-x64.zip",
+        "sha256": "4948a028f7408b846f547d0e2b8d41f4be4566e8edd7ae9fd0b2c45278e78e75",
         "cmd": "./tempr.exe",
         "args": ["acp"]
       }
