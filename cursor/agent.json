@@ -1,7 +1,7 @@
 {
   "id": "cursor",
   "name": "Cursor",
-  "version": "2026.11.05",
+  "version": "2026.11.11",
   "description": "Cursor's coding agent",
   "website": "https://cursor.com/docs/cli/acp",
   "authors": ["Cursor"],
@@ -10,32 +10,32 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://downloads.cursor.com/lab/2026.11.05-86047df/darwin/arm64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.11.11-b912975/darwin/arm64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "darwin-x86_64": {
-        "archive": "https://downloads.cursor.com/lab/2026.11.05-86047df/darwin/x64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.11.11-b912975/darwin/x64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "linux-aarch64": {
-        "archive": "https://downloads.cursor.com/lab/2026.11.05-86047df/linux/arm64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.11.11-b912975/linux/arm64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "linux-x86_64": {
-        "archive": "https://downloads.cursor.com/lab/2026.11.05-86047df/linux/x64/agent-cli-package.tar.gz",
+        "archive": "https://downloads.cursor.com/lab/2026.11.11-b912975/linux/x64/agent-cli-package.tar.gz",
         "cmd": "./dist-package/cursor-agent",
         "args": ["acp"]
       },
       "windows-aarch64": {
-        "archive": "https://downloads.cursor.com/lab/2026.11.05-86047df/windows/arm64/agent-cli-package.zip",
+        "archive": "https://downloads.cursor.com/lab/2026.11.11-b912975/windows/arm64/agent-cli-package.zip",
         "cmd": "./dist-package\\cursor-agent.cmd",
         "args": ["acp"]
       },
       "windows-x86_64": {
-        "archive": "https://downloads.cursor.com/lab/2026.11.05-86047df/windows/x64/agent-cli-package.zip",
+        "archive": "https://downloads.cursor.com/lab/2026.11.11-b912975/windows/x64/agent-cli-package.zip",
         "cmd": "./dist-package\\cursor-agent.cmd",
         "args": ["acp"]
       }
