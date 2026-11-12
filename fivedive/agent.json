@@ -1,7 +1,7 @@
 {
   "id": "fivedive",
   "name": "5dive",
-  "version": "0.127.0",
+  "version": "0.129.0",
   "description": "Attach an ACP client to a named agent in your running 5dive fleet, with its memory, tasks and org position intact, instead of opening a blank session. The roster arrives as slash commands. Runs where the fleet runs.",
   "repository": "https://github.com/5dive-ai/5dive",
   "website": "https://5dive.ai",
@@ -13,17 +13,17 @@
   "distribution": {
     "binary": {
       "linux-x86_64": {
-        "archive": "https://github.com/5dive-ai/5dive/archive/refs/tags/v0.127.0.tar.gz",
-        "sha256": "756ba6a6d1f7a0632a473360dbb3febc91f4b9c241145b74a60f9c37c21d3448",
-        "cmd": "5dive-0.127.0/5dive",
+        "archive": "https://github.com/5dive-ai/5dive/archive/refs/tags/v0.129.0.tar.gz",
+        "sha256": "7128db662b8f4e440c87794e734b196e2e15d5e23fd580530fff2528a7f6fb5d",
+        "cmd": "5dive-0.129.0/5dive",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/5dive-ai/5dive/archive/refs/tags/v0.127.0.tar.gz",
-        "sha256": "756ba6a6d1f7a0632a473360dbb3febc91f4b9c241145b74a60f9c37c21d3448",
-        "cmd": "5dive-0.127.0/5dive",
+        "archive": "https://github.com/5dive-ai/5dive/archive/refs/tags/v0.129.0.tar.gz",
+        "sha256": "7128db662b8f4e440c87794e734b196e2e15d5e23fd580530fff2528a7f6fb5d",
+        "cmd": "5dive-0.129.0/5dive",
         "args": [
           "acp"
         ]
