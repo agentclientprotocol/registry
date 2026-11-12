@@ -1,0 +1,81 @@
+{
+  "id": "wrongstack",
+  "name": "WrongStack",
+  "version": "1.5.4",
+  "description": "Terminal-first AI coding agent: multi-provider models, subagent fleets, MCP tools and per-call approvals.",
+  "repository": "https://github.com/WrongStack/WrongStack",
+  "website": "https://wrongstack.com",
+  "authors": [
+    "ECOSTACK TECHNOLOGY OÜ"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/WrongStack/WrongStack/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-darwin-arm64",
+        "cmd": "./wstack-darwin-arm64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "3e54bb9f6d8da0ab7c75e916ae404a6f4d7835d40e3ace9a3c20a4a03f35547e"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-darwin-x64",
+        "cmd": "./wstack-darwin-x64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "cafd3c7afe8aa141c1bc5db6f3131f0bd015b134c0c1fafadc491f4effa5e829"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-linux-arm64",
+        "cmd": "./wstack-linux-arm64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "b0374cdb32c5f1bf6f67d3795b78f62e5e0d39f582d1e5d6fa86aa3aadabf359"
+      },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-linux-arm64-musl",
+        "cmd": "./wstack-linux-arm64-musl",
+        "args": [
+          "acp"
+        ],
+        "sha256": "90432c42616658d171d524a4cd52172c585233f22013782037e5c9e099e6995d"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-linux-x64",
+        "cmd": "./wstack-linux-x64",
+        "args": [
+          "acp"
+        ],
+        "sha256": "a16f9c8ccf63c8344120bfda535f710a64b6c4d0b00320ea20088350908b9750"
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-linux-x64-musl",
+        "cmd": "./wstack-linux-x64-musl",
+        "args": [
+          "acp"
+        ],
+        "sha256": "00a3389fdf5cbbd6327513c2383597b4e34cbd33118c435f83c52ec750a83218"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-windows-arm64.exe",
+        "cmd": "./wstack-windows-arm64.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "836dadc9738b1e2fcfccbab2240354c428f0d12888317e8f29f016a91b6e7320"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/WrongStack/WrongStack/releases/download/v1.5.4/wstack-windows-x64.exe",
+        "cmd": "./wstack-windows-x64.exe",
+        "args": [
+          "acp"
+        ],
+        "sha256": "06e23344cf380be9440c31ef205bd6d218f41a5e23d4a69d762fc3c6f67796b8"
+      }
+    }
+  }
+}
