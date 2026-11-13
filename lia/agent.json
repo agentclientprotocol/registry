@@ -1,0 +1,27 @@
+{
+  "id": "lia",
+  "name": "lia",
+  "version": "0.1.1",
+  "description": "A coding agent for ACP clients that runs models through Vercel AI Gateway, built on fx",
+  "repository": "https://github.com/ap-justin/lia",
+  "website": "https://github.com/ap-justin/lia#readme",
+  "authors": ["Justin Salas"],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/ap-justin/lia/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "linux-aarch64": {
+        "archive": "https://github.com/ap-justin/lia/releases/download/v0.1.1/lia-linux-aarch64.tar.gz",
+        "sha256": "a1ea2e4d4c0390145fc44f85dbe3f9b115be8dcd56780e811a8cfbae31f7960d",
+        "cmd": "./lia",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/ap-justin/lia/releases/download/v0.1.1/lia-linux-x86_64.tar.gz",
+        "sha256": "d754a9fa1df81d34563a864141a2cb30b642f0670fe3315d3a80133f8efc622f",
+        "cmd": "./lia",
+        "args": ["acp"]
+      }
+    }
+  }
+}
