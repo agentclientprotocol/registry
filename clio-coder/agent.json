@@ -1,0 +1,21 @@
+{
+  "id": "clio-coder",
+  "name": "CLIO Coder",
+  "version": "0.8.0",
+  "description": "An open-source coding agent for scientific software: your models, bounded workers, and inspectable evidence.",
+  "repository": "https://github.com/iowarp/clio-coder",
+  "website": "https://coder.iowarp.ai",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/iowarp/clio-coder/blob/main/LICENSE",
+  "authors": [
+    "Anthony Kougkas <a.kougkas@gmail.com>"
+  ],
+  "distribution": {
+    "npx": {
+      "package": "@iowarp/clio-coder@0.8.0",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
