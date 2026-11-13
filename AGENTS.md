@@ -91,7 +91,7 @@ This is a registry of ACP (Agent Client Protocol) agents. The structure is:
 1. Scans directories for `agent.json` files
 2. Validates against `agent.schema.json` (JSON Schema)
 3. Validates icons (16x16 SVG, monochrome with `currentColor`)
-4. Aggregates into four views: `dist/registry.json`, `dist/registry-for-jetbrains.json`, `dist/registry-for-jetbrains-preview.json` and `dist/registry-for-jetbrains-air.json`
+4. Generates the `opencode-v2` compatibility entry from `opencode` (see `FORMAT.md#opencode-id-consolidation`), then aggregates into four views: `dist/registry.json`, `dist/registry-for-jetbrains.json`, `dist/registry-for-jetbrains-preview.json` and `dist/registry-for-jetbrains-air.json`
 5. Copies icons to `dist/<id>.svg`
 
 **CI/CD** (`.github/workflows/build-registry.yml`):

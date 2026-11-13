@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from registry_utils import (
+    COMPATIBILITY_IDS,
     UVX_VERSION_PATTERN,
     extract_npm_package_name,
     extract_npm_package_version,
@@ -25,6 +26,7 @@ from registry_utils import (
     resolve_preview_entry,
     should_skip_dir,
     strip_preview,
+    with_compatibility_entries,
 )
 
 try:
@@ -767,6 +769,7 @@ def build_registry(
         agent_ids: If set, validate only these agents; implies dry_run.
     """
     if agent_ids is not None:
+        agent_ids = {COMPATIBILITY_IDS.get(agent_id, agent_id) for agent_id in agent_ids}
         dry_run = True
     if registry_dir is None:
         registry_dir = Path(__file__).parent.parent.parent
@@ -812,6 +815,15 @@ def build_registry(
     if has_errors:
         print("\nBuild failed due to validation errors")
         sys.exit(1)
+
+    try:
+        agents = with_compatibility_entries(agents)
+    except ValueError as error:
+        print(f"Error: {error}")
+        sys.exit(1)
+
+    for entry in agents:
+        entry["icon"] = f"{base_url}/{entry['id']}.svg"
 
     if not agents:
         print("\nWarning: No agents found")
@@ -928,7 +940,8 @@ def build_registry(
     # Copy icons to dist
     for entry in agents:
         entry_id = entry["id"]
-        icon_src = registry_dir / entry_id / "icon.svg"
+        source_id = COMPATIBILITY_IDS.get(entry_id, entry_id)
+        icon_src = registry_dir / source_id / "icon.svg"
         if icon_src.exists():
             icon_dst = dist_dir / f"{entry_id}.svg"
             icon_dst.write_bytes(icon_src.read_bytes())
