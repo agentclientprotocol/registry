@@ -1,16 +1,73 @@
 {
   "id": "autohand",
   "name": "Autohand Code",
-  "version": "0.2.1",
-  "description": "Autohand Code - AI coding agent powered by Autohand AI",
-  "repository": "https://github.com/autohandai/autohand-acp",
-  "website": "https://www.autohand.ai/cli/",
-  "authors": ["Autohand AI"],
+  "version": "0.9.11",
+  "description": "Autohand Code CLI with native ACP support",
+  "repository": "https://github.com/autohandai/code-cli",
+  "website": "https://github.com/autohandai/code-cli/blob/main/docs/guides/ACP.md",
+  "authors": [
+    "Autohand AI"
+  ],
   "license": "Apache-2.0",
-  "license_url": "https://github.com/autohandai/autohand-acp/blob/main/LICENSE",
+  "license_url": "https://github.com/autohandai/code-cli/blob/main/LICENSE",
   "distribution": {
-    "npx": {
-      "package": "@autohandai/autohand-acp@0.2.1"
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-macos-arm64.tar.gz",
+        "sha256": "d98de36979a1a4b6442a5b0ff746a2a5f5a5408e493c93c380aa4b3ef312fe24",
+        "cmd": "./autohand",
+        "args": [
+          "--acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-macos-x64.tar.gz",
+        "sha256": "8854375088184bb794ad33ed8a2235ccbdda2559067003a9a23a7a9e231eb5fb",
+        "cmd": "./autohand",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-linux-arm64.tar.gz",
+        "sha256": "6239dc00b0334624aea60329653429cd06f2664b749350de20eda37d9a314f33",
+        "cmd": "./autohand",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-linux-x64.tar.gz",
+        "sha256": "6ec018d0cb135ce874228b0d031e94e52850fffa13b54e81e6360ddccc0dfb64",
+        "cmd": "./autohand",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-linux-arm64-musl.tar.gz",
+        "sha256": "8282e2beae416d28ebb60dc99bfc9dab09606f4b16f80379da2217853d28a51b",
+        "cmd": "./autohand",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-linux-x64-musl.tar.gz",
+        "sha256": "6aad47193dc28196b2ece5ef7260c55754b2cd4de490c7bd2c2663f572940fc2",
+        "cmd": "./autohand",
+        "args": [
+          "--acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/autohandai/code-cli/releases/download/v0.9.11/autohand-windows-x64.zip",
+        "sha256": "58a9194f40e6a676427001572128062e712332766d1189acdb5fbbbf59ca2a5d",
+        "cmd": "./autohand.exe",
+        "args": [
+          "--acp"
+        ]
+      }
     }
   }
 }
