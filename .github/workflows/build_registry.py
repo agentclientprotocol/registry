@@ -845,7 +845,12 @@ def build_registry(
         patched = copy.deepcopy(agent)
         if patched["id"] == "claude-acp":
             assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
-            patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
+            distribution = patched["distribution"]
+            launches = [distribution["npx"], *distribution.get("binary", {}).values()]
+            for launch in launches:
+                args = launch.setdefault("args", [])
+                if "--hide-claude-auth" not in args:
+                    args.append("--hide-claude-auth")
         if patched["id"] in JETBRAINS_BUNDLED_IDS:
             patched["bundled"] = True
         return patched
