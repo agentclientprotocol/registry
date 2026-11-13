@@ -16,6 +16,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+from air_registry_order import sort_air_agents_by_stars
 from registry_utils import (
     UVX_VERSION_PATTERN,
     extract_npm_package_name,
@@ -886,6 +887,8 @@ def build_registry(
             f" (excluded: {', '.join(sorted(AIR_EXCLUDE_IDS))})"
         )
         return
+
+    air_agents = sort_air_agents_by_stars(air_agents)
 
     # Create dist directory
     dist_dir = registry_dir / "dist"
