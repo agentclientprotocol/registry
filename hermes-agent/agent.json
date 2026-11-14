@@ -1,0 +1,22 @@
+{
+  "$schema": "../agent.schema.json",
+  "id": "hermes-agent",
+  "name": "Hermes Agent",
+  "version": "1.0.0",
+  "author": "Nous Research",
+  "description": "The agent that grows with you, by Nous Research.",
+  "homepage": "https://github.com/NousResearch/hermes-agent",
+  "repository": "https://github.com/NousResearch/hermes-agent",
+  "license": "Apache-2.0",
+  "icon": "icon.svg",
+  "capabilities": {
+    "supports_tools": true,
+    "supports_resources": true,
+    "supports_prompts": true
+  },
+  "distribution": {
+    "npx": {
+      "package": "@nousresearch/hermes-agent"
+    }
+  }
+}
