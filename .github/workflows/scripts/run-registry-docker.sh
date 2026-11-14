@@ -99,9 +99,14 @@ mkdir -p \
   "$STATE_DIR_HOST/xdg-cache" \
   "$STATE_DIR_HOST/xdg-config"
 
+DOCKER_BUILD_ARGS=(--label "$BUILD_HASH_LABEL=$BUILD_HASH")
 case "$BUILD_IMAGE" in
   1|true|yes)
     SHOULD_BUILD=1
+    ;;
+  refresh)
+    SHOULD_BUILD=1
+    DOCKER_BUILD_ARGS+=(--pull --no-cache)
     ;;
   0|false|no)
     SHOULD_BUILD=0
@@ -115,15 +120,15 @@ case "$BUILD_IMAGE" in
     ;;
   *)
     echo "Invalid ACP_REGISTRY_BUILD_IMAGE value: $BUILD_IMAGE" >&2
-    echo "Expected one of: auto, 0, 1" >&2
+    echo "Expected one of: auto, 0, 1, refresh" >&2
     exit 2
     ;;
 esac
 
 if [[ "$SHOULD_BUILD" == "1" ]]; then
   docker build \
+    "${DOCKER_BUILD_ARGS[@]}" \
     "${DOCKER_PLATFORM_ARGS[@]}" \
-    --label "$BUILD_HASH_LABEL=$BUILD_HASH" \
     -f "$DOCKERFILE" \
     -t "$IMAGE" \
     "$DOCKER_CONTEXT"
