@@ -1,6 +1,6 @@
-# ACP Protocol Adaptation Matrix — 2026-11-14
+# ACP Protocol Adaptation Matrix — 2026-11-15
 
-_Generated at 2026-11-14T12:13:26+00:00_
+_Generated at 2026-11-15T12:46:24+00:00_
 
 - Agents in report: **42**
 - Probed this run: **42**
@@ -35,8 +35,8 @@ github-copilot      1.570.0     npx     ok        agent                     load
 github-copilot-cli  1.0.112     npx     ok        terminal                  loadSession, session/list                              
 glm-acp-agent       1.17.1      npx     ok        agent, env_var            loadSession, session/list, session/fork, session/resume
 goose               1.59.1      binary  ok        agent                     loadSession, session/list                              
-grok-build          1.0.85      npx     ok        agent                     loadSession, session/list, session/resume              
-harn                0.10.197    binary  ok        agent                     loadSession, session/list, session/resume              
+grok-build          1.0.87      npx     ok        agent                     loadSession, session/list, session/resume              
+harn                0.10.199    binary  ok        agent                     loadSession, session/list, session/resume              
 junie               4020.10.0   binary  ok        agent, terminal           loadSession, session/list, session/fork, session/resume
 kilo                7.8.27      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 kimchi              1.34.3      binary  ok        agent                     loadSession, session/list, session/resume              
@@ -52,7 +52,7 @@ opencode-v2         2.3.0       binary  ok        terminal                  load
 pi-acp              0.0.34      npx     ok        terminal                  loadSession, session/list                              
 poolside            1.0.16      binary  ok        terminal                  loadSession, session/list                              
 qoder               1.1.89      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
-qwen-code           0.27.3      npx     ok        agent                     loadSession, session/list, session/resume              
+qwen-code           0.27.4      npx     ok        agent                     loadSession, session/list, session/resume              
 sigit               1.7.10      npx     ok        agent                     loadSession, session/list, session/fork, session/resume
 stakpak             0.3.88      binary  ok        agent                     loadSession                                            
 ```
@@ -61,8 +61,8 @@ stakpak             0.3.88      binary  ok        agent                     load
 
 | Method | Supported | Auth Required | Method Not Found | Other |
 | --- | ---: | ---: | ---: | ---: |
-| `session/list` | 30 | 5 | 5 | 2 |
+| `session/list` | 31 | 5 | 5 | 1 |
 | `session/fork` | 13 | 7 | 17 | 5 |
 | `session/resume` | 17 | 11 | 11 | 3 |
-| `session/stop` | 0 | 1 | 38 | 3 |
+| `session/stop` | 0 | 1 | 37 | 4 |
 | `session/set_model` | 17 | 4 | 17 | 4 |
