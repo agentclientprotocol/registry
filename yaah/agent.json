@@ -1,0 +1,47 @@
+{
+  "id": "yaah",
+  "name": "yaah",
+  "version": "0.102.0",
+  "description": "A minimal, fast coding agent written in Go, with sub-agents, MCP tool support, and multi-provider configuration, exposed over the Agent Client Protocol for editors.",
+  "repository": "https://github.com/buchenberg/yaah",
+  "authors": [
+    "buchenberg"
+  ],
+  "license": "MIT OR Apache-2.0",
+  "license_url": "https://github.com/buchenberg/yaah/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/buchenberg/yaah/releases/download/v0.102.0/yaah-v0.102.0-darwin-aarch64.tar.gz",
+        "cmd": "./yaah",
+        "sha256": "4c5abd907a407de854d8159cc8e8ebb680339ba74d31addc7fc9d8996efef255"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/buchenberg/yaah/releases/download/v0.102.0/yaah-v0.102.0-darwin-x86_64.tar.gz",
+        "cmd": "./yaah",
+        "sha256": "dbb31d22ae6b2e5be5364507b2202a9e68c3964bb7d6eb8178ff71f852158bc1"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/buchenberg/yaah/releases/download/v0.102.0/yaah-v0.102.0-linux-aarch64.tar.gz",
+        "cmd": "./yaah",
+        "sha256": "0a67828b2f7c0139616212ac9d8fb8a68cee4c09b611359feb88f33a211c61a9"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/buchenberg/yaah/releases/download/v0.102.0/yaah-v0.102.0-linux-x86_64.tar.gz",
+        "cmd": "./yaah",
+        "sha256": "62609e415922c817a89939b8067e23d84517214008c916f6637e72e8e7cf6678"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/buchenberg/yaah/releases/download/v0.102.0/yaah-v0.102.0-windows-aarch64.zip",
+        "cmd": "./yaah.exe",
+        "sha256": "398f8520e86019b92ca88923498da71f6707e723d6892f1f037c4c9f1647a76b"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/buchenberg/yaah/releases/download/v0.102.0/yaah-v0.102.0-windows-x86_64.zip",
+        "cmd": "./yaah.exe",
+        "sha256": "4b7a5b9b95b9908cd9b95e7fbaad39df34ec1bc42640f293f5ffb64cd7596dda"
+      }
+    }
+  }
+}
