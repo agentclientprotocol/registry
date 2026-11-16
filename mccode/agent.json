@@ -1,0 +1,58 @@
+{
+  "id": "mccode",
+  "name": "MicroClaw Code",
+  "version": "0.27.0",
+  "description": "Coding agent with checks, fix rounds, an OS sandbox and any model provider",
+  "repository": "https://github.com/microclaw/microclaw",
+  "website": "https://github.com/microclaw/microclaw/tree/main/apps/microclaw-code",
+  "authors": [
+    "MicroClaw contributors"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/microclaw/microclaw/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/microclaw/microclaw/releases/download/v0.27.0/mccode-0.27.0-aarch64-apple-darwin.tar.gz",
+        "sha256": "298471906132b73285cfb387982956fdef9c551bb36c16b24bf12562d522223e",
+        "cmd": "./mccode",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/microclaw/microclaw/releases/download/v0.27.0/mccode-0.27.0-x86_64-apple-darwin.tar.gz",
+        "sha256": "00340dd18f975c44f3a055d15fda8c0c69f4b32b32e484e631f310f937269515",
+        "cmd": "./mccode",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/microclaw/microclaw/releases/download/v0.27.0/mccode-0.27.0-aarch64-linux-gnu.tar.gz",
+        "sha256": "1f0eaa1645bc82441d39d592d02f98d5689f8a15b929a0c73288880f63c5e628",
+        "cmd": "./mccode",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/microclaw/microclaw/releases/download/v0.27.0/mccode-0.27.0-x86_64-linux-gnu.tar.gz",
+        "sha256": "e7fcf6810a82b538a157f2845c082b7adb07735fc4a077c48eaa80222b2bb5d8",
+        "cmd": "./mccode",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/microclaw/microclaw/releases/download/v0.27.0/mccode-0.27.0-x86_64-windows-msvc.zip",
+        "sha256": "78129190e613354d5e00f346519ac3b4ac0719f3d33099a40e0cf685b0ca309a",
+        "cmd": "mccode.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
