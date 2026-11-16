@@ -17,7 +17,9 @@ def get_github_token() -> str | None:
     return os.environ.get("GITHUB_TOKEN")
 
 
-def make_request(url: str, headers: dict | None = None) -> dict | list | str | None:
+def make_request(
+    url: str, headers: dict | None = None, timeout: float = 30
+) -> dict | list | str | None:
     """Make HTTP request and return JSON response."""
     req_headers = {"User-Agent": "ACP-Registry-Version-Checker/1.0"}
     if headers:
@@ -30,7 +32,7 @@ def make_request(url: str, headers: dict | None = None) -> dict | list | str | N
 
     try:
         req = urllib.request.Request(url, headers=req_headers)
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
             content = response.read().decode("utf-8")
             try:
                 return json.loads(content)

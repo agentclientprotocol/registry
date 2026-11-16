@@ -9,6 +9,8 @@ The registry contains agents:
 }
 ```
 
+The Air index (`registry-for-jetbrains-air.json`) orders agents by the GitHub star count of their `repository`, highest first. Counts refresh when the registry is built. Equal counts use the display name, then the agent id. Agents without a count follow in the same name order. Lookups share a 30-second budget and stop on rate limits; unavailable counts do not block publication. Dry runs do not fetch counts. Other indexes keep their existing order. Consumers must preserve the index order to show this sorting; Air clients that sort by name need a separate change.
+
 Each agent has the following structure:
 
 ```json
