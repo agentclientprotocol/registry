@@ -1,0 +1,63 @@
+{
+  "id": "onde-code",
+  "name": "Onde Code",
+  "version": "1.1.1",
+  "description": "Coding agent for fine-tuning, managing and deploying models on Onde Inference.",
+  "repository": "https://github.com/ondeinference/onde-code",
+  "website": "https://ondeinference.com",
+  "authors": [
+    "Onde Inference <support@ondeinference.com>"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/ondeinference/onde-code/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/ondeinference/onde-code/releases/download/v1.1.1/onde-code-darwin-arm64.tar.gz",
+        "sha256": "5577f6d2b7385eed6473213cf9f0feb7554c9c5699c362e4a9a7dcb16b2191d7",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/ondeinference/onde-code/releases/download/v1.1.1/onde-code-darwin-x64.tar.gz",
+        "sha256": "9f6b2f51e520c49c4779942b5e7d299412fb7d0fa0acd28947a0209734c9c527",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/ondeinference/onde-code/releases/download/v1.1.1/onde-code-linux-arm64.tar.gz",
+        "sha256": "1c7dd12720c0a15b9bf5fb7ade8dd971acaaca9ab792a6e01fae86eec0074801",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/ondeinference/onde-code/releases/download/v1.1.1/onde-code-linux-x64.tar.gz",
+        "sha256": "9d1392b1030c9d7eeb8a38d0f8167729637de9e69bde63d1a903668a7dc3b011",
+        "cmd": "./onde-code",
+        "args": [
+          "--acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/ondeinference/onde-code/releases/download/v1.1.1/onde-code-windows-x64.zip",
+        "sha256": "6b2d8a4cf1a38ca8b2869c611c3feb09efa09c09b7bb9b7e8b7fc1f6df9fa9c9",
+        "cmd": "onde-code.exe",
+        "args": [
+          "--acp"
+        ]
+      }
+    },
+    "npx": {
+      "package": "@ondeinference/onde-code@1.1.1",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
