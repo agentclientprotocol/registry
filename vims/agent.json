@@ -1,0 +1,47 @@
+{
+  "id": "vims",
+  "name": "VIMS",
+  "version": "0.5.18",
+  "description": "Your private AI workspace: its models, knowledge base, memories, apps and agents, from your editor.",
+  "repository": "https://github.com/HelloVIMS/vims-acp",
+  "website": "https://vims.com",
+  "authors": [
+    "VIMS <support@vims.com>"
+  ],
+  "license": "proprietary",
+  "license_url": "https://vims.com/terms",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/HelloVIMS/vims-acp/releases/download/v0.5.18/vims-acp-darwin-arm64.tar.gz",
+        "sha256": "4e8f489d9e5408bedb38dcb4f6fccbe57aff064591ff2ccb07486a107f10484e",
+        "cmd": "./vims-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/HelloVIMS/vims-acp/releases/download/v0.5.18/vims-acp-darwin-amd64.tar.gz",
+        "sha256": "6719e5cb152b01716aabdb78102f797f4f62eb4d2fc47d7c1b8219122240f76c",
+        "cmd": "./vims-acp"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/HelloVIMS/vims-acp/releases/download/v0.5.18/vims-acp-linux-arm64.tar.gz",
+        "sha256": "ad931e22f2f42a400e527e50378a4b6ff6c005539706b8147b1bb9fcaff4d694",
+        "cmd": "./vims-acp"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/HelloVIMS/vims-acp/releases/download/v0.5.18/vims-acp-linux-amd64.tar.gz",
+        "sha256": "066c2e6c8bd2e41fc3ec62556f4aedb5652d5c6ea9d30a6d1a7da4ed1f01c659",
+        "cmd": "./vims-acp"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/HelloVIMS/vims-acp/releases/download/v0.5.18/vims-acp-windows-arm64.zip",
+        "sha256": "aaf1028b9d9d4ade357f056b3da04bfc036a814f9593abf4e4392ce0bd52daa9",
+        "cmd": "./vims-acp.exe"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/HelloVIMS/vims-acp/releases/download/v0.5.18/vims-acp-windows-amd64.zip",
+        "sha256": "3733114ec2e7d8cae88eb99259bbae1054bb89e44f70b6a533960f2a8096c56b",
+        "cmd": "./vims-acp.exe"
+      }
+    }
+  }
+}
