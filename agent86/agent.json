@@ -1,0 +1,22 @@
+{
+  "id": "agent86",
+  "name": "agent86",
+  "version": "1.0.15",
+  "description": "An agentic CLI harness in Rust: a sandboxed, approval-gated coding agent that works with any OpenAI-compatible, Anthropic, or Ollama model.",
+  "repository": "https://github.com/Maetek-Technologies/agent86",
+  "website": "https://github.com/Maetek-Technologies/agent86/blob/main/docs/ACP.md",
+  "authors": [
+    "Maetek Technologies"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/Maetek-Technologies/agent86/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "agent86@1.0.15",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
