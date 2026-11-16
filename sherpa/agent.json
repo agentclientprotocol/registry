@@ -1,0 +1,38 @@
+{
+  "id": "sherpa",
+  "name": "Sherpa",
+  "version": "1.10.0",
+  "description": "A coding agent for any model provider, local ones included, that asks before anything that writes or executes",
+  "repository": "https://github.com/hbenabdallah/sherpa",
+  "authors": ["Houssem Eddine BENABDALLAH"],
+  "license": "MIT",
+  "license_url": "https://github.com/hbenabdallah/sherpa/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.10.0/sherpa-1.10.0-macos-aarch64.tar.gz",
+        "sha256": "2edd8aeebb9b6b3976d2ac9a810d13a91c7055f3fb518a4cd58540eebd0780ba",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.10.0/sherpa-1.10.0-macos-x86_64.tar.gz",
+        "sha256": "d69a7d2eab73f4d93200e5713f634e0e159d244dfec8d3505d047673332861dd",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.10.0/sherpa-1.10.0-linux-aarch64.tar.gz",
+        "sha256": "8a0a869e54403bedac2a13171c23d3933426faf190343137f7f1b7878966631e",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/hbenabdallah/sherpa/releases/download/v1.10.0/sherpa-1.10.0-linux-x86_64.tar.gz",
+        "sha256": "b89497861cc5c40b7120410b560d3e8f082056e135c67598ca8ea6f618905c15",
+        "cmd": "./sherpa",
+        "args": ["acp"]
+      }
+    }
+  }
+}
