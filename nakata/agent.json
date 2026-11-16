@@ -1,0 +1,22 @@
+{
+  "id": "nakata",
+  "name": "Nakata",
+  "version": "0.1.27",
+  "description": "Bring-your-own-key coding agent for OpenRouter, DeepSeek, Anthropic, Ollama or any OpenAI-compatible endpoint",
+  "repository": "https://github.com/nakata-app/nakata",
+  "website": "https://nakata.app/nakata-cli",
+  "authors": [
+    "Nakata"
+  ],
+  "license": "proprietary",
+  "license_url": "https://nakata.app/terms",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "nakata-cli@0.1.27",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
