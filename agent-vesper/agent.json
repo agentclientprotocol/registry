@@ -1,0 +1,42 @@
+{
+  "authors": [
+    "Aleksejs Kozlitins"
+  ],
+  "description": "Agent Vesper — a Rust-native ACP coding-agent runtime featuring the Vesper Reasoning Orchestrator (VRO), transactional sessions, hosted tools, provider-routed authentication, cognitive memory, semantic context compaction, and provider-neutral skill orchestration. The release bundle includes a native TUI and ACP v1 stdio server with real Z.ai GLM, native OpenAI, xAI / Grok, and LM Studio adapters, installable in Zed and other ACP-compatible editors.",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/99percentgrip/agent-vesper/releases/download/v0.24.14/agent-vesper-acp-darwin-aarch64.tar.gz",
+        "cmd": "./agent-vesper-acp/agent-vesper-acp",
+        "sha256": "f8216271abd2b649a6e905b3bcc0aec93c9f807d102437cdf6e47e49146b8bed"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/99percentgrip/agent-vesper/releases/download/v0.24.14/agent-vesper-acp-darwin-x86_64.tar.gz",
+        "cmd": "./agent-vesper-acp/agent-vesper-acp",
+        "sha256": "aef810d22ee748f1db870f541ecb8b75a78cbcd05bcf6ac03cb3450a8743ab57"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/99percentgrip/agent-vesper/releases/download/v0.24.14/agent-vesper-acp-linux-aarch64.tar.gz",
+        "cmd": "./agent-vesper-acp/agent-vesper-acp",
+        "sha256": "ed5cb5cb61192d5552276d91fca857cd59db2d1d4ae792f97f40b04c14211884"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/99percentgrip/agent-vesper/releases/download/v0.24.14/agent-vesper-acp-linux-x86_64.tar.gz",
+        "cmd": "./agent-vesper-acp/agent-vesper-acp",
+        "sha256": "def152ee01d0a5414a4844e80a4e260567d3ed48aa9a093e5106a844362a5eeb"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/99percentgrip/agent-vesper/releases/download/v0.24.14/agent-vesper-acp-windows-x86_64.zip",
+        "cmd": "./agent-vesper-acp/agent-vesper-acp.exe",
+        "sha256": "1768e7073e41b3b8393078ebd76998e003a0fd4c4488424458bd452778e8bba1"
+      }
+    }
+  },
+  "id": "agent-vesper",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/99percentgrip/agent-vesper/blob/main/LICENSE",
+  "name": "Agent Vesper",
+  "repository": "https://github.com/99percentgrip/agent-vesper",
+  "version": "0.24.14",
+  "website": "https://github.com/99percentgrip/agent-vesper"
+}
