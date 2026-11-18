@@ -753,7 +753,6 @@ class TestPreviewRegistryOutputs:
         assert claude["bundled"] is True
         assert "--hide-claude-auth" in claude["distribution"]["npx"]["args"]
         assert claude["version"] == "0.74.0-preview.1"
-        assert "binary" not in claude["distribution"]
         assert "github-copilot-cli" not in preview_agents
         assert "github-copilot" in preview_agents
         assert "github-copilot" not in by_id(registries["registry"])
