@@ -1,17 +1,17 @@
 {
-  "date": "2026-11-13",
-  "generatedAt": "2026-11-13T13:09:31+00:00",
+  "date": "2026-11-18",
+  "generatedAt": "2026-11-18T14:04:49+00:00",
   "tableMode": "capabilities",
   "changedOnly": false,
   "summary": {
-    "agentsProbed": 41,
-    "agentsProbedThisRun": 41,
+    "agentsProbed": 42,
+    "agentsProbedThisRun": 42,
     "agentsReused": 0,
-    "initializeSuccess": 40,
-    "sessionNewAuthRequired": 26,
+    "initializeSuccess": 41,
+    "sessionNewAuthRequired": 27,
     "features": {
       "session/list": {
-        "supported": 30,
+        "supported": 31,
         "authRequired": 5,
         "methodNotFound": 5,
         "other": 1
@@ -19,25 +19,25 @@
       "session/fork": {
         "supported": 13,
         "authRequired": 7,
-        "methodNotFound": 16,
+        "methodNotFound": 17,
         "other": 5
       },
       "session/resume": {
         "supported": 17,
-        "authRequired": 10,
+        "authRequired": 11,
         "methodNotFound": 11,
         "other": 3
       },
       "session/stop": {
         "supported": 0,
         "authRequired": 1,
-        "methodNotFound": 36,
-        "other": 4
+        "methodNotFound": 38,
+        "other": 3
       },
       "session/set_model": {
         "supported": 17,
         "authRequired": 4,
-        "methodNotFound": 16,
+        "methodNotFound": 17,
         "other": 4
       }
     }
@@ -46,7 +46,7 @@
     {
       "id": "amp-acp",
       "name": "Amp",
-      "registryVersion": "0.12.0",
+      "registryVersion": "0.13.0",
       "repository": "https://github.com/tao12345666333/amp-acp",
       "website": null,
       "distribution": "binary",
@@ -56,7 +56,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.12.0",
+      "agentInfoVersion": "0.13.0",
       "authMethods": [
         "terminal"
       ],
@@ -101,12 +101,12 @@
           "message": "\"Method not found\": session/set_model"
         }
       },
-      "stderrTail": "[acp] amp-acp v0.12.0 initialized",
+      "stderrTail": "[acp] amp-acp v0.13.0 initialized",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/amp-acp/extracted/amp-acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/amp-acp/workspace",
-      "durationSeconds": 0.804,
+      "durationSeconds": 1.241,
       "processExitCode": 143,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -167,12 +167,12 @@
           "message": "Authentication required"
         }
       },
-      "stderrTail": "thenticator, google3.security.credentials.public.python.end_user_creds, google3.net.rpc.python._rpc_stats, google3.net.rpc.python.deadline_propagation, google3.net.rpc.python.rpc, google3.net.rpc.python.rpc_errorspace, google3.net.rpc.python.rpc_internals_status, google3.thread.python.executor, google3.net.base.python.traffic_class, google3.net.rpc.python.load_balancing_channel, google3.net.rpc.python.rawmessage_with_type, google3.net.rpc.python.rpc_security_checker, google3.net.rpc.python.rpc_service, google3.net.rpc.python.rpc_status, google3.net.rpc2.python.legacy_stream_passkey, google3.net.rpc2.python.rpc2, google3.net.rpc.python.stream_inl, google3.net.eventmanager._net_eventmanager_pywrapeventmanager, google3.net.http.python._net_http_python_pywraphttpserverrequest, google3.iobuffer._iobuffer_pywrapiobuffer, google3.webutil.http.python._webutil_http_python_pywraphttputils, google3.webutil.url._webutil_url_pywrapurl, google3.net.http2.server.lib.public.python._net_http2_server_lib_public_python_pywraphttpserver2, google3.util.task.python._util_task_python_pywrap__task (total: 40) E1113 13:09:38.411004 2484 process_state.cc:796] RAW: Raising signal 15 with default behavior",
+      "stderrTail": "thenticator, google3.security.credentials.public.python.end_user_creds, google3.net.rpc.python._rpc_stats, google3.net.rpc.python.deadline_propagation, google3.net.rpc.python.rpc, google3.net.rpc.python.rpc_errorspace, google3.net.rpc.python.rpc_internals_status, google3.thread.python.executor, google3.net.base.python.traffic_class, google3.net.rpc.python.load_balancing_channel, google3.net.rpc.python.rawmessage_with_type, google3.net.rpc.python.rpc_security_checker, google3.net.rpc.python.rpc_service, google3.net.rpc.python.rpc_status, google3.net.rpc2.python.legacy_stream_passkey, google3.net.rpc2.python.rpc2, google3.net.rpc.python.stream_inl, google3.net.eventmanager._net_eventmanager_pywrapeventmanager, google3.net.http.python._net_http_python_pywraphttpserverrequest, google3.iobuffer._iobuffer_pywrapiobuffer, google3.webutil.http.python._webutil_http_python_pywraphttputils, google3.webutil.url._webutil_url_pywrapurl, google3.net.http2.server.lib.public.python._net_http2_server_lib_public_python_pywraphttpserver2, google3.util.task.python._util_task_python_pywrap__task (total: 40) E1118 14:04:59.510092 2360 process_state.cc:796] RAW: Raising signal 15 with default behavior",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/antigravity-acp/extracted/agy_acp_server.par --uid=",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/antigravity-acp/workspace",
-      "durationSeconds": 6.011,
+      "durationSeconds": 8.685,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -236,9 +236,9 @@
       "stderrTail": "essage: 'Authentication required', data: undefined } Error handling request { jsonrpc: '2.0', id: 4, method: 'session/fork', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/auggie/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/fork', data: { method: 'session/fork' } } Error handling request { jsonrpc: '2.0', id: 5, method: 'session/resume', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/auggie/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/resume', data: { method: 'session/resume' } } Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: 'sess_matrix_probe' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } Error handling request { jsonrpc: '2.0', id: 7, method: 'session/set_model', params: { sessionId: 'sess_matrix_probe', modelId: 'matrix-model' } } { code: -32602, message: 'Invalid params', data: { details: 'Session not found: sess_matrix_probe' } }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/auggie --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/auggie/workspace",
-      "durationSeconds": 1.777,
+      "durationSeconds": 2.661,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -299,12 +299,12 @@
           "message": "\"Method not found\": session/set_model"
         }
       },
-      "stderrTail": "[ACP] Starting native ACP mode... [ACP] Native ACP mode ready. Waiting for client... [ACP] Resumed session 99b636c4-9416-4c9a-8c00-c99a8884b033-1794575382638",
+      "stderrTail": "[ACP] Starting native ACP mode... [ACP] Native ACP mode ready. Waiting for client... [ACP] Resumed session d4b6219e-ae5b-426b-be66-3fe57676a5c0-1795010704615",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/autohand/extracted/autohand --acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/autohand/workspace",
-      "durationSeconds": 9.905,
+      "durationSeconds": 9.602,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -368,15 +368,15 @@
       "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/bob --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/bob/workspace",
-      "durationSeconds": 3.834,
+      "durationSeconds": 4.345,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "claude-acp",
       "name": "Claude Agent",
-      "registryVersion": "0.106.0",
+      "registryVersion": "0.108.0",
       "repository": "https://github.com/agentclientprotocol/claude-agent-acp",
       "website": null,
       "distribution": "npx",
@@ -386,7 +386,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.106.0",
+      "agentInfoVersion": "0.108.0",
       "authMethods": [
         "terminal"
       ],
@@ -431,12 +431,12 @@
           "message": "\"Method not found\": session/set_model"
         }
       },
-      "stderrTail": "[session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=validate-cwd durationMs=2 totalMs=2 [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=settings durationMs=2 totalMs=5 [session/query] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 resume=none apiType=native baseUrl=native [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=prepare-query durationMs=8 totalMs=13 [authStatus] discarding a probe that predates the latest auth change [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=sdk-initialize durationMs=1731 totalMs=1744 [authStatus] session account carries no identity signal; keeping probe [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=models durationMs=1 totalMs=1745 [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=modes durationMs=0 totalMs=1746 [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=agents durationMs=0 totalMs=1746 [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=ultracode durationMs=4 totalMs=1750 [session/create] sessionId=c2a007a6-44bb-410f-8993-1afe690589c7 phase=register durationMs=1 totalMs=1751",
+      "stderrTail": "[session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=validate-cwd durationMs=1 totalMs=1 [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=settings durationMs=4 totalMs=4 [session/query] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f resume=none apiType=native baseUrl=native [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=prepare-query durationMs=11 totalMs=16 [authStatus] discarding a probe that predates the latest auth change [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=sdk-initialize durationMs=1902 totalMs=1918 [authStatus] session account carries no identity signal; keeping probe [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=models durationMs=2 totalMs=1920 [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=modes durationMs=0 totalMs=1920 [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=agents durationMs=0 totalMs=1920 [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=ultracode durationMs=7 totalMs=1927 [session/create] sessionId=93a50343-cc24-4c8a-9b33-1f34dacbba9f phase=register durationMs=2 totalMs=1929",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/claude-acp --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/claude-acp/workspace",
-      "durationSeconds": 8.947,
+      "durationSeconds": 11.75,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -500,15 +500,15 @@
       "stderrTail": "handling request { jsonrpc: \"2.0\", id: 4, method: \"session/fork\", params: { sessionId: \"sess_matrix_probe\", cwd: \"/home/runner/work/_temp/matrix-sandbox/npx/cline/workspace\", mcpServers: [], }, } { code: -32601, message: \"\\\"Method not found\\\": session/fork\", data: { method: \"session/fork\", }, } Error handling request { jsonrpc: \"2.0\", id: 5, method: \"session/resume\", params: { sessionId: \"sess_matrix_probe\", cwd: \"/home/runner/work/_temp/matrix-sandbox/npx/cline/workspace\", mcpServers: [], }, } { code: -32601, message: \"\\\"Method not found\\\": session/resume\", data: { method: \"session/resume\", }, } Error handling request { jsonrpc: \"2.0\", id: 6, method: \"session/stop\", params: { sessionId: \"sess_matrix_probe\", }, } { code: -32601, message: \"\\\"Method not found\\\": session/stop\", data: { method: \"session/stop\", }, } Error handling request { jsonrpc: \"2.0\", id: 7, method: \"session/set_model\", params: { sessionId: \"sess_matrix_probe\", modelId: \"matrix-model\", }, } { code: -32603, message: \"Internal error\", data: { details: \"unknown session: sess_matrix_probe\", }, }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/cline --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/cline/workspace",
-      "durationSeconds": 15.154,
+      "durationSeconds": 18.288,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "codebuddy-code",
       "name": "Codebuddy Code",
-      "registryVersion": "2.184.0",
+      "registryVersion": "2.185.0",
       "repository": null,
       "website": "https://www.codebuddy.cn/cli/",
       "distribution": "npx",
@@ -566,15 +566,15 @@
       "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/codebuddy-code --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/codebuddy-code/workspace",
-      "durationSeconds": 5.563,
+      "durationSeconds": 7.897,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "codex-acp",
       "name": "Codex",
-      "registryVersion": "2.6.0",
+      "registryVersion": "2.7.0",
       "repository": "https://github.com/agentclientprotocol/codex-acp",
       "website": null,
       "distribution": "npx",
@@ -584,7 +584,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "2.6.0",
+      "agentInfoVersion": "2.7.0",
       "authMethods": [
         "agent"
       ],
@@ -632,9 +632,9 @@
       "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/codex-acp --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/codex-acp/workspace",
-      "durationSeconds": 5.567,
+      "durationSeconds": 7.854,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -698,7 +698,7 @@
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/cortex-code/workspace",
       "durationSeconds": null,
       "processExitCode": null,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -762,9 +762,9 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/corust-agent/extracted/corust-agent-acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/corust-agent/workspace",
-      "durationSeconds": 0.67,
+      "durationSeconds": 0.748,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -828,15 +828,15 @@
       "stderrTail": "yncio/unix_events.py\", line 869, in _start File \"subprocess.py\", line 1040, in __init__ File \"subprocess.py\", line 1992, in _execute_child FileNotFoundError: [Errno 2] No such file or directory: 'crow-cli' The above exception was the direct cause of the following exception: Traceback (most recent call last): File \"acp/connection.py\", line 262, in _execute_request File \"acp/router.py\", line 239, in __call__ File \"acp/router.py\", line 73, in handle File \"acp/router.py\", line 162, in wrapper File \"crow_cli/agent/main.py\", line 514, in new_session File \"contextlib.py\", line 668, in enter_async_context File \"fastmcp/client/client.py\", line 535, in __aenter__ File \"fastmcp/client/client.py\", line 622, in _connect RuntimeError: Client failed to connect: [Errno 2] No such file or directory: 'crow-cli' INFO:crow_logger:Listing sessions for working directory: None INFO:crow_logger:FORK_SESSION: sess_matrix_probe agentIdx=None turnIdx=None messageOffset=None rlmDepth=None cwd=/home/runner/work/_temp/matrix-sandbox/binary/crow-cli/workspace mcp_servers=[] ERROR:crow_logger:Failed to fork session sess_matrix_probe: memory error 404: agent 'sess_matrix_probe-1-1' not found",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/crow-cli/extracted/crow-cli acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/crow-cli/workspace",
-      "durationSeconds": 3.885,
+      "durationSeconds": 5.703,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "cursor",
       "name": "Cursor",
-      "registryVersion": "2026.11.11",
+      "registryVersion": "2026.11.13",
       "repository": null,
       "website": "https://cursor.com/docs/cli/acp",
       "distribution": "binary",
@@ -894,15 +894,15 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/cursor/extracted/dist-package/cursor-agent acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/cursor/workspace",
-      "durationSeconds": 3.071,
+      "durationSeconds": 4.493,
       "processExitCode": 143,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "devin",
       "name": "Devin",
-      "registryVersion": "3000.12.57",
+      "registryVersion": "3000.14.30821",
       "repository": "https://github.com/CognitionAI/devin-cli",
       "website": "https://docs.devin.ai/cli",
       "distribution": "binary",
@@ -912,7 +912,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.0.0-dev",
+      "agentInfoVersion": "3000.14.30821",
       "authMethods": [
         "agent",
         "terminal"
@@ -958,18 +958,18 @@
           "message": "timeout after 5.0s"
         }
       },
-      "stderrTail": "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\",
+      "stderrTail": "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/devin/extracted/bin/devin acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/devin/workspace",
-      "durationSeconds": 24.838,
+      "durationSeconds": 24.917,
       "processExitCode": -9,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "dimcode",
       "name": "DimCode",
-      "registryVersion": "0.5.27",
+      "registryVersion": "0.5.29",
       "repository": null,
       "website": "https://dimagent.cn/",
       "distribution": "npx",
@@ -979,7 +979,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.5.27",
+      "agentInfoVersion": "0.5.29",
       "authMethods": [
         "terminal"
       ],
@@ -1027,15 +1027,15 @@
       "stderrTail": "equest { jsonrpc: \"2.0\", id: 4, method: \"session/fork\", params: { sessionId: \"sess_matrix_probe\", cwd: \"/home/runner/work/_temp/matrix-sandbox/npx/dimcode/workspace\", mcpServers: [], }, } { code: -32000, message: \"Authentication required: Provider credentials are required\", data: undefined, } Error handling request { jsonrpc: \"2.0\", id: 5, method: \"session/resume\", params: { sessionId: \"sess_matrix_probe\", cwd: \"/home/runner/work/_temp/matrix-sandbox/npx/dimcode/workspace\", mcpServers: [], }, } { code: -32000, message: \"Authentication required: Provider credentials are required\", data: undefined, } Error handling request { jsonrpc: \"2.0\", id: 6, method: \"session/stop\", params: { sessionId: \"sess_matrix_probe\", }, } { code: -32601, message: \"\\\"Method not found\\\": session/stop\", data: { method: \"session/stop\", }, } Error handling request { jsonrpc: \"2.0\", id: 7, method: \"session/set_model\", params: { sessionId: \"sess_matrix_probe\", modelId: \"matrix-model\", }, } { code: -32002, message: \"ACP session not found: sess_matrix_probe\", data: { sessionId: \"sess_matrix_probe\", }, }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/dimcode --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/dimcode/workspace",
-      "durationSeconds": 3.081,
+      "durationSeconds": 8.472,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "dirac",
       "name": "Dirac",
-      "registryVersion": "0.5.24",
+      "registryVersion": "0.6.1",
       "repository": "https://github.com/dirac-run/dirac",
       "website": "https://dirac.run",
       "distribution": "npx",
@@ -1045,7 +1045,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.5.24",
+      "agentInfoVersion": "0.6.1",
       "authMethods": [
         "agent",
         "env_var",
@@ -1092,18 +1092,18 @@
           "message": "\"Method not found\": session/set_model"
         }
       },
-      "stderrTail": "npm warn EBADENGINE Unsupported engine { npm warn EBADENGINE package: 'dirac-cli@0.5.24', npm warn EBADENGINE required: { node: '>=22.13.0 <25.0.0' }, npm warn EBADENGINE current: { node: 'v26.13.1', npm: '11.20.0' } npm warn EBADENGINE } npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead",
+      "stderrTail": "npm warn EBADENGINE Unsupported engine { npm warn EBADENGINE package: 'dirac-cli@0.6.1', npm warn EBADENGINE required: { node: '>=22.13.0 <25.0.0' }, npm warn EBADENGINE current: { node: 'v26.13.1', npm: '11.20.0' } npm warn EBADENGINE } npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/dirac --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/dirac/workspace",
-      "durationSeconds": 7.389,
+      "durationSeconds": 9.413,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "factory-droid",
       "name": "Factory Droid",
-      "registryVersion": "1.10.0",
+      "registryVersion": "1.14.0",
       "repository": null,
       "website": "https://factory.ai/product/cli",
       "distribution": "npx",
@@ -1113,7 +1113,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "1.10.0",
+      "agentInfoVersion": "1.14.0",
       "authMethods": [
         "agent"
       ],
@@ -1129,7 +1129,7 @@
       "sessionNew": {
         "status": "auth_required",
         "code": -32000,
-        "message": "Authentication required: Your code: RXZN-QLSN Click the \"Login\" button to authenticate, or set a FACTORY_API_KEY environment variable."
+        "message": "Authentication required: Your code: XJMR-QCPC Click the \"Login\" button to authenticate, or set a FACTORY_API_KEY environment variable."
       },
       "methodProbes": {
         "session/list": {
@@ -1140,12 +1140,12 @@
         "session/fork": {
           "status": "auth_required",
           "code": -32000,
-          "message": "Authentication required: Your code: RXZN-QLSN Click the \"Login\" button to authenticate, or set a FACTORY_API_KEY environment variable."
+          "message": "Authentication required: Your code: XJMR-QCPC Click the \"Login\" button to authenticate, or set a FACTORY_API_KEY environment variable."
         },
         "session/resume": {
           "status": "auth_required",
           "code": -32000,
-          "message": "Authentication required: Your code: RXZN-QLSN Click the \"Login\" button to authenticate, or set a FACTORY_API_KEY environment variable."
+          "message": "Authentication required: Your code: XJMR-QCPC Click the \"Login\" button to authenticate, or set a FACTORY_API_KEY environment variable."
         },
         "session/stop": {
           "status": "method_not_found",
@@ -1161,9 +1161,9 @@
       "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/factory-droid --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/factory-droid/workspace",
-      "durationSeconds": 6.957,
+      "durationSeconds": 9.581,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -1227,15 +1227,15 @@
       "stderrTail": "'\"Method not found\": session/list', data: { method: 'session/list' } } Error handling request { jsonrpc: '2.0', id: 4, method: 'session/fork', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/gemini/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/fork', data: { method: 'session/fork' } } Error handling request { jsonrpc: '2.0', id: 5, method: 'session/resume', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/gemini/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/resume', data: { method: 'session/resume' } } Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: 'sess_matrix_probe' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } Error handling request { jsonrpc: '2.0', id: 7, method: 'session/set_model', params: { sessionId: 'sess_matrix_probe', modelId: 'matrix-model' } } { code: -32602, message: 'Session not found: sess_matrix_probe', data: undefined }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/gemini --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/gemini/workspace",
-      "durationSeconds": 9.25,
+      "durationSeconds": 9.205,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "github-copilot",
       "name": "GitHub Copilot",
-      "registryVersion": "1.570.0",
+      "registryVersion": "1.573.0",
       "repository": "https://github.com/github/copilot-language-server-release",
       "website": "https://github.com/github/copilot-language-server-release",
       "distribution": "npx",
@@ -1245,7 +1245,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "1.570.0",
+      "agentInfoVersion": "1.573.0",
       "authMethods": [
         "agent"
       ],
@@ -1293,15 +1293,15 @@
       "stderrTail": "[ACP] Token priming failed - set GH_COPILOT_TOKEN or GITHUB_COPILOT_TOKEN environment variable",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/github-copilot --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/github-copilot/workspace",
-      "durationSeconds": 9.596,
+      "durationSeconds": 10.414,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "github-copilot-cli",
       "name": "GitHub Copilot",
-      "registryVersion": "1.0.110",
+      "registryVersion": "1.0.114",
       "repository": "https://github.com/github/copilot-cli",
       "website": "https://github.com/features/copilot/cli/",
       "distribution": "npx",
@@ -1311,7 +1311,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "1.0.110",
+      "agentInfoVersion": "1.0.114",
       "authMethods": [
         "terminal"
       ],
@@ -1359,9 +1359,9 @@
       "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/github-copilot-cli --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/github-copilot-cli/workspace",
-      "durationSeconds": 3.265,
+      "durationSeconds": 5.164,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -1423,18 +1423,18 @@
           "message": null
         }
       },
-      "stderrTail": "Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: '55d9d5b9-0d6e-4eb3-aba4-0a006e00d151' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } [glm-acp-agent] warning: model \"matrix-model\" is not in the advertised list; using as-is.",
+      "stderrTail": "Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: '8256678d-5557-4827-8da5-cb24e322b294' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } [glm-acp-agent] warning: model \"matrix-model\" is not in the advertised list; using as-is.",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/glm-acp-agent --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/glm-acp-agent/workspace",
-      "durationSeconds": 1.677,
+      "durationSeconds": 2.044,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "goose",
       "name": "goose",
-      "registryVersion": "1.59.0",
+      "registryVersion": "1.60.1",
       "repository": "https://github.com/block/goose",
       "website": "https://block.github.io/goose/",
       "distribution": "binary",
@@ -1444,7 +1444,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "1.59.0",
+      "agentInfoVersion": "1.60.1",
       "authMethods": [
         "agent"
       ],
@@ -1492,15 +1492,15 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/goose/extracted/goose acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/goose/workspace",
-      "durationSeconds": 5.119,
+      "durationSeconds": 7.594,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "grok-build",
       "name": "Grok Build",
-      "registryVersion": "1.0.84",
+      "registryVersion": "1.0.89",
       "repository": null,
       "website": "https://x.ai/cli",
       "distribution": "npx",
@@ -1558,15 +1558,15 @@
       "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/grok-build --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/grok-build/workspace",
-      "durationSeconds": 3.063,
+      "durationSeconds": 4.384,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "harn",
       "name": "Harn",
-      "registryVersion": "0.10.196",
+      "registryVersion": "0.10.202",
       "repository": "https://github.com/burin-labs/harn",
       "website": "https://harnlang.com",
       "distribution": "binary",
@@ -1576,7 +1576,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.10.196",
+      "agentInfoVersion": "0.10.202",
       "authMethods": [
         "agent"
       ],
@@ -1624,15 +1624,15 @@
       "stderrTail": "[harn] ACP workflow server ready on stdio warning: ACP method session/stop is deprecated; use session/close instead",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/harn/extracted/harn serve acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/harn/workspace",
-      "durationSeconds": 1.541,
+      "durationSeconds": 1.888,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "junie",
       "name": "Junie",
-      "registryVersion": "4020.7.0",
+      "registryVersion": "4100.5.0",
       "repository": "https://github.com/JetBrains/junie-acp-release",
       "website": "https://junie.jetbrains.com",
       "distribution": "binary",
@@ -1642,7 +1642,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "26.11.1 (4020.7)",
+      "agentInfoVersion": "26.11.2 (4100.5)",
       "authMethods": [
         "agent",
         "terminal"
@@ -1688,12 +1688,12 @@
           "message": "Session sess_matrix_probe not found"
         }
       },
-      "stderrTail": "Junie 26.11.1 (4020.7) (pid=3773): log file: /home/runner/.junie/logs/log-2026-11-13_131202-pid-3773.log",
+      "stderrTail": "Junie 26.11.2 (4100.5) (pid=3620): log file: /home/runner/.junie/logs/log-2026-11-18_140753-pid-3620.log",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/junie/extracted/junie-app/bin/junie --acp=true",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/junie/workspace",
-      "durationSeconds": 8.9,
+      "durationSeconds": 5.681,
       "processExitCode": 143,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -1754,18 +1754,18 @@
           "message": "Invalid params: model not found: matrix-model"
         }
       },
-      "stderrTail": "Error handling request { jsonrpc: \"2.0\", id: 6, method: \"session/stop\", params: { sessionId: \"ses_e2af67fc1ffegrk0W40Bq82Fg7\", }, } { code: -32601, message: \"\\\"Method not found\\\": session/stop\", data: { method: \"session/stop\", }, } Error handling request { jsonrpc: \"2.0\", id: 7, method: \"session/set_model\", params: { sessionId: \"ses_e2af67fc1ffegrk0W40Bq82Fg7\", modelId: \"matrix-model\", }, } { code: -32602, message: \"Invalid params: model not found: matrix-model\", data: { providerId: \"matrix-model\", modelId: \"matrix-model\", }, }",
+      "stderrTail": "Error handling request { jsonrpc: \"2.0\", id: 6, method: \"session/stop\", params: { sessionId: \"ses_e110387dcffewkPsNEjyPDADcH\", }, } { code: -32601, message: \"\\\"Method not found\\\": session/stop\", data: { method: \"session/stop\", }, } Error handling request { jsonrpc: \"2.0\", id: 7, method: \"session/set_model\", params: { sessionId: \"ses_e110387dcffewkPsNEjyPDADcH\", modelId: \"matrix-model\", }, } { code: -32602, message: \"Invalid params: model not found: matrix-model\", data: { providerId: \"matrix-model\", modelId: \"matrix-model\", }, }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/kilo --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/kilo/workspace",
-      "durationSeconds": 7.777,
+      "durationSeconds": 10.393,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "kimchi",
       "name": "Kimchi",
-      "registryVersion": "1.34.3",
+      "registryVersion": "1.36.0",
       "repository": "https://github.com/getkimchi/kimchi",
       "website": "https://kimchi.dev",
       "distribution": "binary",
@@ -1775,7 +1775,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "1.34.3",
+      "agentInfoVersion": "1.36.0",
       "authMethods": [
         "agent"
       ],
@@ -1823,9 +1823,9 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/kimchi/extracted/bin/kimchi --mode acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/kimchi/workspace",
-      "durationSeconds": 2.303,
+      "durationSeconds": 4.086,
       "processExitCode": 143,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -1889,15 +1889,15 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/kimi/extracted/kimi acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/kimi/workspace",
-      "durationSeconds": 2.525,
+      "durationSeconds": 4.008,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "kimi-code",
       "name": "Kimi Code",
-      "registryVersion": "2.6.1",
+      "registryVersion": "2.6.3",
       "repository": "https://github.com/MoonshotAI/kimi-code",
       "website": "https://moonshotai.github.io/kimi-code/",
       "distribution": "npx",
@@ -1907,7 +1907,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "2.6.1",
+      "agentInfoVersion": "2.6.3",
       "authMethods": [
         "terminal"
       ],
@@ -1955,9 +1955,9 @@
       "stderrTail": "{\"level\":\"info\",\"msg\":\"acp: auth readiness probe failed, trying the OAuth summary\",\"error\":\"no provider configured; complete onboarding via /login or the providers endpoint\"} {\"level\":\"info\",\"msg\":\"acp: auth readiness probe failed, trying the OAuth summary\",\"error\":\"no provider configured; complete onboarding via /login or the providers endpoint\"} {\"level\":\"info\",\"msg\":\"acp: auth readiness probe failed, trying the OAuth summary\",\"error\":\"no provider configured; complete onboarding via /login or the providers endpoint\"}",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/kimi-code --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/kimi-code/workspace",
-      "durationSeconds": 2.701,
+      "durationSeconds": 3.445,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -2021,15 +2021,15 @@
       "stderrTail": "Not logged in. Set the KIRO_API_KEY environment variable or run `kiro-cli login` first.",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/kiro/extracted/kirocli/bin/kiro-cli acp --agent-engine=v3",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/kiro/workspace",
-      "durationSeconds": 1.408,
+      "durationSeconds": 1.357,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "minimax-code",
       "name": "MiniMax Code",
-      "registryVersion": "0.2.7",
+      "registryVersion": "0.7.7",
       "repository": null,
       "website": "https://agent.minimax.io",
       "distribution": "npx",
@@ -2039,7 +2039,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.2.7",
+      "agentInfoVersion": "0.7.7",
       "authMethods": [
         "terminal"
       ],
@@ -2087,9 +2087,9 @@
       "stderrTail": "npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/minimax-code --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/minimax-code/workspace",
-      "durationSeconds": 3.125,
+      "durationSeconds": 8.455,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -2151,18 +2151,84 @@
           "message": "Method not found"
         }
       },
-      "stderrTail": "rvisor.py\", line 51, in _on_done File \"acp/task/dispatcher.py\", line 81, in runner File \"acp/connection.py\", line 234, in _run_request File \"acp/router.py\", line 184, in __call__ File \"acp/router.py\", line 73, in handle File \"acp/router.py\", line 107, in wrapper File \"vibe/acp/agent.py\", line 1170, in resume_session File \"vibe/acp/agent.py\", line 639, in _create_session vibe.acp.exceptions.UnauthenticatedError: Missing API key for mistral provider. ERROR:root:Background task failed Traceback (most recent call last): File \"acp/task/supervisor.py\", line 51, in _on_done File \"acp/task/dispatcher.py\", line 81, in runner File \"acp/connection.py\", line 234, in _run_request File \"acp/router.py\", line 182, in __call__ acp.exceptions.RequestError: Method not found ERROR:root:Background task failed Traceback (most recent call last): File \"acp/task/supervisor.py\", line 51, in _on_done File \"acp/task/dispatcher.py\", line 81, in runner File \"acp/connection.py\", line 234, in _run_request File \"acp/router.py\", line 182, in __call__ acp.exceptions.RequestError: Method not found Sentry is attempting to send 3 pending events Waiting up to 2 seconds Press Ctrl-C to quit",
+      "stderrTail": "rvisor.py\", line 51, in _on_done File \"acp/task/dispatcher.py\", line 81, in runner File \"acp/connection.py\", line 234, in _run_request File \"acp/router.py\", line 184, in __call__ File \"acp/router.py\", line 73, in handle File \"acp/router.py\", line 107, in wrapper File \"vibe/acp/agent.py\", line 1170, in resume_session File \"vibe/acp/agent.py\", line 639, in _create_session vibe.acp.exceptions.UnauthenticatedError: Missing API key for mistral provider. ERROR:root:Background task failed Traceback (most recent call last): File \"acp/task/supervisor.py\", line 51, in _on_done File \"acp/task/dispatcher.py\", line 81, in runner File \"acp/connection.py\", line 234, in _run_request File \"acp/router.py\", line 182, in __call__ acp.exceptions.RequestError: Method not found ERROR:root:Background task failed Traceback (most recent call last): File \"acp/task/supervisor.py\", line 51, in _on_done File \"acp/task/dispatcher.py\", line 81, in runner File \"acp/connection.py\", line 234, in _run_request File \"acp/router.py\", line 182, in __call__ acp.exceptions.RequestError: Method not found Sentry is attempting to send 2 pending events Waiting up to 2 seconds Press Ctrl-C to quit",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/mistral-vibe/extracted/vibe-acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/mistral-vibe/workspace",
-      "durationSeconds": 4.391,
+      "durationSeconds": 5.179,
       "processExitCode": 0,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
+      "reusedFromPrevious": false
+    },
+    {
+      "id": "muse-code",
+      "name": "Muse Code",
+      "registryVersion": "1.4.14",
+      "repository": null,
+      "website": "https://dev.meta.ai/docs/muse-code",
+      "distribution": "binary",
+      "initialize": {
+        "status": "success",
+        "code": null,
+        "message": null
+      },
+      "protocolVersion": 1,
+      "agentInfoVersion": "1.4.14",
+      "authMethods": [
+        "agent"
+      ],
+      "setModelSignal": false,
+      "capabilities": {
+        "loadSession": true,
+        "sessionList": true,
+        "sessionFork": false,
+        "sessionResume": true,
+        "sessionStop": false,
+        "setModel": false
+      },
+      "sessionNew": {
+        "status": "auth_required",
+        "code": -32000,
+        "message": "log in to Muse before opening a session"
+      },
+      "methodProbes": {
+        "session/list": {
+          "status": "success",
+          "code": null,
+          "message": null
+        },
+        "session/fork": {
+          "status": "method_not_found",
+          "code": -32601,
+          "message": "Method not found: `session/fork`"
+        },
+        "session/resume": {
+          "status": "auth_required",
+          "code": -32000,
+          "message": "log in to Muse before opening a session"
+        },
+        "session/stop": {
+          "status": "method_not_found",
+          "code": -32601,
+          "message": "Method not found: `session/stop`"
+        },
+        "session/set_model": {
+          "status": "method_not_found",
+          "code": -32601,
+          "message": "Method not found: `session/set_model`"
+        }
+      },
+      "stderrTail": "received SIGTERM; flushed session logs",
+      "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/muse-code/extracted/muse acp",
+      "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/muse-code/workspace",
+      "durationSeconds": 5.357,
+      "processExitCode": 143,
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "nova",
       "name": "Nova",
-      "registryVersion": "1.1.65",
+      "registryVersion": "1.1.66",
       "repository": "https://github.com/Compass-Agentic-Platform/nova",
       "website": "https://www.compassap.ai/portfolio/nova.html",
       "distribution": "npx",
@@ -2217,18 +2283,18 @@
           "message": "Session not found: sess_matrix_probe"
         }
       },
-      "stderrTail": "ed\": false, \"type\": \"string\", \"length\": 43 } } [2026-11-13T13:12:42.112Z] [ERROR] [ACPSessionManager] Session not found { \"sessionId\": \"id_53d48b89bde6153a\" } [2026-11-13T13:12:42.112Z] [ERROR] [ACPCommand] Message handler error { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 12 }, \"error\": { \"captured\": false, \"type\": \"string\", \"length\": 36 } } [2026-11-13T13:12:42.113Z] [ERROR] [ACPCommand] Message handler error { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 14 }, \"error\": { \"captured\": false, \"type\": \"string\", \"length\": 36 } } [2026-11-13T13:12:42.113Z] [WARN ] [ACPCommand] Unsupported ACP method { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 12 }, \"params\": { \"sessionId\": \"id_53d48b89bde6153a\" } } [2026-11-13T13:12:42.114Z] [ERROR] [ACPSessionManager] Session not found { \"sessionId\": \"id_53d48b89bde6153a\" } [2026-11-13T13:12:42.114Z] [ERROR] [ACPCommand] Message handler error { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 17 }, \"error\": { \"captured\": false, \"type\": \"string\", \"length\": 36 } }",
+      "stderrTail": "ed\": false, \"type\": \"string\", \"length\": 43 } } [2026-11-18T14:08:54.870Z] [ERROR] [ACPSessionManager] Session not found { \"sessionId\": \"id_53d48b89bde6153a\" } [2026-11-18T14:08:54.870Z] [ERROR] [ACPCommand] Message handler error { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 12 }, \"error\": { \"captured\": false, \"type\": \"string\", \"length\": 36 } } [2026-11-18T14:08:54.872Z] [ERROR] [ACPCommand] Message handler error { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 14 }, \"error\": { \"captured\": false, \"type\": \"string\", \"length\": 36 } } [2026-11-18T14:08:54.872Z] [WARN ] [ACPCommand] Unsupported ACP method { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 12 }, \"params\": { \"sessionId\": \"id_53d48b89bde6153a\" } } [2026-11-18T14:08:54.873Z] [ERROR] [ACPSessionManager] Session not found { \"sessionId\": \"id_53d48b89bde6153a\" } [2026-11-18T14:08:54.873Z] [ERROR] [ACPCommand] Message handler error { \"method\": { \"captured\": false, \"type\": \"string\", \"length\": 17 }, \"error\": { \"captured\": false, \"type\": \"string\", \"length\": 36 } }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/nova --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/nova/workspace",
-      "durationSeconds": 13.537,
+      "durationSeconds": 17.275,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "opencode",
       "name": "OpenCode",
-      "registryVersion": "2.2.7",
+      "registryVersion": "2.3.2",
       "repository": "https://github.com/anomalyco/opencode",
       "website": "https://opencode.ai",
       "distribution": "binary",
@@ -2238,7 +2304,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "2.2.7",
+      "agentInfoVersion": "2.3.2",
       "authMethods": [
         "terminal"
       ],
@@ -2265,7 +2331,7 @@
         "session/fork": {
           "status": "invalid_params",
           "code": -32602,
-          "message": "Invalid params: Cannot fork empty session: ses_e2af5ffbfffeHuxrmemi4Pe7P7"
+          "message": "Invalid params: Cannot fork empty session: ses_e1102bab2ffekQpGE6h2RTyPzU"
         },
         "session/resume": {
           "status": "success",
@@ -2286,15 +2352,15 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/opencode/extracted/opencode acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/opencode/workspace",
-      "durationSeconds": 2.788,
+      "durationSeconds": 3.414,
       "processExitCode": 143,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "opencode-v2",
       "name": "OpenCode V2",
-      "registryVersion": "2.2.7",
+      "registryVersion": "2.3.2",
       "repository": "https://github.com/anomalyco/opencode",
       "website": "https://opencode.ai",
       "distribution": "binary",
@@ -2304,7 +2370,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "2.2.7",
+      "agentInfoVersion": "2.3.2",
       "authMethods": [
         "terminal"
       ],
@@ -2331,7 +2397,7 @@
         "session/fork": {
           "status": "invalid_params",
           "code": -32602,
-          "message": "Invalid params: Cannot fork empty session: ses_e2af5eb00ffer6zxrEEuRwTjvB"
+          "message": "Invalid params: Cannot fork empty session: ses_e1102a3a7ffe2CQc4hUhRK3G2d"
         },
         "session/resume": {
           "status": "success",
@@ -2339,9 +2405,9 @@
           "message": null
         },
         "session/stop": {
-          "status": "no_response",
-          "code": null,
-          "message": "timeout after 5.0s"
+          "status": "method_not_found",
+          "code": -32601,
+          "message": "\"Method not found\": session/stop"
         },
         "session/set_model": {
           "status": "method_not_found",
@@ -2352,9 +2418,9 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/opencode-v2/extracted/opencode acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/opencode-v2/workspace",
-      "durationSeconds": 10.614,
+      "durationSeconds": 5.896,
       "processExitCode": 143,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -2418,9 +2484,9 @@
       "stderrTail": "H. Then try again.', data: { code: 'ENOENT' } } Error handling request { jsonrpc: '2.0', id: 4, method: 'session/fork', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/pi-acp/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/fork', data: { method: 'session/fork' } } Error handling request { jsonrpc: '2.0', id: 5, method: 'session/resume', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/pi-acp/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/resume', data: { method: 'session/resume' } } Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: 'sess_matrix_probe' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } Error handling request { jsonrpc: '2.0', id: 7, method: 'session/set_model', params: { sessionId: 'sess_matrix_probe', modelId: 'matrix-model' } } { code: -32601, message: '\"Method not found\": session/set_model', data: { method: 'session/set_model' } }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/pi-acp --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/pi-acp/workspace",
-      "durationSeconds": 0.794,
+      "durationSeconds": 1.122,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -2484,15 +2550,15 @@
       "stderrTail": null,
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/poolside/extracted/pool-linux-amd64 acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/poolside/workspace",
-      "durationSeconds": 0.743,
+      "durationSeconds": 0.503,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "qoder",
       "name": "Qoder CLI",
-      "registryVersion": "1.1.88",
+      "registryVersion": "1.1.92",
       "repository": null,
       "website": "https://qoder.com",
       "distribution": "npx",
@@ -2502,7 +2568,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "1.1.88",
+      "agentInfoVersion": "1.1.92",
       "authMethods": [
         "terminal"
       ],
@@ -2547,18 +2613,18 @@
           "message": "Authentication required: Authentication is required."
         }
       },
-      "stderrTail": "uired: Authentication is required.', data: undefined } Error handling request { jsonrpc: '2.0', id: 4, method: 'session/fork', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/qoder/workspace', mcpServers: [] } } { code: -32000, message: 'Authentication required: Authentication is required.', data: undefined } Error handling request { jsonrpc: '2.0', id: 5, method: 'session/resume', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/qoder/workspace', mcpServers: [] } } { code: -32000, message: 'Authentication required: Authentication is required.', data: undefined } Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: 'sess_matrix_probe' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } Error handling request { jsonrpc: '2.0', id: 7, method: 'session/set_model', params: { sessionId: 'sess_matrix_probe', modelId: 'matrix-model' } } { code: -32000, message: 'Authentication required: Authentication is required.', data: undefined }",
+      "stderrTail": null,
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/qoder --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/qoder/workspace",
-      "durationSeconds": 9.74,
+      "durationSeconds": 10.064,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
       "id": "qwen-code",
       "name": "Qwen Code",
-      "registryVersion": "0.27.3",
+      "registryVersion": "0.28.0",
       "repository": "https://github.com/QwenLM/qwen-code",
       "website": "https://qwenlm.github.io/qwen-code-docs/en/users/overview",
       "distribution": "npx",
@@ -2568,7 +2634,7 @@
         "message": null
       },
       "protocolVersion": 1,
-      "agentInfoVersion": "0.27.3",
+      "agentInfoVersion": "0.28.0",
       "authMethods": [
         "agent"
       ],
@@ -2616,9 +2682,9 @@
       "stderrTail": "ethods: [ [Object] ] } } Error handling request { jsonrpc: '2.0', id: 4, method: 'session/fork', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/qwen-code/workspace', mcpServers: [] } } { code: -32601, message: '\"Method not found\": session/fork', data: { method: 'session/fork' } } Error handling request { jsonrpc: '2.0', id: 5, method: 'session/resume', params: { sessionId: 'sess_matrix_probe', cwd: '/home/runner/work/_temp/matrix-sandbox/npx/qwen-code/workspace', mcpServers: [] } } { code: -32002, message: 'Resource not found: session:sess_matrix_probe', data: { uri: 'session:sess_matrix_probe' } } Error handling request { jsonrpc: '2.0', id: 6, method: 'session/stop', params: { sessionId: 'sess_matrix_probe' } } { code: -32601, message: '\"Method not found\": session/stop', data: { method: 'session/stop' } } Error handling request { jsonrpc: '2.0', id: 7, method: 'session/set_model', params: { sessionId: 'sess_matrix_probe', modelId: 'matrix-model' } } { code: -32602, message: 'Invalid params: Session not found for id: sess_matrix_probe', data: undefined }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/qwen-code --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/qwen-code/workspace",
-      "durationSeconds": 4.551,
+      "durationSeconds": 6.399,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -2679,12 +2745,12 @@
           "message": "Method not found"
         }
       },
-      "stderrTail": "m INFO\u001b[0m \u001b[2msigit\u001b[0m\u001b[2m:\u001b[0m resume_session: restored 0 message(s), replayed 0 update(s) for 10a0031d-5e5a-4639-bdcd-21f933815eab \u001b[2m2026-11-13T13:13:13.922587Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2magent_client_protocol::jsonrpc::incoming_actor\u001b[0m\u001b[2m:\u001b[0m Rejecting request with error, no handler \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0m\"session/stop\" \u001b[2m2026-11-13T13:13:13.922594Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2magent_client_protocol::jsonrpc::outgoing_actor\u001b[0m\u001b[2m:\u001b[0m Sending error response \u001b[3mid\u001b[0m\u001b[2m=\u001b[0mNumber(6) \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0msession/stop \u001b[3merror\u001b[0m\u001b[2m=\u001b[0mError { code: -32601: Method not found, message: \"Method not found\", data: Some(String(\"session/stop\")) } \u001b[2m2026-11-13T13:13:13.922661Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2magent_client_protocol::jsonrpc::incoming_actor\u001b[0m\u001b[2m:\u001b[0m Rejecting request with error, no handler \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0m\"session/set_model\" \u001b[2m2026-11-13T13:13:13.922664Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2magent_client_protocol::jsonrpc::outgoing_actor\u001b[0m\u001b[2m:\u001b[0m Sending error response \u001b[3mid\u001b[0m\u001b[2m=\u001b[0mNumber(7) \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0msession/set_model \u001b[3merror\u001b[0m\u001b[2m=\u001b[0mError { code: -32601: Method not found, message: \"Method not found\", data: Some(String(\"session/set_model\")) }",
+      "stderrTail": "m INFO\u001b[0m \u001b[2msigit\u001b[0m\u001b[2m:\u001b[0m resume_session: restored 0 message(s), replayed 0 update(s) for af67018a-f33c-42bb-97c1-07b9d8abdb1c \u001b[2m2026-11-18T14:09:25.924463Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2magent_client_protocol::jsonrpc::incoming_actor\u001b[0m\u001b[2m:\u001b[0m Rejecting request with error, no handler \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0m\"session/stop\" \u001b[2m2026-11-18T14:09:25.924471Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2magent_client_protocol::jsonrpc::outgoing_actor\u001b[0m\u001b[2m:\u001b[0m Sending error response \u001b[3mid\u001b[0m\u001b[2m=\u001b[0mNumber(6) \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0msession/stop \u001b[3merror\u001b[0m\u001b[2m=\u001b[0mError { code: -32601: Method not found, message: \"Method not found\", data: Some(String(\"session/stop\")) } \u001b[2m2026-11-18T14:09:25.924594Z\u001b[0m \u001b[32m INFO\u001b[0m \u001b[2magent_client_protocol::jsonrpc::incoming_actor\u001b[0m\u001b[2m:\u001b[0m Rejecting request with error, no handler \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0m\"session/set_model\" \u001b[2m2026-11-18T14:09:25.924598Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2magent_client_protocol::jsonrpc::outgoing_actor\u001b[0m\u001b[2m:\u001b[0m Sending error response \u001b[3mid\u001b[0m\u001b[2m=\u001b[0mNumber(7) \u001b[3mmethod\u001b[0m\u001b[2m=\u001b[0msession/set_model \u001b[3merror\u001b[0m\u001b[2m=\u001b[0mError { code: -32601: Method not found, message: \"Method not found\", data: Some(String(\"session/set_model\")) }",
       "commandPreview": "npx --prefix /home/runner/work/_temp/matrix-sandbox/npx/sigit --yes",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/npx/sigit/workspace",
-      "durationSeconds": 2.528,
+      "durationSeconds": 3.651,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     },
     {
@@ -2748,9 +2814,9 @@
       "stderrTail": "Update check failed: Failed to fetch release info",
       "commandPreview": "/home/runner/work/_temp/matrix-sandbox/binary/stakpak/extracted/stakpak acp",
       "workspaceCwd": "/home/runner/work/_temp/matrix-sandbox/binary/stakpak/workspace",
-      "durationSeconds": 3.287,
+      "durationSeconds": 3.043,
       "processExitCode": -15,
-      "probedAt": "2026-11-13T13:09:31+00:00",
+      "probedAt": "2026-11-18T14:04:49+00:00",
       "reusedFromPrevious": false
     }
   ]
