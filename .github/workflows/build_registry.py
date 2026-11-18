@@ -829,11 +829,20 @@ def build_registry(
     # Agents flagged as bundled in the JetBrains registry
     JETBRAINS_BUNDLED_IDS = {"claude-acp"}
 
+    # Windows Application Control blocks the unsigned 0.108.0 exe. A version other than the
+    # installed 0.108.0 makes JetBrains clients replace it; the pin serves npx only.
+    JETBRAINS_CLAUDE_ACP_VERSION = "0.107.2"
+
     def patch_agent_for_jetbrains(agent):
         patched = copy.deepcopy(agent)
         if patched["id"] == "claude-acp":
             assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
             distribution = patched["distribution"]
+            patched["version"] = JETBRAINS_CLAUDE_ACP_VERSION
+            distribution["npx"]["package"] = (
+                f"@agentclientprotocol/claude-agent-acp@{JETBRAINS_CLAUDE_ACP_VERSION}"
+            )
+            distribution.pop("binary", None)
             launches = [distribution["npx"], *distribution.get("binary", {}).values()]
             for launch in launches:
                 args = launch.setdefault("args", [])
