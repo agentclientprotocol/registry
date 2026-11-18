@@ -827,7 +827,7 @@ def build_registry(
     AIR_EXCLUDE_IDS = {"gemini"}
 
     # Agents flagged as bundled in the JetBrains registry
-    JETBRAINS_BUNDLED_IDS = {"claude-acp"}
+    JETBRAINS_BUNDLED_IDS = {"claude-acp", "junie"}
 
     # Windows Application Control blocks the unsigned 0.108.0 exe. A version other than the
     # installed 0.108.0 makes JetBrains clients replace it; the pin serves npx only.
