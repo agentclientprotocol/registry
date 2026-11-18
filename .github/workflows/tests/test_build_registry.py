@@ -752,7 +752,8 @@ class TestPreviewRegistryOutputs:
         claude = preview_agents["claude-acp"]
         assert claude["bundled"] is True
         assert "--hide-claude-auth" in claude["distribution"]["npx"]["args"]
-        assert claude["version"] == "0.107.2"
+        assert claude["version"] == "0.74.0-preview.1"
+        assert "binary" not in claude["distribution"]
         assert "github-copilot-cli" not in preview_agents
         assert "github-copilot" in preview_agents
         assert "github-copilot" not in by_id(registries["registry"])
@@ -800,8 +801,14 @@ class TestPreviewRegistryOutputs:
             claude = entries["claude-acp"]
             assert claude["bundled"] is True
             assert claude["distribution"]["npx"]["args"] == expected_args
-            for target in claude["distribution"].get("binary", {}).values():
-                assert target["args"] == expected_args
+            assert "binary" not in claude["distribution"]
+            if name == "registry-for-jetbrains-preview" and preview_version != "1.0.0":
+                assert claude["version"] == preview_version
+                preview_package = preview["distribution"]["npx"]["package"]
+                assert claude["distribution"]["npx"]["package"] == preview_package
+            else:
+                assert claude["version"] == "1.0.0"
+                assert claude["distribution"]["npx"]["package"] == "@acp/claude-acp@1.0.0"
             assert entries["agent-a"]["distribution"] == distribution
         assert json.loads((tmp_path / "claude-acp" / "agent.json").read_text()) == manifest
 
