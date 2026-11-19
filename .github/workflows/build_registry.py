@@ -833,7 +833,15 @@ def build_registry(
         patched = copy.deepcopy(agent)
         if patched["id"] == "claude-acp":
             assert "npx" in patched["distribution"], "claude-acp must have npx distribution"
-            patched["distribution"]["npx"].setdefault("args", []).append("--hide-claude-auth")
+            distribution = patched["distribution"]
+            # The Windows claude-agent-acp.exe is not Authenticode-signed, so Windows
+            # Application Control blocks it; JetBrains outputs serve npx only until it is.
+            distribution.pop("binary", None)
+            launches = [distribution["npx"], *distribution.get("binary", {}).values()]
+            for launch in launches:
+                args = launch.setdefault("args", [])
+                if "--hide-claude-auth" not in args:
+                    args.append("--hide-claude-auth")
         if patched["id"] in JETBRAINS_BUNDLED_IDS:
             patched["bundled"] = True
         return patched

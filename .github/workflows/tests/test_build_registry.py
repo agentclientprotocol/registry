@@ -757,6 +757,60 @@ class TestPreviewRegistryOutputs:
         assert "github-copilot" in preview_agents
         assert "github-copilot" not in by_id(registries["registry"])
 
+    @pytest.mark.parametrize("preview_version", ["1.0.0", "1.1.0-preview.1"])
+    @pytest.mark.parametrize(
+        "existing_args", [None, ["--verbose"], ["--verbose", "--hide-claude-auth"]]
+    )
+    def test_claude_auth_flag_covers_binary_and_npx(self, tmp_path, preview_version, existing_args):
+        binary = {
+            target: {
+                "archive": f"https://example.com/v1.0.0/{target}.tar.gz",
+                "cmd": "./claude-agent-acp",
+                **({"args": existing_args.copy()} if existing_args is not None else {}),
+            }
+            for target in ("darwin-aarch64", "linux-x86_64", "windows-x86_64")
+        }
+        distribution = {
+            "binary": binary,
+            "npx": {
+                "package": "@acp/claude-acp@1.0.0",
+                **({"args": existing_args.copy()} if existing_args is not None else {}),
+            },
+        }
+        preview = npx_preview("claude-acp", preview_version)
+        if existing_args is not None:
+            preview["distribution"]["npx"]["args"] = existing_args.copy()
+        manifest = agent_manifest("claude-acp", "1.0.0", preview, distribution=distribution)
+        other = agent_manifest("agent-a", "1.0.0", distribution=distribution)
+        write_registry(tmp_path, [manifest, other])
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        assert by_id(registries["registry"])["claude-acp"]["distribution"] == distribution
+        expected_args = list(existing_args or [])
+        if "--hide-claude-auth" not in expected_args:
+            expected_args.append("--hide-claude-auth")
+        for name in (
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        ):
+            entries = by_id(registries[name])
+            claude = entries["claude-acp"]
+            assert claude["bundled"] is True
+            assert claude["distribution"]["npx"]["args"] == expected_args
+            assert "binary" not in claude["distribution"]
+            if name == "registry-for-jetbrains-preview" and preview_version != "1.0.0":
+                assert claude["version"] == preview_version
+                preview_package = preview["distribution"]["npx"]["package"]
+                assert claude["distribution"]["npx"]["package"] == preview_package
+            else:
+                assert claude["version"] == "1.0.0"
+                assert claude["distribution"]["npx"]["package"] == "@acp/claude-acp@1.0.0"
+            assert entries["agent-a"]["distribution"] == distribution
+        assert json.loads((tmp_path / "claude-acp" / "agent.json").read_text()) == manifest
+
     def test_preview_may_declare_a_distribution_type_the_base_entry_lacks(self, tmp_path):
         write_registry(
             tmp_path,
