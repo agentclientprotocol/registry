@@ -1,7 +1,7 @@
 {
   "id": "muse-code",
   "name": "Muse Code",
-  "version": "1.4.14",
+  "version": "1.4.24",
   "description": "Meta's coding agent, built for Muse Spark",
   "website": "https://dev.meta.ai/docs/muse-code",
   "authors": [
@@ -12,8 +12,8 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.14-R7309.1&file=muse-aarch64-macos",
-        "sha256": "1c96114408acbeade9a8fb79e3b4425e5b64d50425938568aef01bdc04ce2e03",
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-aarch64-macos",
+        "sha256": "51224e835fccf2ba8c1abe9c2957b187252050a0b7315e0b1ee4cdcd2f090494",
         "cmd": "./muse",
         "args": [
           "acp"
@@ -23,8 +23,8 @@
         }
       },
       "darwin-x86_64": {
-        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.14-R7309.1&file=muse-x86-macos",
-        "sha256": "6da5a12d3298afba45afec929fc385b516084ed28e9504ae29354dbcdfc4089d",
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-x86-macos",
+        "sha256": "dc65624b7e061e7f11f251acf4b11d77c4a1bb9eca945d58cd6787f84da8521a",
         "cmd": "./muse",
         "args": [
           "acp"
@@ -34,8 +34,8 @@
         }
       },
       "linux-aarch64": {
-        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.14-R7309.1&file=muse-aarch64-linux",
-        "sha256": "3dc39b8fa26f9963cc2038f2966c0932ed5a39f0f9efb39cc0266a261cbbcf76",
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-aarch64-linux",
+        "sha256": "31d4c1fdf382e6711b1c8854d976a6095fe4743eb17b2a8f9a5bb43aef5bad63",
         "cmd": "./muse",
         "args": [
           "acp"
@@ -45,8 +45,8 @@
         }
       },
       "linux-x86_64": {
-        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.14-R7309.1&file=muse-x86-linux",
-        "sha256": "0809aac7cb58d18f5022b6d05e02aa1974683c0ec430e5f04d25b60ed17de2da",
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-x86-linux",
+        "sha256": "d752c45dce079ee29e118804b091d81ac2b1b89b67f317b4a162fa1af1206465",
         "cmd": "./muse",
         "args": [
           "acp"
@@ -56,8 +56,8 @@
         }
       },
       "windows-aarch64": {
-        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.14-R7309.1&file=muse-aarch64-windows.exe",
-        "sha256": "64cef76cb210de993d31478ee582ef4639bbb212df8912b74f45d40431e66e82",
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-aarch64-windows.exe",
+        "sha256": "5ff8bc7d867739bc7ff17d298f20d1581620fe10f12e9eaf3dd23849b3b7594a",
         "cmd": "./muse.exe",
         "args": [
           "acp"
@@ -67,8 +67,8 @@
         }
       },
       "windows-x86_64": {
-        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.14-R7309.1&file=muse-x86-windows.exe",
-        "sha256": "20d18c426cc26e9e4b3cc07008ec07ec97e12e466a2be8cd2797b2e0e2018382",
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-x86-windows.exe",
+        "sha256": "9c948338ba8b0a463ca81a1826660b3d3a59fb96feef8669f51cdfb5c2a3cb93",
         "cmd": "./muse.exe",
         "args": [
           "acp"
