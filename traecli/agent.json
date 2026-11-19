@@ -1,0 +1,50 @@
+{
+  "id": "traecli",
+  "name": "TRAE CLI",
+  "version": "0.216.0",
+  "description": "TRAE CLI coding agent with native Agent Client Protocol support.",
+  "website": "https://www.trae.cn/",
+  "authors": ["TRAE"],
+  "license": "proprietary",
+  "license_url": "https://www.trae.cn/terms-of-service",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/trae-cli/v2/acp/releases/0.216.0/traecli-acp-darwin-aarch64.tar.gz",
+        "sha256": "1d11f6efaab59bb4165f491d35c6a9f2ed5979ca5cf512da615f3afb75c72d07",
+        "cmd": "./bin/traecli",
+        "args": ["acp", "serve"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/trae-cli/v2/acp/releases/0.216.0/traecli-acp-darwin-x86_64.tar.gz",
+        "sha256": "07e579d5e7f5418d871858696e3fffc761268bef1da6dde0fa412fe174218a05",
+        "cmd": "./bin/traecli",
+        "args": ["acp", "serve"]
+      },
+      "linux-aarch64": {
+        "archive": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/trae-cli/v2/acp/releases/0.216.0/traecli-acp-linux-aarch64.tar.gz",
+        "sha256": "4496fb78de54c99d969390fd9b9b75aea7d1051d9df31a0f680a8296aa3c62c6",
+        "cmd": "./bin/traecli",
+        "args": ["acp", "serve"]
+      },
+      "linux-x86_64": {
+        "archive": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/trae-cli/v2/acp/releases/0.216.0/traecli-acp-linux-x86_64.tar.gz",
+        "sha256": "bf92a7dfc0b21b7cc2db302f72188aba54ee5cd20cea9300e74f76d3f82b353e",
+        "cmd": "./bin/traecli",
+        "args": ["acp", "serve"]
+      },
+      "windows-aarch64": {
+        "archive": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/trae-cli/v2/acp/releases/0.216.0/traecli-acp-windows-aarch64.zip",
+        "sha256": "6ef90e92fcc047906b06d4ef0c40c7c19ae681917c27d52a6954fa64cf0951eb",
+        "cmd": "./bin/traecli.exe",
+        "args": ["acp", "serve"]
+      },
+      "windows-x86_64": {
+        "archive": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/trae-cli/v2/acp/releases/0.216.0/traecli-acp-windows-x86_64.zip",
+        "sha256": "fded953e8bd1393bd2329e98006f767535b7f66db44d0a21a803a9fa3afdb776",
+        "cmd": "./bin/traecli.exe",
+        "args": ["acp", "serve"]
+      }
+    }
+  }
+}
