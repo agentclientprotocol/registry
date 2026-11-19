@@ -42,16 +42,6 @@
         "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.108.1/claude-agent-acp-linux-x64-musl.tar.gz",
         "cmd": "./claude-agent-acp",
         "sha256": "36b46056ba3d6ce5a4a072cca6a4aa899f49c92f8edd54f25a3b37a505529199"
-      },
-      "windows-aarch64": {
-        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.108.1/claude-agent-acp-windows-arm64.zip",
-        "cmd": "./claude-agent-acp.exe",
-        "sha256": "a243da5ddea1bc2906f020757c0c300009d6c331a01ec39e5e40e9e5a241aaf3"
-      },
-      "windows-x86_64": {
-        "archive": "https://github.com/agentclientprotocol/claude-agent-acp/releases/download/v0.108.1/claude-agent-acp-windows-x64.zip",
-        "cmd": "./claude-agent-acp.exe",
-        "sha256": "c7916add7f634b72047d6826be8ba9c90b869550a2bc49d6aed9ee732b01e0ba"
       }
     },
     "npx": {
