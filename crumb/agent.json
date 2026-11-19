@@ -1,0 +1,57 @@
+{
+  "id": "crumb",
+  "name": "Crumb",
+  "version": "1.4.1",
+  "description": "Terminal coding agent with its own tools, sessions and approvals; Pollinations models by default",
+  "repository": "https://github.com/elixpo/crumb.elixpo",
+  "website": "https://crumb.elixpo.com",
+  "authors": [
+    "Ayushman Bhattacharya <ayushman.elixpo@gmail.com>"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/elixpo/crumb.elixpo/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/elixpo/crumb.elixpo/releases/download/v1.4.1/crumb-macos-aarch64.tar.gz",
+        "sha256": "cd26349bed5ce5a9ffc1b09e307d1590da6ac1cae320843fa8f5192c995764e6",
+        "cmd": "./crumb",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/elixpo/crumb.elixpo/releases/download/v1.4.1/crumb-macos-x86_64.tar.gz",
+        "sha256": "3ff2a315dec3acddf67ec6d9c265d5474de02e64d0fcffdcd195d0595f443048",
+        "cmd": "./crumb",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/elixpo/crumb.elixpo/releases/download/v1.4.1/crumb-linux-aarch64.tar.gz",
+        "sha256": "c6c03401a5cb770bccdb6ef96138bc526726072efa901657322ab75451108f2f",
+        "cmd": "./crumb",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/elixpo/crumb.elixpo/releases/download/v1.4.1/crumb-linux-x86_64.tar.gz",
+        "sha256": "5c90636857ab7ceb7994011efb8d321b51ec6e460f4462bdc2d4d7be05b3e18d",
+        "cmd": "./crumb",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/elixpo/crumb.elixpo/releases/download/v1.4.1/crumb-windows-x86_64.zip",
+        "sha256": "a587864c8b4f026b57ca4e6d5320290a12f92395837fff0edc21489c5ba6179e",
+        "cmd": "crumb.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
