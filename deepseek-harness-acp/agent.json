@@ -1,0 +1,17 @@
+{
+  "id": "deepseek-harness-acp",
+  "name": "DeepSeek Harness",
+  "version": "0.1.31",
+  "description": "Standalone ACP server powered by DeepSeek Harness with real-time token streaming, thought trace transparency, tool lifecycle updates, and session recovery.",
+  "repository": "https://github.com/maojindao55/deepseek-harness-acp",
+  "authors": [
+    "maojindao55 <hobby0524@gmail.com>"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/maojindao55/deepseek-harness-acp/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "deepseek-harness-acp@0.1.31"
+    }
+  }
+}
