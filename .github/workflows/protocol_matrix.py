@@ -6,7 +6,7 @@ without user login by:
 1. Launching each registered agent
 2. Running `initialize`
 3. Running a basic `session/new` check
-4. Probing selected unstable methods
+4. Probing selected feature methods
 
 Outputs:
 - .protocol-matrix/snapshots/YYYY-MM-DD.json
@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import fcntl
 import json
 import os
 import select
@@ -27,10 +26,16 @@ import shutil
 import subprocess
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - unavailable on Windows
+    fcntl = None
 
 from registry_utils import subprocess_group_kwargs, terminate_process_group
 from verify_agents import (
@@ -49,6 +54,7 @@ DEFAULT_SANDBOX_DIR = ".matrix-sandbox"
 DEFAULT_OUTPUT_DIR = ".protocol-matrix"
 DEFAULT_TABLE_MODE = "full"
 PROTOCOL_VERSION = 1
+PROBE_SCHEMA_VERSION = 2
 
 TABLE_MODE_CHOICES = ("full", "capabilities")
 
@@ -56,8 +62,8 @@ METHOD_PROBES = (
     "session/list",
     "session/fork",
     "session/resume",
-    "session/stop",
     "session/set_model",
+    "session/close",
 )
 
 SUCCESS_STATUSES = {"success", "invalid_params", "resource_not_found"}
@@ -67,7 +73,7 @@ CAPABILITY_COLUMNS = (
     ("sessionList", "session/list"),
     ("sessionFork", "session/fork"),
     ("sessionResume", "session/resume"),
-    ("sessionStop", "session/stop"),
+    ("sessionClose", "session/close"),
 )
 
 
@@ -78,6 +84,12 @@ class ProbeOutcome:
     status: str
     code: int | None = None
     message: str | None = None
+
+
+ProbeRequest = Callable[
+    [int, str, dict[str, Any], float],
+    tuple[ProbeOutcome, dict[str, Any] | None],
+]
 
 
 def short_message(message: str, max_len: int = 220) -> str:
@@ -165,6 +177,14 @@ def index_snapshot_agents(snapshot: dict[str, Any] | None) -> dict[str, dict[str
     return indexed
 
 
+def snapshot_schema_is_current(snapshot: dict[str, Any] | None) -> bool:
+    """Return whether a previous snapshot can be reused without translation."""
+    if snapshot is None:
+        return False
+    version = snapshot.get("probeSchemaVersion")
+    return type(version) is int and version == PROBE_SCHEMA_VERSION
+
+
 def should_probe_agent(
     agent: dict[str, Any],
     previous_record: dict[str, Any] | None,
@@ -233,6 +253,15 @@ def capability_present(capabilities: dict[str, Any], key: str) -> bool:
     return key in capabilities and capabilities[key] is not None
 
 
+def close_capability_advertised(session_capabilities: dict[str, Any]) -> bool:
+    """Return whether stable ACP v1 close support is advertised as an object."""
+    close_capability = session_capabilities.get("close")
+    if not isinstance(close_capability, dict):
+        return False
+    meta = close_capability.get("_meta")
+    return "_meta" not in close_capability or meta is None or isinstance(meta, dict)
+
+
 def build_initialize_params() -> dict[str, Any]:
     """Build the client initialize payload used for protocol probing."""
     return {
@@ -257,7 +286,7 @@ def build_initialize_params() -> dict[str, Any]:
 
 def response_exposes_models(message: dict[str, Any] | None) -> bool:
     """Return whether a successful response includes session model state."""
-    if not message or "result" not in message:
+    if not message or "result" not in message or "error" in message:
         return False
 
     result = message["result"]
@@ -266,6 +295,12 @@ def response_exposes_models(message: dict[str, Any] | None) -> bool:
 
 def classify_rpc_response(message: dict[str, Any]) -> ProbeOutcome:
     """Convert a JSON-RPC response payload into a normalized probe outcome."""
+    if ("result" in message) == ("error" in message):
+        return ProbeOutcome(
+            status="invalid_response",
+            message="JSON-RPC response must contain exactly one of result or error",
+        )
+
     if "result" in message:
         return ProbeOutcome(status="success")
 
@@ -468,6 +503,9 @@ def collect_stderr_tail(proc: subprocess.Popen, max_chars: int = 1200) -> str | 
     if proc.poll() is None:
         return None
 
+    if fcntl is None:
+        return None
+
     fd = proc.stderr.fileno()
     try:
         flags = fcntl.fcntl(fd, fcntl.F_GETFL)
@@ -514,7 +552,7 @@ def probe_params_for_method(
             "cwd": cwd,
             "mcpServers": [],
         }
-    if method == "session/stop":
+    if method == "session/close":
         return {"sessionId": session_id}
     if method == "session/set_model":
         return {
@@ -535,12 +573,18 @@ def status_short(status: str) -> str:
         "no_response": "timeout",
         "decode_error": "decode",
         "process_error": "proc_err",
+        "invalid_response": "invalid",
+        "not_applicable": "n/a",
         "not_probed": "-",
     }
     return mapping.get(status, "err")
 
 
-def feature_cell(advertised: bool, outcome: ProbeOutcome) -> str:
+def feature_cell(
+    advertised: bool,
+    outcome: ProbeOutcome,
+    method: str | None = None,
+) -> str:
     """Render `signal/probe` feature status, e.g. `Y/yes`, `N/no`."""
     advertised_part = "Y" if advertised else "N"
 
@@ -552,15 +596,97 @@ def feature_cell(advertised: bool, outcome: ProbeOutcome) -> str:
         "method_not_found": "no",
         "no_response": "timeout",
         "decode_error": "decode",
+        "invalid_response": "invalid",
+        "not_applicable": "n/a",
         "not_probed": "-",
     }
-    return f"{advertised_part}/{probe_map.get(outcome.status, 'err')}"
+    probe_value = probe_map.get(outcome.status, "err")
+    if method == "session/close" and outcome.status in {
+        "invalid_params",
+        "resource_not_found",
+    }:
+        probe_value = status_short(outcome.status)
+    return f"{advertised_part}/{probe_value}"
 
 
 def format_capabilities(capabilities: dict[str, bool]) -> str:
     """Summarize capabilities advertised during the `initialize` handshake."""
     advertised = [label for key, label in CAPABILITY_COLUMNS if capabilities.get(key, False)]
     return ", ".join(advertised) if advertised else "-"
+
+
+def normalize_close_outcome(
+    outcome: ProbeOutcome,
+    message: dict[str, Any] | None,
+) -> ProbeOutcome:
+    """Require a successful close response to contain an object result."""
+    if message is not None and "result" in message and "error" in message:
+        return ProbeOutcome(
+            status="invalid_response",
+            message="session/close response must contain exactly one of result or error",
+        )
+    if outcome.status != "success":
+        return outcome
+    if message is None or not isinstance(message.get("result"), dict):
+        return ProbeOutcome(
+            status="invalid_response",
+            message="session/close result must be an object",
+        )
+
+    result = message["result"]
+    meta = result.get("_meta")
+    if "_meta" in result and meta is not None and not isinstance(meta, dict):
+        return ProbeOutcome(
+            status="invalid_response",
+            message="session/close result _meta must be an object or null",
+        )
+    return outcome
+
+
+def run_method_probes(
+    request: ProbeRequest,
+    request_id: int,
+    probe_session_id: str,
+    close_session_id: str | None,
+    cwd: str,
+    timeout: float,
+    close_advertised: bool,
+) -> tuple[int, dict[str, ProbeOutcome], bool]:
+    """Run feature probes while keeping close gated, real-session-only, and last."""
+    outcomes = {method: ProbeOutcome(status="not_probed") for method in METHOD_PROBES}
+    set_model_signal = False
+
+    for method in METHOD_PROBES:
+        session_id = probe_session_id
+        if method == "session/close":
+            if not close_advertised:
+                outcomes[method] = ProbeOutcome(status="not_applicable")
+                continue
+            if close_session_id is None:
+                outcomes[method] = ProbeOutcome(
+                    status="not_probed",
+                    message="No active session was created",
+                )
+                continue
+            session_id = close_session_id
+
+        params = probe_params_for_method(method=method, session_id=session_id, cwd=cwd)
+        outcome, message = request(request_id, method, params, timeout)
+        if method == "session/close":
+            outcome = normalize_close_outcome(outcome, message)
+        if response_exposes_models(message):
+            set_model_signal = True
+        outcomes[method] = outcome
+        request_id += 1
+
+    return request_id, outcomes, set_model_signal
+
+
+def probe_indicates_support(method: str, status: str) -> bool:
+    """Interpret probe outcomes without treating close errors as support."""
+    if method == "session/close":
+        return status == "success"
+    return status in SUCCESS_STATUSES
 
 
 def render_aligned_table(headers: list[str], rows: list[list[str]]) -> list[str]:
@@ -599,6 +725,8 @@ def summarize_results(records: list[dict[str, Any]]) -> dict[str, Any]:
             "supported": 0,
             "authRequired": 0,
             "methodNotFound": 0,
+            "notApplicable": 0,
+            "notProbed": 0,
             "other": 0,
         }
 
@@ -619,16 +747,40 @@ def summarize_results(records: list[dict[str, Any]]) -> dict[str, Any]:
         for method in METHOD_PROBES:
             status = record["methodProbes"][method]["status"]
             counters = summary["features"][method]
-            if status in SUCCESS_STATUSES:
+            if probe_indicates_support(method, status):
                 counters["supported"] += 1
             elif status == "auth_required":
                 counters["authRequired"] += 1
             elif status == "method_not_found":
                 counters["methodNotFound"] += 1
+            elif status == "not_applicable":
+                counters["notApplicable"] += 1
+            elif status == "not_probed":
+                counters["notProbed"] += 1
             else:
                 counters["other"] += 1
 
     return summary
+
+
+def build_snapshot(
+    records: list[dict[str, Any]],
+    summary: dict[str, Any],
+    date_str: str,
+    generated_at: str,
+    table_mode: str,
+    changed_only: bool,
+) -> dict[str, Any]:
+    """Build the versioned machine-readable matrix report."""
+    return {
+        "probeSchemaVersion": PROBE_SCHEMA_VERSION,
+        "date": date_str,
+        "generatedAt": generated_at,
+        "tableMode": table_mode,
+        "changedOnly": changed_only,
+        "summary": summary,
+        "agents": records,
+    }
 
 
 def render_markdown(
@@ -647,6 +799,7 @@ def render_markdown(
         "",
         f"_Generated at {generated_at}_",
         "",
+        f"- Probe schema version: **{PROBE_SCHEMA_VERSION}**",
         f"- Agents in report: **{summary['agentsProbed']}**",
         f"- Probed this run: **{summary['agentsProbedThisRun']}**",
         f"- Reused unchanged versions: **{summary['agentsReused']}**",
@@ -671,10 +824,11 @@ def render_markdown(
             [
                 (
                     "Legend: feature cells use `Signal/Probe` format. "
-                    "For `session/list`, `session/fork`, `session/resume`, and `session/stop`, "
+                    "For `session/list`, `session/fork`, `session/resume`, and `session/close`, "
                     "`Y`/`N` means the capability was advertised. For `session/set_model`, "
                     "`Y`/`N` means session responses exposed `models`. Probe values: "
-                    "`yes`, `no`, `auth`, `timeout`, `decode`, `err`, `-`."
+                    "`yes`, `no`, `auth`, `params`, `missing`, `n/a`, `timeout`, "
+                    "`decode`, `invalid`, `err`, `-`."
                 ),
                 (
                     "`Capabilities` lists the capabilities advertised in the "
@@ -721,7 +875,11 @@ def render_markdown(
                 feature_cell(caps["sessionList"], ProbeOutcome(**probes["session/list"])),
                 feature_cell(caps["sessionFork"], ProbeOutcome(**probes["session/fork"])),
                 feature_cell(caps["sessionResume"], ProbeOutcome(**probes["session/resume"])),
-                feature_cell(caps["sessionStop"], ProbeOutcome(**probes["session/stop"])),
+                feature_cell(
+                    caps["sessionClose"],
+                    ProbeOutcome(**probes["session/close"]),
+                    method="session/close",
+                ),
                 feature_cell(
                     set_model_advertised,
                     ProbeOutcome(**probes["session/set_model"]),
@@ -742,7 +900,7 @@ def render_markdown(
             "session/list",
             "session/fork",
             "session/resume",
-            "session/stop",
+            "session/close",
             "session/set_model",
         ]
 
@@ -753,8 +911,11 @@ def render_markdown(
             "",
             "## Method Probe Summary",
             "",
-            "| Method | Supported | Auth Required | Method Not Found | Other |",
-            "| --- | ---: | ---: | ---: | ---: |",
+            (
+                "| Method | Supported | Auth Required | Method Not Found | "
+                "Not Applicable | Not Probed | Other |"
+            ),
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
 
@@ -768,6 +929,8 @@ def render_markdown(
                     str(counters["supported"]),
                     str(counters["authRequired"]),
                     str(counters["methodNotFound"]),
+                    str(counters["notApplicable"]),
+                    str(counters["notProbed"]),
                     str(counters["other"]),
                 ]
             )
@@ -846,7 +1009,7 @@ def probe_agent(
             "sessionList": False,
             "sessionFork": False,
             "sessionResume": False,
-            "sessionStop": False,
+            "sessionClose": False,
             "setModel": False,
         },
         "sessionNew": asdict(ProbeOutcome(status="not_probed")),
@@ -931,6 +1094,7 @@ def probe_agent(
         default_row["initialize"] = asdict(init_outcome)
 
         session_id = "sess_matrix_probe"
+        close_session_id = None
         if init_outcome.status == "success" and init_message and "result" in init_message:
             result = init_message["result"]
             if isinstance(result, dict):
@@ -955,7 +1119,7 @@ def probe_agent(
                     "sessionList": capability_present(session_caps, "list"),
                     "sessionFork": capability_present(session_caps, "fork"),
                     "sessionResume": capability_present(session_caps, "resume"),
-                    "sessionStop": capability_present(session_caps, "stop"),
+                    "sessionClose": close_capability_advertised(session_caps),
                     "setModel": False,
                 }
 
@@ -982,25 +1146,37 @@ def probe_agent(
                         maybe_session_id = session_result.get("sessionId")
                         if isinstance(maybe_session_id, str) and maybe_session_id:
                             session_id = maybe_session_id
+                            close_session_id = maybe_session_id
 
-                for method in METHOD_PROBES:
-                    params = probe_params_for_method(
-                        method=method,
-                        session_id=session_id,
-                        cwd=str(workspace_dir),
-                    )
-                    outcome, message = request_with_timeout(
+                def request_probe(
+                    probe_request_id: int,
+                    method: str,
+                    params: dict[str, Any],
+                    timeout: float,
+                ) -> tuple[ProbeOutcome, dict[str, Any] | None]:
+                    return request_with_timeout(
                         proc,
-                        request_id,
+                        probe_request_id,
                         method,
                         params,
-                        rpc_timeout,
+                        timeout,
                     )
-                    if response_exposes_models(message):
-                        default_row["setModelSignal"] = True
-                        default_row["capabilities"]["setModel"] = True
-                    default_row["methodProbes"][method] = asdict(outcome)
-                    request_id += 1
+
+                _, probe_outcomes, probes_expose_models = run_method_probes(
+                    request=request_probe,
+                    request_id=request_id,
+                    probe_session_id=session_id,
+                    close_session_id=close_session_id,
+                    cwd=str(workspace_dir),
+                    timeout=rpc_timeout,
+                    close_advertised=default_row["capabilities"]["sessionClose"],
+                )
+                default_row["methodProbes"] = {
+                    method: asdict(outcome) for method, outcome in probe_outcomes.items()
+                }
+                if probes_expose_models:
+                    default_row["setModelSignal"] = True
+                    default_row["capabilities"]["setModel"] = True
     except Exception as exc:  # noqa: BLE001
         default_row["initialize"] = asdict(
             ProbeOutcome(
@@ -1115,6 +1291,13 @@ def main() -> int:
     agents.sort(key=lambda item: item["id"])
     latest_json_path = output_base / "latest.json"
     previous_snapshot = load_previous_snapshot(latest_json_path) if args.changed_only else None
+    if previous_snapshot is not None and not snapshot_schema_is_current(previous_snapshot):
+        previous_version = previous_snapshot.get("probeSchemaVersion", 1)
+        print(
+            "Previous snapshot probe schema "
+            f"{previous_version!r} is incompatible with {PROBE_SCHEMA_VERSION}; probing all agents"
+        )
+        previous_snapshot = None
     previous_records = index_snapshot_agents(previous_snapshot)
     previous_generated_at = None
     if previous_snapshot is not None:
@@ -1153,14 +1336,14 @@ def main() -> int:
         records.append(record)
 
     summary = summarize_results(records)
-    snapshot = {
-        "date": date_str,
-        "generatedAt": generated_at,
-        "tableMode": args.table_mode,
-        "changedOnly": args.changed_only,
-        "summary": summary,
-        "agents": records,
-    }
+    snapshot = build_snapshot(
+        records=records,
+        summary=summary,
+        date_str=date_str,
+        generated_at=generated_at,
+        table_mode=args.table_mode,
+        changed_only=args.changed_only,
+    )
 
     markdown = render_markdown(
         records,
