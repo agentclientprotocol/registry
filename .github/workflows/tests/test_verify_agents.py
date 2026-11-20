@@ -4,20 +4,131 @@ import subprocess
 import sys
 import zipfile
 from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
 
 from verify_agents import (
+    build_agent_command,
     build_agent_process_env,
     build_installed_npx_command,
     compute_archive_sha256,
     ensure_executable,
     extract_archive,
+    get_current_platform,
     npm_package_bin_name,
+    prepare_binary,
     prepare_npx_package,
     resolve_binary_executable,
     run_process,
     sha256_matches,
     should_retry_npx_auth_with_install,
+    verify_binary,
 )
+
+
+@pytest.mark.parametrize(
+    ("system", "machine", "libc", "ldd_stderr", "expected"),
+    [
+        ("Linux", "x86_64", "glibc", "", "linux-x86_64"),
+        ("Linux", "x86_64", "musl", "", "linux-x86_64-musl"),
+        ("Linux", "aarch64", "musl", "", "linux-aarch64-musl"),
+        ("Darwin", "arm64", "", "", "darwin-aarch64"),
+        ("Linux", "x86_64", "", "musl libc (x86_64)", "linux-x86_64-musl"),
+    ],
+)
+def test_get_current_platform(monkeypatch, system, machine, libc, ldd_stderr, expected):
+    monkeypatch.setattr("verify_agents.platform.system", lambda: system)
+    monkeypatch.setattr("verify_agents.platform.machine", lambda: machine)
+    monkeypatch.setattr("verify_agents.platform.libc_ver", lambda: (libc, ""))
+    ldd = Mock(return_value=subprocess.CompletedProcess(["ldd", "--version"], 1, "", ldd_stderr))
+    monkeypatch.setattr("verify_agents.subprocess.run", ldd)
+
+    assert get_current_platform() == expected
+    if system == "Linux" and not libc:
+        ldd.assert_called_once()
+    else:
+        ldd.assert_not_called()
+
+
+@pytest.mark.parametrize("error", [FileNotFoundError(), subprocess.TimeoutExpired("ldd", 5)])
+def test_get_current_platform_handles_unavailable_ldd(monkeypatch, error):
+    monkeypatch.setattr("verify_agents.platform.system", lambda: "Linux")
+    monkeypatch.setattr("verify_agents.platform.machine", lambda: "x86_64")
+    monkeypatch.setattr("verify_agents.platform.libc_ver", lambda: ("", ""))
+
+    def unavailable(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr("verify_agents.subprocess.run", unavailable)
+
+    assert get_current_platform() == "linux-x86_64"
+
+
+def test_binary_workflows_select_musl_target(monkeypatch, tmp_path):
+    target = "linux-x86_64-musl"
+    monkeypatch.setattr("verify_agents.get_current_platform", lambda: target)
+    agent = {
+        "id": "demo",
+        "distribution": {
+            "binary": {
+                "linux-x86_64": {
+                    "archive": "https://example.com/default.tar.gz",
+                    "cmd": "./default",
+                },
+                target: {
+                    "archive": "https://example.com/musl.tar.gz",
+                    "cmd": "./musl",
+                    "args": ["acp"],
+                    "env": {"AGENT_MODE": "musl"},
+                },
+            }
+        },
+    }
+    (tmp_path / "musl.tar.gz").touch()
+    extract_dir = tmp_path / "extracted"
+    extract_dir.mkdir()
+    executable = extract_dir / "musl"
+    executable.write_text("#!/bin/sh\n")
+    download = Mock(side_effect=AssertionError("The selected musl archive is already cached"))
+    run = Mock(return_value=(0, "", ""))
+    monkeypatch.setattr("verify_agents.download_file", download)
+    monkeypatch.setattr("verify_agents.run_process", run)
+
+    assert verify_binary(agent, tmp_path, 1, False).success
+    assert prepare_binary(agent, tmp_path) == (True, "Binary prepared")
+    cmd, cwd, env = build_agent_command(agent, "binary", tmp_path)
+    assert cmd == [str(executable), "acp"]
+    assert cwd == extract_dir
+    assert env == {"AGENT_MODE": "musl"}
+    run.assert_called_once_with(cmd, cwd, env, 1)
+    download.assert_not_called()
+
+
+def test_binary_workflows_do_not_fall_back_to_default_linux(monkeypatch, tmp_path):
+    monkeypatch.setattr("verify_agents.get_current_platform", lambda: "linux-x86_64-musl")
+    agent = {
+        "id": "demo",
+        "distribution": {
+            "binary": {
+                "linux-x86_64": {
+                    "archive": "https://example.com/default.tar.gz",
+                    "cmd": "./default",
+                }
+            }
+        },
+    }
+
+    def unexpected_download(*args, **kwargs):
+        pytest.fail("A default Linux binary must not be downloaded on musl")
+
+    monkeypatch.setattr("verify_agents.download_file", unexpected_download)
+
+    result = verify_binary(agent, tmp_path, 1, False)
+    assert result.skipped
+    assert result.message == "No build for linux-x86_64-musl"
+    assert prepare_binary(agent, tmp_path) == (False, result.message)
+    assert build_agent_command(agent, "binary", tmp_path)[0] == []
 
 
 def test_resolve_binary_executable_renames_single_raw_binary(tmp_path: Path):

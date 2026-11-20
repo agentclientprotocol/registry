@@ -1,7 +1,7 @@
 {
   "id": "amp-acp",
   "name": "Amp",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "description": "ACP wrapper for Amp - the frontier coding agent",
   "repository": "https://github.com/tao12345666333/amp-acp",
   "authors": [
@@ -13,29 +13,29 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.11.0/amp-acp-darwin-aarch64.tar.gz",
+        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.13.0/amp-acp-darwin-aarch64.tar.gz",
         "cmd": "./amp-acp",
-        "sha256": "4bf329d06ffa80123f88324cf27260054bfda6ad952eb4337c30747ad9618ad8"
+        "sha256": "ca3315e3e54ea85c7e5db09d19a1908cd2ea149c8e83a728cefb814c7a490edf"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.11.0/amp-acp-darwin-x86_64.tar.gz",
+        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.13.0/amp-acp-darwin-x86_64.tar.gz",
         "cmd": "./amp-acp",
-        "sha256": "0e016273310457f5dbd145962473625645f2bfe490f8fa47d4e9ced4a42a97a2"
+        "sha256": "75aeeb10a346276151fb38812a8aafd95d108765e794da0e1ff30b0aebfc6752"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.11.0/amp-acp-linux-aarch64.tar.gz",
+        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.13.0/amp-acp-linux-aarch64.tar.gz",
         "cmd": "./amp-acp",
-        "sha256": "fa77d0b4379f89c33fb6cf346b49149c09e48c9e0358d997e0267d846e0a8930"
+        "sha256": "ad7e1c23ec29bf47f757d656fc4c9a957dd60533da034213a6bc7d33d1813d32"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.11.0/amp-acp-linux-x86_64.tar.gz",
+        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.13.0/amp-acp-linux-x86_64.tar.gz",
         "cmd": "./amp-acp",
-        "sha256": "57642a7d6e80015cffab263e84c05cde2283b1aa5c80349d0161124f1df24a81"
+        "sha256": "205c819383b6fd389b408120ebea9cdde5c2957530b5ce4ebc912998d4118f8b"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.11.0/amp-acp-windows-x86_64.zip",
+        "archive": "https://github.com/tao12345666333/amp-acp/releases/download/v0.13.0/amp-acp-windows-x86_64.zip",
         "cmd": "amp-acp.exe",
-        "sha256": "908add2112197527c8a3e303721c5edccf73b1d85daf55e6911c3fb6ac07f00a"
+        "sha256": "5bb7aad1f40f6a1c41a81dbb566bf550a00a627da41508b035cca8765a1422dd"
       }
     }
   }

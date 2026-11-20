@@ -11,6 +11,7 @@ import pytest
 
 from build_registry import (
     HAS_JSONSCHEMA,
+    JETBRAINS_ENVIRONMENTS,
     build_registry,
     check_license_urls,
     is_public_https_url,
@@ -495,6 +496,34 @@ def _skip_url_validation(monkeypatch):
     monkeypatch.setattr("build_registry.SKIP_URL_VALIDATION", True)
 
 
+class TestMuslTargets:
+    @pytest.mark.parametrize("use_schema", [False, True])
+    def test_preserves_default_and_musl_targets(self, tmp_path, monkeypatch, use_schema):
+        if use_schema and not HAS_JSONSCHEMA:
+            pytest.skip("jsonschema not installed")
+        monkeypatch.setattr("build_registry.HAS_JSONSCHEMA", use_schema)
+        binary = {
+            target: {
+                "archive": f"https://example.com/v1.0.0/{target}.tar.gz",
+                "cmd": "./agent",
+            }
+            for target in (
+                "linux-aarch64",
+                "linux-x86_64",
+                "linux-aarch64-musl",
+                "linux-x86_64-musl",
+            )
+        }
+        write_registry(
+            tmp_path, [agent_manifest("agent-a", "1.0.0", distribution={"binary": binary})]
+        )
+
+        build_registry(registry_dir=tmp_path)
+
+        for registry in read_registries(tmp_path).values():
+            assert by_id(registry)["agent-a"]["distribution"]["binary"] == binary
+
+
 class TestValidatePreview:
     def test_no_preview_block(self):
         assert validate_preview(agent_manifest("agent-a", "1.8.0")) == []
@@ -581,6 +610,20 @@ class TestPreviewRegistryOutputs:
             "registry-for-jetbrains-air",
         }
 
+    def test_only_jetbrains_registries_carry_the_environments(self, tmp_path):
+        write_registry(tmp_path, [agent_manifest("agent-a", "1.8.0")])
+
+        build_registry(registry_dir=tmp_path)
+
+        registries = read_registries(tmp_path)
+        assert "environments" not in registries["registry"]
+        for name in (
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        ):
+            assert registries[name]["environments"] == JETBRAINS_ENVIRONMENTS
+
     def test_air_registry_excludes_only_gemini(self, tmp_path):
         write_registry(
             tmp_path,
@@ -598,6 +641,7 @@ class TestPreviewRegistryOutputs:
         assert registries["registry-for-jetbrains-air"] == {
             "version": registries["registry-for-jetbrains"]["version"],
             "agents": [jetbrains_agents["antigravity-acp"], jetbrains_agents["gemini-custom"]],
+            "environments": JETBRAINS_ENVIRONMENTS,
         }
         for name in ("registry", "registry-for-jetbrains", "registry-for-jetbrains-preview"):
             assert "gemini" in by_id(registries[name])
@@ -712,6 +756,60 @@ class TestPreviewRegistryOutputs:
         assert "github-copilot-cli" not in preview_agents
         assert "github-copilot" in preview_agents
         assert "github-copilot" not in by_id(registries["registry"])
+
+    @pytest.mark.parametrize("preview_version", ["1.0.0", "1.1.0-preview.1"])
+    @pytest.mark.parametrize(
+        "existing_args", [None, ["--verbose"], ["--verbose", "--hide-claude-auth"]]
+    )
+    def test_claude_auth_flag_covers_binary_and_npx(self, tmp_path, preview_version, existing_args):
+        binary = {
+            target: {
+                "archive": f"https://example.com/v1.0.0/{target}.tar.gz",
+                "cmd": "./claude-agent-acp",
+                **({"args": existing_args.copy()} if existing_args is not None else {}),
+            }
+            for target in ("darwin-aarch64", "linux-x86_64", "windows-x86_64")
+        }
+        distribution = {
+            "binary": binary,
+            "npx": {
+                "package": "@acp/claude-acp@1.0.0",
+                **({"args": existing_args.copy()} if existing_args is not None else {}),
+            },
+        }
+        preview = npx_preview("claude-acp", preview_version)
+        if existing_args is not None:
+            preview["distribution"]["npx"]["args"] = existing_args.copy()
+        manifest = agent_manifest("claude-acp", "1.0.0", preview, distribution=distribution)
+        other = agent_manifest("agent-a", "1.0.0", distribution=distribution)
+        write_registry(tmp_path, [manifest, other])
+
+        build_registry(registry_dir=tmp_path)
+        registries = read_registries(tmp_path)
+
+        assert by_id(registries["registry"])["claude-acp"]["distribution"] == distribution
+        expected_args = list(existing_args or [])
+        if "--hide-claude-auth" not in expected_args:
+            expected_args.append("--hide-claude-auth")
+        for name in (
+            "registry-for-jetbrains",
+            "registry-for-jetbrains-preview",
+            "registry-for-jetbrains-air",
+        ):
+            entries = by_id(registries[name])
+            claude = entries["claude-acp"]
+            assert claude["bundled"] is True
+            assert claude["distribution"]["npx"]["args"] == expected_args
+            assert "binary" not in claude["distribution"]
+            if name == "registry-for-jetbrains-preview" and preview_version != "1.0.0":
+                assert claude["version"] == preview_version
+                preview_package = preview["distribution"]["npx"]["package"]
+                assert claude["distribution"]["npx"]["package"] == preview_package
+            else:
+                assert claude["version"] == "1.0.0"
+                assert claude["distribution"]["npx"]["package"] == "@acp/claude-acp@1.0.0"
+            assert entries["agent-a"]["distribution"] == distribution
+        assert json.loads((tmp_path / "claude-acp" / "agent.json").read_text()) == manifest
 
     def test_preview_may_declare_a_distribution_type_the_base_entry_lacks(self, tmp_path):
         write_registry(
