@@ -1,0 +1,21 @@
+{
+  "id": "aither-adk",
+  "name": "AitherOS Agent",
+  "version": "3.0.3",
+  "description": "AitherOS agents with persistent typed memory, a knowledge graph and a code graph, on any backend - local models, your own fleet, or cloud APIs",
+  "repository": "https://github.com/Aitherium/aither-adk",
+  "website": "https://aitherium.com",
+  "authors": [
+    "Aitherium <hello@aitherium.com>"
+  ],
+  "license": "proprietary",
+  "distribution": {
+    "uvx": {
+      "package": "aither-adk==3.0.3",
+      "args": [
+        "acp",
+        "serve"
+      ]
+    }
+  }
+}
