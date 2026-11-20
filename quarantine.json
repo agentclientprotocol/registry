@@ -2,6 +2,5 @@
   "agoragentic-acp": "Postinstall script",
   "deepagents": "Missing npm dependency",
   "minion-code": "Python dependency issue",
-  "vtcode": "Missing windows builds",
-  "fast-agent": "Timeout after 120s waiting for initialize response"
+  "vtcode": "Missing windows builds"
 }
