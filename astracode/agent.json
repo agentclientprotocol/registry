@@ -1,0 +1,20 @@
+{
+  "id": "astracode",
+  "name": "AstraCode",
+  "version": "0.3.1",
+  "description": "AI coding agent that plans, edits, runs your tests and proves them before it reports, with AstraOne choosing the model",
+  "website": "https://astracode.io/docs/cli/overview/",
+  "authors": [
+    "Vanarx Tech Inc."
+  ],
+  "license_url": "https://astracode.io/terms/",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "astracode-agent@0.3.1",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
