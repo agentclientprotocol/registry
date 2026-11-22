@@ -1,0 +1,64 @@
+{
+  "id": "reason",
+  "name": "Reason",
+  "version": "0.2.678",
+  "description": "Reason's coding agent, running on your own computer or on Reason cloud computers",
+  "website": "https://docs.reasonmachines.com/docs/acp",
+  "authors": [
+    "Reason Machines"
+  ],
+  "license": "proprietary",
+  "license_url": "https://reasonmachines.com/terms-of-service",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://reasonmachines.com/cli/releases/download/cli-v0.2.678/reason-machines-cli-darwin-arm64-0.2.678.tgz",
+        "sha256": "2a0209a64a8c7142c545b5aa830bfa4316a6efd8dc4245a1a9aaba1b9a25e332",
+        "cmd": "./package/bin/reason",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://reasonmachines.com/cli/releases/download/cli-v0.2.678/reason-machines-cli-darwin-x64-0.2.678.tgz",
+        "sha256": "6e6feafd63a824bf1e47037d1c3bfa1a64427663e46b24b884497c370da4c040",
+        "cmd": "./package/bin/reason",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://reasonmachines.com/cli/releases/download/cli-v0.2.678/reason-machines-cli-linux-arm64-0.2.678.tgz",
+        "sha256": "e8e18c61b6e2030879990c26d97d322aa4bcdeda325203f15b444074baae1cb5",
+        "cmd": "./package/bin/reason",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://reasonmachines.com/cli/releases/download/cli-v0.2.678/reason-machines-cli-linux-x64-0.2.678.tgz",
+        "sha256": "70efe37c3be99b9e55f22262e7d941ff54131d38f22ad88deacee54b40ff436a",
+        "cmd": "./package/bin/reason",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-aarch64": {
+        "archive": "https://reasonmachines.com/cli/releases/download/cli-v0.2.678/reason-machines-cli-win32-arm64-0.2.678.tgz",
+        "sha256": "28763238ebf307e22f6f0822408218ff4bf72d408e2a2d34e549da77c7d056be",
+        "cmd": "./package/bin/reason.exe",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://reasonmachines.com/cli/releases/download/cli-v0.2.678/reason-machines-cli-win32-x64-0.2.678.tgz",
+        "sha256": "0f3e8d22ff8000a602c3eaceaddc30ee299693a224011c9e6870fd53f7a55b5d",
+        "cmd": "./package/bin/reason.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
