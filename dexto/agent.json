@@ -1,0 +1,21 @@
+{
+  "id": "dexto",
+  "name": "Dexto",
+  "version": "2.4.0",
+  "description": "Dexto's coding agent. Runs on your Dexto account's models or your own provider keys.",
+  "repository": "https://github.com/truffle-ai/dexto",
+  "website": "https://dexto.ai",
+  "authors": [
+    "Truffle AI"
+  ],
+  "license": "Elastic-2.0",
+  "license_url": "https://github.com/truffle-ai/dexto/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "dexto@2.4.0",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
