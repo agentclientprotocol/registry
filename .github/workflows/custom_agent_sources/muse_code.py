@@ -1,14 +1,14 @@
 """Muse Code's stable channel: the release channel its installer reads, not GitHub Releases.
 
 The channel names the current build (e.g. `1.4.24-R9131.1`) and its manifest of raw
-binaries. A rebuild of the same `x.y.z` (new `-R` suffix) isn't picked up.
+binaries. A rebuild of the same `x.y.z` (new `-R` suffix) is reported as an error.
 """
 
 import json
 import re
 import urllib.error
-import urllib.request
 
+import strict_http
 from common import LatestRelease, ResolvedAsset, UpdateError
 from registry_utils import version_tuple
 
@@ -35,32 +35,21 @@ class _FeedError(Exception):
     """The channel is unreachable, or the channel or manifest is wrong."""
 
 
-class _NoRedirect(urllib.request.HTTPRedirectHandler):
-    # A redirect could lead outside the allowlist, so surface 3xx as errors.
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
+_NO_CACHE = {"Cache-Control": "no-cache"}
 
 
-_OPENER = urllib.request.build_opener(_NoRedirect)
-
-
-def _open(url: str, method: str):
-    req = urllib.request.Request(
-        url,
-        method=method,
-        headers={"User-Agent": "ACP-Registry-Version-Checker/1.0", "Cache-Control": "no-cache"},
-    )
-    try:
-        return _OPENER.open(req, timeout=30)
-    except urllib.error.HTTPError as e:
-        raise _FeedError(f"HTTP {e.code} for {url}") from e
-    except (urllib.error.URLError, TimeoutError, OSError) as e:
-        raise _FeedError(f"{url}: {e}") from e
+def _failure(url: str, e: Exception) -> _FeedError:
+    if isinstance(e, urllib.error.HTTPError):
+        return _FeedError(f"HTTP {e.code} for {url}")
+    return _FeedError(f"{url}: {e}")
 
 
 def _fetch_json(url: str) -> dict:
-    with _open(url, "GET") as response:
-        body = response.read()
+    try:
+        with strict_http.open_url(url, headers=_NO_CACHE) as response:
+            body = response.read()
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise _failure(url, e) from e
     try:
         data = json.loads(body)
     except ValueError as e:
@@ -71,10 +60,10 @@ def _fetch_json(url: str) -> dict:
 
 
 def _head(url: str) -> tuple[str, int]:
-    """Returns (content type, content length) for a 200 response."""
-    with _open(url, "HEAD") as response:
-        length = response.headers.get("Content-Length", "")
-        return response.headers.get_content_type(), int(length) if length.isdigit() else -1
+    try:
+        return strict_http.head(url, _NO_CACHE)
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise _failure(url, e) from e
 
 
 def _resolve(agent_data: dict) -> LatestRelease | None:
@@ -94,8 +83,11 @@ def _resolve(agent_data: dict) -> LatestRelease | None:
     if latest[0] != current[0]:
         raise _FeedError(f"channel version {version} is not a {current[0]}.x release")
     if latest == current:
-        # Like Muse's own launcher, stop after the channel read when nothing changed.
-        return LatestRelease(version, "binary", CHANNEL_URL, "")
+        # A same-version rebuild can leave agent.json pinned to a revoked build (downloads 410).
+        pinned = agent_data.get("distribution", {}).get("binary", {}).values()
+        if not all(t.get("archive", "").startswith(f"{DOWNLOAD_PREFIX}{build}&") for t in pinned):
+            raise _FeedError(f"channel serves {build}, a rebuild of {version}; update by hand")
+        return None
 
     manifest_url = f"{DOWNLOAD_PREFIX}{build}&file=manifest.json"
     if channel.get("manifest_url") != manifest_url:

@@ -1,10 +1,12 @@
 """Ensure the binary updater cannot publish partial, foreign or mismatched Muse Code releases."""
 
 import json
+import urllib.error
 from unittest.mock import patch
 
 import pytest
 
+import strict_http
 from custom_agent_sources import muse_code
 from update_versions import apply_update, check_agent_version
 
@@ -106,8 +108,14 @@ def test_updates_all_binary_urls_and_checksums(entry, channel, manifest, tmp_pat
         assert target["env"] == {"MUSE_EXPERIMENTAL_ACP": "on"}
 
 
+def pin(entry, build):
+    entry["version"] = build.split("-")[0]
+    for platform, target in entry["distribution"]["binary"].items():
+        target["archive"] = download_url(build, muse_code.PLATFORMS[platform][1])
+
+
 def test_current_build_reads_only_the_channel(entry, channel, manifest, tmp_path):
-    entry["version"] = "1.4.25"
+    pin(entry, BUILD)
     path = tmp_path / "agent.json"
     path.write_text(json.dumps(entry))
     fetch, head = serve(channel, manifest)
@@ -116,6 +124,13 @@ def test_current_build_reads_only_the_channel(entry, channel, manifest, tmp_path
     assert (update, error) == (None, None)
     fetch_json.assert_called_once_with(muse_code.CHANNEL_URL)
     head_request.assert_not_called()
+
+
+def test_rebuild_of_current_version_is_reported(entry, channel, manifest, tmp_path):
+    pin(entry, "1.4.25-R9100.1")
+    _, update, error = check(entry, channel, manifest, tmp_path)
+    assert update is None
+    assert f"channel serves {BUILD}, a rebuild of 1.4.25; update by hand" in error.error
 
 
 @pytest.mark.parametrize("build", ["1.4.23-R9000.1", "1.3.9-R8000.1"])
@@ -228,6 +243,13 @@ def test_head_failure_is_reported(entry, channel, manifest, tmp_path):
     assert "HTTP 404" in error.error
 
 
-def test_redirects_are_refused():
-    handler = muse_code._NoRedirect()
-    assert handler.redirect_request(None, None, 302, "Found", {}, "https://example.com") is None
+@pytest.mark.parametrize("code", [302, 410])
+def test_requests_go_through_strict_http(entry, tmp_path, code):
+    path = tmp_path / "agent.json"
+    path.write_text(json.dumps(entry))
+    failure = urllib.error.HTTPError(muse_code.CHANNEL_URL, code, "msg", {}, None)
+    with patch.object(strict_http._OPENER, "open", side_effect=failure) as open_:
+        update, error = check_agent_version(path, entry)
+    assert update is None
+    assert f"HTTP {code} for {muse_code.CHANNEL_URL}" in error.error
+    assert open_.call_args.args[0].get_header("Cache-control") == "no-cache"

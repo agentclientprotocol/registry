@@ -19,9 +19,9 @@ import json
 import os
 import re
 import urllib.error
-import urllib.request
 from typing import NamedTuple
 
+import strict_http
 from common import LatestRelease, ResolvedAsset, UpdateError
 from registry_utils import version_tuple
 
@@ -57,13 +57,6 @@ class _Hop(NamedTuple):
     yanked: bool
 
 
-class _NoRedirect(urllib.request.HTTPRedirectHandler):
-    # A redirect could lead outside the allowlist, so surface 3xx as errors.
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
-
-
-_OPENER = urllib.request.build_opener(_NoRedirect)
 _request_count = 0
 
 
@@ -72,17 +65,10 @@ def _open(url: str, method: str):
     global _request_count
     _request_count += 1
     busted = f"{url}?r={os.environ.get('GITHUB_RUN_ID', 'local')}-{_request_count}"
-    req = urllib.request.Request(
-        busted,
-        method=method,
-        headers={
-            "User-Agent": "ACP-Registry-Version-Checker/1.0",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache",
-        },
-    )
     try:
-        return _OPENER.open(req, timeout=30)
+        return strict_http.open_url(
+            busted, method, {"Cache-Control": "no-cache", "Pragma": "no-cache"}
+        )
     except urllib.error.HTTPError as e:
         if e.code == 404:
             return None
