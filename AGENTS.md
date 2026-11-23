@@ -157,7 +157,7 @@ To add a new custom source: write `custom_agent_sources/<agent_id>.py` with a fu
 
 Agent versions are automatically updated via `.github/workflows/update-versions.yml`:
 
-- **Schedule:** Runs hourly (cron: `0 * * * *`)
+- **Schedule:** Runs hourly at minute 17 (cron: `17 * * * *`)
 - **Scope:** Checks all agents in the root directory
 - **Supported distributions:** `npx` (npm), `uvx` (PyPI), `binary` (GitHub releases only — non-GitHub `repository` URLs are skipped)
 

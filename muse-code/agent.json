@@ -1,0 +1,82 @@
+{
+  "id": "muse-code",
+  "name": "Muse Code",
+  "version": "1.4.24",
+  "description": "Meta's coding agent, built for Muse Spark",
+  "website": "https://dev.meta.ai/docs/muse-code",
+  "authors": [
+    "Meta"
+  ],
+  "license": "proprietary",
+  "license_url": "https://dev.meta.ai/legal/terms-of-service",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-aarch64-macos",
+        "sha256": "51224e835fccf2ba8c1abe9c2957b187252050a0b7315e0b1ee4cdcd2f090494",
+        "cmd": "./muse",
+        "args": [
+          "acp"
+        ],
+        "env": {
+          "MUSE_EXPERIMENTAL_ACP": "on"
+        }
+      },
+      "darwin-x86_64": {
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-x86-macos",
+        "sha256": "dc65624b7e061e7f11f251acf4b11d77c4a1bb9eca945d58cd6787f84da8521a",
+        "cmd": "./muse",
+        "args": [
+          "acp"
+        ],
+        "env": {
+          "MUSE_EXPERIMENTAL_ACP": "on"
+        }
+      },
+      "linux-aarch64": {
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-aarch64-linux",
+        "sha256": "31d4c1fdf382e6711b1c8854d976a6095fe4743eb17b2a8f9a5bb43aef5bad63",
+        "cmd": "./muse",
+        "args": [
+          "acp"
+        ],
+        "env": {
+          "MUSE_EXPERIMENTAL_ACP": "on"
+        }
+      },
+      "linux-x86_64": {
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-x86-linux",
+        "sha256": "d752c45dce079ee29e118804b091d81ac2b1b89b67f317b4a162fa1af1206465",
+        "cmd": "./muse",
+        "args": [
+          "acp"
+        ],
+        "env": {
+          "MUSE_EXPERIMENTAL_ACP": "on"
+        }
+      },
+      "windows-aarch64": {
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-aarch64-windows.exe",
+        "sha256": "5ff8bc7d867739bc7ff17d298f20d1581620fe10f12e9eaf3dd23849b3b7594a",
+        "cmd": "./muse.exe",
+        "args": [
+          "acp"
+        ],
+        "env": {
+          "MUSE_EXPERIMENTAL_ACP": "on"
+        }
+      },
+      "windows-x86_64": {
+        "archive": "https://lookaside.facebook.com/lookaside/muse/download/?channel=muse&version=1.4.24-R9131.1&file=muse-x86-windows.exe",
+        "sha256": "9c948338ba8b0a463ca81a1826660b3d3a59fb96feef8669f51cdfb5c2a3cb93",
+        "cmd": "./muse.exe",
+        "args": [
+          "acp"
+        ],
+        "env": {
+          "MUSE_EXPERIMENTAL_ACP": "on"
+        }
+      }
+    }
+  }
+}

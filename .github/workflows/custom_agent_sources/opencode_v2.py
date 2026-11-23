@@ -12,7 +12,9 @@ _PLATFORM_ASSETS = {
     "darwin-aarch64": "opencode-darwin-arm64.zip",
     "darwin-x86_64": "opencode-darwin-x64.zip",
     "linux-aarch64": "opencode-linux-arm64.tar.gz",
+    "linux-aarch64-musl": "opencode-linux-arm64-musl.tar.gz",
     "linux-x86_64": "opencode-linux-x64.tar.gz",
+    "linux-x86_64-musl": "opencode-linux-x64-musl.tar.gz",
     "windows-aarch64": "opencode-windows-arm64.zip",
     "windows-x86_64": "opencode-windows-x64.zip",
 }
