@@ -1,6 +1,7 @@
 {
   "agoragentic-acp": "Postinstall script",
   "deepagents": "Missing npm dependency",
+  "fast-agent": "fast-agent-acp wheel ships no fast_agent_acp module; launcher conflicts with fast-agent-mcp",
   "minion-code": "Python dependency issue",
   "vtcode": "Missing windows builds"
 }
