@@ -1,8 +1,8 @@
 {
   "id": "plato",
   "name": "Plato",
-  "version": "0.5.2",
-  "description": "An AI coding agent that plans in the open, takes your direction mid-run, and asks before it changes your code.",
+  "version": "0.5.3",
+  "description": "Plans in the open, takes direction mid-run, and asks before changing code. Solo in editors.",
   "repository": "https://github.com/Applivity/plato",
   "website": "https://plato.applivity.com",
   "authors": [
@@ -12,7 +12,7 @@
   "license_url": "https://github.com/Applivity/plato/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "@applivity/plato@0.5.2",
+      "package": "@applivity/plato@0.5.3",
       "args": [
         "--acp"
       ]
