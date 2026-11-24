@@ -1,0 +1,51 @@
+{
+  "id": "jcode",
+  "name": "Jcode",
+  "version": "1.0.3",
+  "description": "Fast, multi-model coding agent with a native TUI, swarm coordination, and 30+ built-in tools.",
+  "repository": "https://github.com/1jehuang/jcode",
+  "website": "https://jcode.sh",
+  "authors": ["Jeremy Huang"],
+  "license": "MIT",
+  "license_url": "https://github.com/1jehuang/jcode/blob/master/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/1jehuang/jcode/releases/download/v1.0.3/jcode-macos-aarch64.tar.gz",
+        "sha256": "274396799d2c60600ce3e4890abe78439c1882017eedfc272ce30b1730c5b74b",
+        "cmd": "./jcode-macos-aarch64",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/1jehuang/jcode/releases/download/v1.0.3/jcode-macos-x86_64.tar.gz",
+        "sha256": "1e9833027eeac661662c15d4d7cd568ea394a399470e131f7ad40dd4dda5198e",
+        "cmd": "./jcode-macos-x86_64",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/1jehuang/jcode/releases/download/v1.0.3/jcode-linux-aarch64.tar.gz",
+        "sha256": "c76cec0b9b98458aca9d1a0bcfa92d330459b7cfef12700c19f130881129ce8f",
+        "cmd": "./jcode-linux-aarch64",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/1jehuang/jcode/releases/download/v1.0.3/jcode-linux-x86_64.tar.gz",
+        "sha256": "7283a4417fed877229fd89049173a3bb469368a3dec37ca2cc31c4895fb3a6ad",
+        "cmd": "./jcode-linux-x86_64",
+        "args": ["acp"]
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/1jehuang/jcode/releases/download/v1.0.3/jcode-windows-aarch64.tar.gz",
+        "sha256": "99f2f91eb5e9af129deee50d3919e2f508898dd05a4a51981c149caa96364674",
+        "cmd": "jcode-windows-aarch64.exe",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/1jehuang/jcode/releases/download/v1.0.3/jcode-windows-x86_64.tar.gz",
+        "sha256": "de40f140d0d91902df1ed0e885bbdd8532bcaba49157afe5d69c875677f2877d",
+        "cmd": "jcode-windows-x86_64.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
