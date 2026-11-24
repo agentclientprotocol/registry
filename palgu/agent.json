@@ -1,0 +1,16 @@
+{
+  "id": "palgu",
+  "name": "Palgu",
+  "version": "0.1.114",
+  "description": "The governed coding agent: every model call goes through your Palgu gateway, so your organization's policy, budgets and audit apply in the editor.",
+  "website": "https://www.palgu.ai",
+  "authors": ["Palgu, Inc."],
+  "license": "proprietary",
+  "license_url": "https://www.palgu.ai/terms",
+  "distribution": {
+    "npx": {
+      "package": "@palgu/agent@0.1.114",
+      "args": ["acp"]
+    }
+  }
+}
