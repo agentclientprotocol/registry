@@ -2,7 +2,7 @@
   "id": "plato",
   "name": "Plato",
   "version": "0.5.3",
-  "description": "Plans in the open, takes direction mid-run, and asks before changing code. Solo in editors.",
+  "description": "Plans in the open, takes direction mid-run, and asks before changing code. Runs alone in an editor.",
   "repository": "https://github.com/Applivity/plato",
   "website": "https://plato.applivity.com",
   "authors": [
