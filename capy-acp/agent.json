@@ -1,0 +1,17 @@
+{
+  "id": "capy-acp",
+  "name": "Capy ACP",
+  "version": "0.1.0",
+  "description": "ACP adapter that runs Capy coding-agent threads on your machine",
+  "repository": "https://github.com/yazcaleb/capy-acp",
+  "authors": [
+    "Yaz Caleb"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/yazcaleb/capy-acp/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "capy-acp@0.1.0"
+    }
+  }
+}
