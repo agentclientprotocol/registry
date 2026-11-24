@@ -1,0 +1,57 @@
+{
+  "id": "agentty",
+  "name": "agentty",
+  "version": "0.9.62",
+  "description": "A fast, terminal-native coding agent with live tool cards, streaming reasoning, subagents, MCP plugins, skills, and hooks. Works standalone (TUI) or as an ACP agent in any editor.",
+  "repository": "https://github.com/agentty-org/agentty",
+  "website": "https://agentty.org",
+  "authors": ["1ay1 <tfeayush@gmail.com>"],
+  "license": "MIT",
+  "license_url": "https://github.com/agentty-org/agentty/blob/master/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-macos-arm64",
+        "sha256": "df7c667a7de4cebec505a297d54e103c96fc88f3514bde7d0d0037ab5d3a785b",
+        "cmd": "./agentty-macos-arm64",
+        "args": ["acp"]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-macos-x86_64",
+        "sha256": "6491d3983fae59456cf06f50873c873dc68881f18ea861336eda45bb94b279df",
+        "cmd": "./agentty-macos-x86_64",
+        "args": ["acp"]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-linux-aarch64",
+        "sha256": "5844d8a7491719b312c2963e70b216b1aa30b78fbb52754835032c15e5a4eb20",
+        "cmd": "./agentty-linux-aarch64",
+        "args": ["acp"]
+      },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-linux-aarch64",
+        "sha256": "5844d8a7491719b312c2963e70b216b1aa30b78fbb52754835032c15e5a4eb20",
+        "cmd": "./agentty-linux-aarch64",
+        "args": ["acp"]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-linux-x86_64",
+        "sha256": "6eb5ba8573534fe8fdec64b9d44a0992e12e9bc38d37b5fcbe5bfb01189b8a60",
+        "cmd": "./agentty-linux-x86_64",
+        "args": ["acp"]
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-linux-x86_64",
+        "sha256": "6eb5ba8573534fe8fdec64b9d44a0992e12e9bc38d37b5fcbe5bfb01189b8a60",
+        "cmd": "./agentty-linux-x86_64",
+        "args": ["acp"]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/agentty-org/agentty/releases/download/v0.9.62/agentty-windows-x86_64.exe",
+        "sha256": "fc251f0c4129349bac978cb2044bcf1c18569d5b1baed8094ea070df134bfa19",
+        "cmd": "agentty-windows-x86_64.exe",
+        "args": ["acp"]
+      }
+    }
+  }
+}
