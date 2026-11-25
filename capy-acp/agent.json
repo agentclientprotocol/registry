@@ -1,7 +1,7 @@
 {
   "id": "capy-acp",
   "name": "Capy ACP",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Community ACP adapter for Capy coding agents, not affiliated with Capy",
   "repository": "https://github.com/yazcaleb/capy-acp",
   "authors": [
@@ -11,7 +11,7 @@
   "license_url": "https://github.com/yazcaleb/capy-acp/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "capy-acp@0.1.0"
+      "package": "capy-acp@0.2.0"
     }
   }
 }
