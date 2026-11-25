@@ -1,0 +1,44 @@
+{
+  "id": "inferpal",
+  "name": "Inferpal",
+  "version": "1.8.12",
+  "description": "A coding agent that runs on your own model server (Ollama, LM Studio or any OpenAI-compatible endpoint): no account, no telemetry.",
+  "repository": "https://github.com/EstaxNet/Inferpal",
+  "website": "https://github.com/EstaxNet/Inferpal/blob/master/docs/acp.md",
+  "authors": [
+    "EstaxNet"
+  ],
+  "license": "GPL-3.0-only",
+  "license_url": "https://github.com/EstaxNet/Inferpal/blob/master/LICENSE",
+  "distribution": {
+    "binary": {
+      "windows-x86_64": {
+        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.8.12/inferpal-acp-win32-x64-1.8.12.zip",
+        "sha256": "d6843e5de6c87d0271e384a1bb52633bdb1d2394282a581577acc6a029dae93c",
+        "cmd": "./Inferpal.Host.exe",
+        "args": [
+          "--acp"
+        ],
+        "env": {}
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.8.12/inferpal-acp-linux-x64-1.8.12.tar.gz",
+        "sha256": "7d71b991523d449b487624907cbbe11ef84209014499751f74d8f1b0ae2d9d5e",
+        "cmd": "./Inferpal.Host",
+        "args": [
+          "--acp"
+        ],
+        "env": {}
+      },
+      "darwin-aarch64": {
+        "archive": "https://github.com/EstaxNet/Inferpal/releases/download/v1.8.12/inferpal-acp-darwin-arm64-1.8.12.tar.gz",
+        "sha256": "60cd205163f4b8f6ad3faa29c75d5d661cfb7af0625afdfa790411bfade3fbfb",
+        "cmd": "./Inferpal.Host",
+        "args": [
+          "--acp"
+        ],
+        "env": {}
+      }
+    }
+  }
+}
