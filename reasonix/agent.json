@@ -1,0 +1,21 @@
+{
+  "id": "reasonix",
+  "name": "Reasonix",
+  "version": "1.39.2",
+  "description": "Cache-first DeepSeek coding agent for the terminal",
+  "repository": "https://github.com/esengine/DeepSeek-Reasonix",
+  "website": "https://esengine.github.io/DeepSeek-Reasonix/",
+  "authors": [
+    "Reasonix Contributors"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/esengine/DeepSeek-Reasonix/blob/studio/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "reasonix@1.39.2",
+      "args": [
+        "--acp"
+      ]
+    }
+  }
+}
