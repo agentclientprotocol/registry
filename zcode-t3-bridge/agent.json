@@ -1,0 +1,25 @@
+{
+  "id": "zcode-t3-bridge",
+  "name": "ZCode ACP (community)",
+  "version": "0.3.0",
+  "description": "Community ACP bridge for the ZCode native agent. Requires Node.js 24+ and separately installed ZCode Desktop (CLI 0.16.9) on macOS Apple Silicon; supports Coding Plan API-key terminal setup, streaming, permissions, resume and attachments. Not affiliated with Z.ai.",
+  "repository": "https://github.com/saarthak-yadav/t3-zcode-bridge",
+  "website": "https://github.com/saarthak-yadav/t3-zcode-bridge#readme",
+  "authors": [
+    "Sarthak (@saarthak-yadav)"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/saarthak-yadav/t3-zcode-bridge/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/saarthak-yadav/t3-zcode-bridge/releases/download/v0.3.0/t3-zcode-bridge-0.3.0-darwin-arm64.tar.gz",
+        "sha256": "899f3f54bf1cd2d78839a5374623165583358da336f65e8fba2b4cbb71fe0583",
+        "cmd": "./bridge.mjs",
+        "args": [
+          "--acp"
+        ]
+      }
+    }
+  }
+}
