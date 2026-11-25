@@ -1,0 +1,57 @@
+{
+  "id": "opengate",
+  "name": "OpenGate",
+  "version": "0.3.1",
+  "description": "Coding agent for your own AI gateway (e.g. CLIProxyAPI): any model it serves, subagents, memory, skills, MCP and a safety guard",
+  "repository": "https://github.com/Emmanuek5/opengate",
+  "website": "https://github.com/Emmanuek5/opengate#readme",
+  "authors": [
+    "Emmanuek5"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/Emmanuek5/opengate/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/Emmanuek5/opengate/releases/download/v0.3.1/opengate-darwin-arm64",
+        "sha256": "780853a2d52fdcf9f4cab10ae83fea6ef8157ed053c07cadd17202429bccdbf2",
+        "cmd": "./opengate-darwin-arm64",
+        "args": [
+          "acp"
+        ]
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/Emmanuek5/opengate/releases/download/v0.3.1/opengate-darwin-x64",
+        "sha256": "537d5e18a87ff4c85650e60dd108c0804f1ae8d0d4d3601190d37745fb91fc00",
+        "cmd": "./opengate-darwin-x64",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/Emmanuek5/opengate/releases/download/v0.3.1/opengate-linux-arm64",
+        "sha256": "9b16d06dac79fcbb97dacb913d4a637ce1c489eab2f71296aecd95993ac508d6",
+        "cmd": "./opengate-linux-arm64",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/Emmanuek5/opengate/releases/download/v0.3.1/opengate-linux-x64",
+        "sha256": "04853eec7ce906c11eed96f9d45e7942372a83fcf2b48f89af8a347aaf1977f3",
+        "cmd": "./opengate-linux-x64",
+        "args": [
+          "acp"
+        ]
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/Emmanuek5/opengate/releases/download/v0.3.1/opengate-windows-x64.exe",
+        "sha256": "e1682ae245e1569a60c1016aae025a88ef7fcc0d81ad5403d9b377d61b63747c",
+        "cmd": "opengate-windows-x64.exe",
+        "args": [
+          "acp"
+        ]
+      }
+    }
+  }
+}
