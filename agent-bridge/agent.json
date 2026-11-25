@@ -1,0 +1,19 @@
+{
+  "id": "agent-bridge",
+  "name": "agent-bridge",
+  "version": "0.3.0",
+  "description": "One bridge for many CLI coding agents: spawn codex (native adapter), Claude Code, pi, or any ACP agent by name as a single stdio ACP agent — with approval-flow mapping (once/always/deny by kind), session resume across bridge restarts, and image passthrough. Zero npm dependencies.",
+  "repository": "https://github.com/xiaohuzai/agent-bridge",
+  "website": "https://github.com/xiaohuzai/agent-bridge#readme",
+  "authors": [
+    "xiaohuzai"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/xiaohuzai/agent-bridge/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@xiaohuzai/agent-bridge@0.3.0",
+      "args": ["acp", "claude"]
+    }
+  }
+}
