@@ -41,6 +41,22 @@
           "acp"
         ]
       },
+      "linux-aarch64-musl": {
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.88/stakpak-linux-aarch64.tar.gz",
+        "sha256": "8312b611b5a635ea7411555f082b0fb3b6d644f99007d2c6a1f30fc6c13e725d",
+        "cmd": "./stakpak",
+        "args": [
+          "acp"
+        ]
+      },
+      "linux-x86_64-musl": {
+        "archive": "https://github.com/stakpak/agent/releases/download/v0.3.88/stakpak-linux-x86_64.tar.gz",
+        "sha256": "1e923d6b632e6bda743b3f48c40914f657853478647c26d0a47729a7728490c6",
+        "cmd": "./stakpak",
+        "args": [
+          "acp"
+        ]
+      },
       "windows-x86_64": {
         "archive": "https://github.com/stakpak/agent/releases/download/v0.3.88/stakpak-windows-x86_64.zip",
         "cmd": "./stakpak.exe",

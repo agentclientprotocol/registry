@@ -33,7 +33,7 @@ from common import (
     UpdateError,
     VersionUpdate,
 )
-from custom_agent_sources import CustomSourceFn, antigravity, junie, opencode_v2
+from custom_agent_sources import CustomSourceFn, antigravity, junie
 from github_api import (
     get_github_release_digests,
     get_github_release_versions,
@@ -41,6 +41,7 @@ from github_api import (
     make_request,
 )
 from registry_utils import (
+    COMPATIBILITY_IDS,
     UVX_VERSION_PATTERN,
     extract_npm_package_name,
     extract_pypi_package_name,
@@ -62,7 +63,6 @@ AGENT_DIRS = [
 # discovered through npm/PyPI/GitHub Releases. See custom_agent_sources/__init__.py.
 CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
     ("junie", "preview"): junie.get_preview_release,
-    ("opencode-v2", "stable"): opencode_v2.get_stable_release,
     ("antigravity-acp", "stable"): antigravity.get_stable_release,
 }
 
@@ -592,7 +592,9 @@ def main():
 
     # Filter by agent IDs if specified
     if args.agents:
-        filter_ids = set(args.agents.split(","))
+        filter_ids = {
+            COMPATIBILITY_IDS.get(agent_id, agent_id) for agent_id in args.agents.split(",")
+        }
         agents = [(p, d) for p, d in agents if d.get("id") in filter_ids]
 
     # Sort deterministically by agent ID

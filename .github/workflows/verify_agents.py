@@ -28,6 +28,7 @@ from registry_utils import (
     should_skip_dir,
     subprocess_group_kwargs,
     terminate_process_group,
+    with_compatibility_entries,
 )
 
 # Import auth client (only needed when --auth-check is used)
@@ -94,7 +95,24 @@ def get_current_platform() -> str:
     """Get current platform identifier."""
     system = platform.system()
     machine = platform.machine()
-    return PLATFORM_MAP.get((system, machine), f"{system.lower()}-{machine}")
+    target = PLATFORM_MAP.get((system, machine), f"{system.lower()}-{machine}")
+    if system == "Linux" and is_musl():
+        return f"{target}-musl"
+    return target
+
+
+def is_musl() -> bool:
+    libc, _ = platform.libc_ver()
+    if libc.lower() in {"glibc", "musl"}:
+        return libc.lower() == "musl"
+    # Python's libc_ver() can return an empty name on musl.
+    try:
+        result = subprocess.run(
+            ["ldd", "--version"], capture_output=True, text=True, timeout=5, check=False
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return "musl" in (result.stdout + result.stderr).lower()
 
 
 def check_command_exists(cmd: str) -> bool:
@@ -984,7 +1002,7 @@ def load_registry(registry_dir: Path) -> list[dict]:
         print(f"  ({len(quarantine)} agent(s) quarantined)")
         print()
 
-    return agents
+    return [entry for entry in with_compatibility_entries(agents) if entry["id"] not in quarantine]
 
 
 def main():

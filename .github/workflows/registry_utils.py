@@ -11,6 +11,10 @@ import sys
 import time
 from pathlib import Path
 
+# Published legacy IDs must remain resolvable by clients that saved them.
+COMPATIBILITY_IDS = {"opencode-v2": "opencode"}
+
+
 SKIP_DIRS = {
     ".claude",
     ".git",
@@ -106,6 +110,25 @@ PREVIEW_VERSION_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)-preview\.(\d+)$")
 
 # Version part of a uvx package spec (`pkg==1.2.3`, `pkg@1.2.3-preview.4`, ...)
 UVX_VERSION_PATTERN = r"[\d.]+(?:-preview\.\d+)?"
+
+
+def with_compatibility_entries(agents: list[dict]) -> list[dict]:
+    by_id = {agent["id"]: agent for agent in agents}
+    entries = list(agents)
+    for legacy_id, canonical_id in COMPATIBILITY_IDS.items():
+        if legacy_id in by_id:
+            raise ValueError(f"{legacy_id} is generated from {canonical_id}; remove its manifest")
+        if canonical_id not in by_id:
+            continue
+        entry = copy.deepcopy(by_id[canonical_id])
+        entry["id"] = legacy_id
+        entry["name"] = f"{entry['name']} (legacy ID)"
+        entry["description"] = (
+            f"Compatibility entry for existing {legacy_id} installations. "
+            f"Select {by_id[canonical_id]['name']} ({canonical_id}) for new installations."
+        )
+        entries.append(entry)
+    return sorted(entries, key=lambda entry: entry["id"])
 
 
 def should_skip_dir(name: str) -> bool:
