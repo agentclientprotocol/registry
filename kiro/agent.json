@@ -17,8 +17,7 @@
         "sha256": "f5ab5178a0bd796d83c5d689be63fbb87085dde861b4e62680560c2cbed83303",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
-          "acp",
-          "--agent-engine=v3"
+          "acp"
         ]
       },
       "darwin-x86_64": {
@@ -26,8 +25,7 @@
         "sha256": "f5ab5178a0bd796d83c5d689be63fbb87085dde861b4e62680560c2cbed83303",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
-          "acp",
-          "--agent-engine=v3"
+          "acp"
         ]
       },
       "linux-aarch64": {
@@ -35,8 +33,7 @@
         "sha256": "5eb452b74394b86194f37257fed29ece9f5b3a5601b7fb0e8bfca4e0ac10cfc8",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
-          "acp",
-          "--agent-engine=v3"
+          "acp"
         ]
       },
       "linux-x86_64": {
@@ -44,8 +41,7 @@
         "sha256": "c4c01ab99248f2136f4e244ca45b8e1d8b9ed7c2b7a2c4bc8a942cdb91ecd7d7",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
-          "acp",
-          "--agent-engine=v3"
+          "acp"
         ]
       },
       "linux-aarch64-musl": {
@@ -53,8 +49,7 @@
         "sha256": "3f1642317938ce0fc8d407ad9132facefd924a71af7765ea1bfd9e3438ff35f4",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
-          "acp",
-          "--agent-engine=v3"
+          "acp"
         ]
       },
       "linux-x86_64-musl": {
@@ -62,8 +57,7 @@
         "sha256": "86230a72c66fcab358a24006b9a0270265074c4946e9afc4af8c6261bb4f0cd6",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
-          "acp",
-          "--agent-engine=v3"
+          "acp"
         ]
       }
     }
