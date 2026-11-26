@@ -1,5 +1,6 @@
 """Ensure the binary updater cannot publish partial, foreign or mismatched Muse Code releases."""
 
+import io
 import json
 import urllib.error
 from unittest.mock import patch
@@ -174,6 +175,8 @@ def _break(fault, entry, channel, manifest):
             manifest["version"] = "1.4.25-R9201.1"
         case "wrong_algorithm":
             manifest["checksum_algorithm"] = "md5"
+        case "artifacts_not_object":
+            manifest["artifacts"] = list(manifest["artifacts"].values())
         case "missing_platform":
             del manifest["artifacts"][key]
         case "swapped_platform":
@@ -184,50 +187,78 @@ def _break(fault, entry, channel, manifest):
             artifact["url"] = f"https://example.com/?version={BUILD}&file={file_name}"
         case "checksum":
             artifact["checksum"] = "bad"
-        case "size":
+        case "checksum_not_string":
+            artifact["checksum"] = 0xA
+        case "string_size":
+            artifact["size"] = str(SIZE)
+        case "bool_size":
             artifact["size"] = True
+        case "zero_size":
+            artifact["size"] = 0
+        case "negative_size":
+            artifact["size"] = -SIZE
         case "unknown_platform":
             entry["distribution"]["binary"]["linux-x86_64-musl"] = {"archive": "x"}
         case "no_platforms":
             entry["distribution"]["binary"] = {}
 
 
+URL_ERROR = "windows-aarch64: URL is not"
+CHANNEL_ERROR = "is not the public muse-stable channel"
+MANIFEST_ERROR = f"manifest for {BUILD} is malformed or names another build"
+CHECKSUM_ERROR = "windows-aarch64: checksum is not 64 hex chars"
+SIZE_ERROR = "windows-aarch64: size must be a positive int"
+
+
 @pytest.mark.parametrize(
-    "fault",
+    ("fault", "message"),
     [
-        "empty_channel",
-        "other_channel",
-        "not_public",
-        "bad_build",
-        "new_major",
-        "old_major",
-        "foreign_manifest",
-        "manifest_mismatch",
-        "wrong_algorithm",
-        "missing_platform",
-        "swapped_platform",
-        "stale_url",
-        "foreign_url",
-        "checksum",
-        "size",
-        "unknown_platform",
-        "no_platforms",
+        ("empty_channel", CHANNEL_ERROR),
+        ("other_channel", CHANNEL_ERROR),
+        ("not_public", CHANNEL_ERROR),
+        ("bad_build", "unexpected build version '1.4.25'"),
+        ("new_major", "channel version 2.0.0 is not a 1.x release"),
+        ("old_major", "channel version 0.9.0 is not a 1.x release"),
+        ("foreign_manifest", "manifest URL is not"),
+        ("manifest_mismatch", MANIFEST_ERROR),
+        ("wrong_algorithm", MANIFEST_ERROR),
+        ("artifacts_not_object", MANIFEST_ERROR),
+        ("missing_platform", URL_ERROR),
+        ("swapped_platform", URL_ERROR),
+        ("stale_url", URL_ERROR),
+        ("foreign_url", URL_ERROR),
+        ("checksum", CHECKSUM_ERROR),
+        ("checksum_not_string", CHECKSUM_ERROR),
+        ("string_size", SIZE_ERROR),
+        ("bool_size", SIZE_ERROR),
+        ("zero_size", SIZE_ERROR),
+        ("negative_size", SIZE_ERROR),
+        ("unknown_platform", "no Muse Code build is known for linux-x86_64-musl"),
+        ("no_platforms", "agent.json has no binary platforms"),
     ],
 )
-def test_rejects_unusable_feed(entry, channel, manifest, tmp_path, fault):
+def test_rejects_unusable_feed(entry, channel, manifest, tmp_path, fault, message):
     _break(fault, entry, channel, manifest)
     _, update, error = check(entry, channel, manifest, tmp_path)
     assert update is None
-    assert error is not None and error.agent_id == "muse-code"
+    assert error.agent_id == "muse-code"
+    assert message in error.error
 
 
 @pytest.mark.parametrize(
-    "head", [("text/html", 0), ("application/octet-stream", SIZE - 1)], ids=["html", "truncated"]
+    ("head", "got"),
+    [
+        (("text/html", SIZE), f"got text/html, {SIZE} bytes"),
+        (("application/octet-stream", SIZE - 1), f"got application/octet-stream, {SIZE - 1} bytes"),
+    ],
+    ids=["html", "truncated"],
 )
-def test_rejects_binary_that_is_not_the_advertised_file(entry, channel, manifest, tmp_path, head):
+def test_rejects_binary_that_is_not_the_advertised_file(
+    entry, channel, manifest, tmp_path, head, got
+):
     _, update, error = check(entry, channel, manifest, tmp_path, head=head)
     assert update is None
-    assert "expected application/octet-stream" in error.error
+    assert got in error.error
 
 
 def test_head_failure_is_reported(entry, channel, manifest, tmp_path):
@@ -253,3 +284,17 @@ def test_requests_go_through_strict_http(entry, tmp_path, code):
     assert update is None
     assert f"HTTP {code} for {muse_code.CHANNEL_URL}" in error.error
     assert open_.call_args.args[0].get_header("Cache-control") == "no-cache"
+
+
+@pytest.mark.parametrize(
+    ("body", "message"),
+    [(b"<html></html>", "not JSON"), (b"[]", "expected a JSON object")],
+    ids=["html", "array"],
+)
+def test_channel_must_be_a_json_object(entry, tmp_path, body, message):
+    path = tmp_path / "agent.json"
+    path.write_text(json.dumps(entry))
+    with patch.object(strict_http._OPENER, "open", return_value=io.BytesIO(body)):
+        update, error = check_agent_version(path, entry)
+    assert update is None
+    assert f"{muse_code.CHANNEL_URL}: {message}" in error.error
