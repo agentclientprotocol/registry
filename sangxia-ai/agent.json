@@ -1,0 +1,18 @@
+{
+  "id": "sangxia-ai",
+  "name": "Sangxia.ai",
+  "version": "0.6.16",
+  "description": "Coding agent speaking ACP over stdio, with a built-in tool harness and JSON-configured OpenAI-compatible LLM backends",
+  "repository": "https://github.com/EthanYin-0701/sangxia-ai",
+  "website": "https://github.com/EthanYin-0701/sangxia-ai#readme",
+  "authors": [
+    "ethan"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/EthanYin-0701/sangxia-ai/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "sangxia-ai@0.6.16"
+    }
+  }
+}
