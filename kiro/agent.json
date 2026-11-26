@@ -1,7 +1,7 @@
 {
   "id": "kiro",
   "name": "Kiro CLI",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "The Kiro coding agent",
   "repository": "https://github.com/kirodotdev/Kiro",
   "website": "https://kiro.dev/docs/cli/acp/",
@@ -13,48 +13,48 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.1/kirocli-universal-darwin.tar.gz",
-        "sha256": "f5ab5178a0bd796d83c5d689be63fbb87085dde861b4e62680560c2cbed83303",
+        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.2/kirocli-universal-darwin.tar.gz",
+        "sha256": "d752571286636c5f69a6115d39c92e3ffb83ce91a6f6061ef19e12f280b50c21",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.1/kirocli-universal-darwin.tar.gz",
-        "sha256": "f5ab5178a0bd796d83c5d689be63fbb87085dde861b4e62680560c2cbed83303",
+        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.2/kirocli-universal-darwin.tar.gz",
+        "sha256": "d752571286636c5f69a6115d39c92e3ffb83ce91a6f6061ef19e12f280b50c21",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.1/kirocli-aarch64-linux.tar.gz",
-        "sha256": "5eb452b74394b86194f37257fed29ece9f5b3a5601b7fb0e8bfca4e0ac10cfc8",
+        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.2/kirocli-aarch64-linux.tar.gz",
+        "sha256": "a957c6a92b1d58849e67a7e49c07f9c4f0344c1f07ce2b0d271c9d93415f5f01",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.1/kirocli-x86_64-linux.tar.gz",
-        "sha256": "c4c01ab99248f2136f4e244ca45b8e1d8b9ed7c2b7a2c4bc8a942cdb91ecd7d7",
+        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.2/kirocli-x86_64-linux.tar.gz",
+        "sha256": "ffa5b53423a399249bbdbd69dc00686f60bbcf4637f59895796b81d401a1435f",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64-musl": {
-        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.1/kirocli-aarch64-linux-musl.zip",
-        "sha256": "3f1642317938ce0fc8d407ad9132facefd924a71af7765ea1bfd9e3438ff35f4",
+        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.2/kirocli-aarch64-linux-musl.zip",
+        "sha256": "fe77d01f4453609817d507b8270ae32174da62cdc0b8fc7eef3dee3cb71c0602",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64-musl": {
-        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.1/kirocli-x86_64-linux-musl.zip",
-        "sha256": "86230a72c66fcab358a24006b9a0270265074c4946e9afc4af8c6261bb4f0cd6",
+        "archive": "https://prod.download.cli.kiro.dev/stable/3.6.2/kirocli-x86_64-linux-musl.zip",
+        "sha256": "36d9a94b75ce6de3d27e5c157a7ad1ea3142b8b506068f58b2f8e1efebcda407",
         "cmd": "./kirocli/bin/kiro-cli",
         "args": [
           "acp"
