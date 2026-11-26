@@ -1,7 +1,7 @@
 {
   "id": "goose",
   "name": "goose",
-  "version": "1.61.0",
+  "version": "1.61.1",
   "description": "A local, extensible, open source AI agent that automates engineering tasks",
   "repository": "https://github.com/block/goose",
   "website": "https://block.github.io/goose/",
@@ -13,60 +13,60 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-aarch64-apple-darwin.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-aarch64-apple-darwin.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ],
-        "sha256": "f225bdd7d4b86dc6b83c392e99265e14ca92ba671e263aa29c5c75a2a1c5aa5d"
+        "sha256": "1da551c55be746369e4af58bc6eb5e9dd67fb5ce682cb8683246e0c7dda1d0dc"
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-x86_64-apple-darwin.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-x86_64-apple-darwin.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ],
-        "sha256": "c649310d54c62d47a9509065c4a3b0ca9841cd18a821e2b740928d0c48c0c398"
+        "sha256": "3887fe49b549d517cd3518ab55ae2a5257ba11a3d4664fa1c3adf49197b2f585"
       },
       "linux-aarch64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-aarch64-unknown-linux-gnu.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-aarch64-unknown-linux-gnu.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ],
-        "sha256": "535f240b1193525290045a0a10f93f42986a2999fb6e8183baecdfe17eddc1bb"
+        "sha256": "57a5480c7d71c49fb1e1153bb24f08511c2b58cb467babd7659b7020967a4067"
       },
       "linux-x86_64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-x86_64-unknown-linux-gnu.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-x86_64-unknown-linux-gnu.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ],
-        "sha256": "493c41b6544817b4c2669c3ba465d9d7161185cacfb9088e83dc26566d36f36d"
+        "sha256": "34cd9a484a15564d3f462843359d24e4964ae328be3625024003d29f318e586c"
       },
       "linux-aarch64-musl": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-aarch64-unknown-linux-musl.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-aarch64-unknown-linux-musl.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ],
-        "sha256": "8d4a8aebda51f31887f35c64304d1d64892b58ed8948a52c949d88042013ef13"
+        "sha256": "5922d671dc5b2c6c78226656c5aa81b80bf24f7b98e284eca8e787638c366a8c"
       },
       "linux-x86_64-musl": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-x86_64-unknown-linux-musl.tar.bz2",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-x86_64-unknown-linux-musl.tar.bz2",
         "cmd": "./goose",
         "args": [
           "acp"
         ],
-        "sha256": "c25b9b79f60f984f369a51be64bc75742b07808ac89d8f1556bb089e12ea3b77"
+        "sha256": "ff0afec001b02a699ef4b9c23734f630c9b3039fc04c06e4e5c31ff5391eee73"
       },
       "windows-x86_64": {
-        "archive": "https://github.com/block/goose/releases/download/v1.61.0/goose-x86_64-pc-windows-msvc.zip",
+        "archive": "https://github.com/block/goose/releases/download/v1.61.1/goose-x86_64-pc-windows-msvc.zip",
         "cmd": "./goose-package\\goose.exe",
         "args": [
           "acp"
         ],
-        "sha256": "03f7396b9babecb1649ec3e600def93a701d3deadbb704d379774798099f03b7"
+        "sha256": "960d884257d107fafb5dd46170ade1dc07cfd9d0e5562949e9b1d8a31cf14055"
       }
     }
   }
