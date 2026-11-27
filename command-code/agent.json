@@ -1,0 +1,23 @@
+{
+  "id": "command-code",
+  "name": "Command Code",
+  "version": "1.88.0",
+  "description": "Coding agent that continuously learns your coding taste, built for open models",
+  "repository": "https://github.com/CommandCodeAI/command-code",
+  "website": "https://commandcode.ai/docs/acp",
+  "authors": [
+    "Command Code (https://commandcode.ai)"
+  ],
+  "license": "proprietary",
+  "license_url": "https://commandcode.ai/terms",
+  "icon": "./icon.svg",
+  "distribution": {
+    "npx": {
+      "package": "command-code@1.88.0",
+      "args": [
+        "acp",
+        "--no-auto-update"
+      ]
+    }
+  }
+}
