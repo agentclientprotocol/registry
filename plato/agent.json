@@ -1,7 +1,7 @@
 {
   "id": "plato",
   "name": "Plato",
-  "version": "0.5.3",
+  "version": "0.5.5",
   "description": "Plans in the open, takes direction mid-run, and asks before changing code. Runs alone in an editor.",
   "repository": "https://github.com/Applivity/plato",
   "website": "https://plato.applivity.com",
@@ -12,7 +12,7 @@
   "license_url": "https://github.com/Applivity/plato/blob/main/LICENSE",
   "distribution": {
     "npx": {
-      "package": "@applivity/plato@0.5.3",
+      "package": "@applivity/plato@0.5.5",
       "args": [
         "--acp"
       ]
