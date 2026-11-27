@@ -1,0 +1,21 @@
+{
+  "id": "zencode",
+  "name": "ZenCODE",
+  "version": "5.0.0",
+  "description": "Native-Swift coding agent: one binary with no Node runtime, sub-agents with per-task model bindings, any OpenAI-compatible endpoint or local DS4 inference.",
+  "repository": "https://github.com/gerardogrisolini/ZenCODE",
+  "website": "https://github.com/gerardogrisolini/ZenCODE/blob/main/Docs/why-zen.md",
+  "authors": ["Gerardo Grisolini"],
+  "license": "MIT",
+  "license_url": "https://github.com/gerardogrisolini/ZenCODE/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/gerardogrisolini/ZenCODE/releases/download/v5.0.0/zen-5.0.0-macos-arm64.tar.gz",
+        "sha256": "2904266519785f014c5a5eca9759ed76a0d0bcbe7f30fa72e7bcd0586083407f",
+        "cmd": "./zen",
+        "args": ["--acp"]
+      }
+    }
+  }
+}
