@@ -1,0 +1,21 @@
+{
+  "id": "omp-acp",
+  "name": "Oh My Pi",
+  "version": "18.12.5",
+  "description": "Oh My Pi coding agent with a built-in ACP server mode.",
+  "repository": "https://github.com/can1357/oh-my-pi",
+  "website": "https://omp.sh",
+  "authors": [
+    "Stencil Labs, Inc."
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/can1357/oh-my-pi/blob/main/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@oh-my-pi/pi-coding-agent@18.12.5",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
