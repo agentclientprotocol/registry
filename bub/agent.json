@@ -1,0 +1,18 @@
+{
+  "id": "bub",
+  "name": "Bub",
+  "version": "0.1.5",
+  "description": "A tiny agent runtime, composable with plugins",
+  "repository": "https://github.com/bubbuild/bub",
+  "website": "https://bub.build",
+  "authors": [
+    "Bub <https://github.com/bubbuild>"
+  ],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/bubbuild/bub/blob/main/LICENSE",
+  "distribution": {
+    "uvx": {
+      "package": "bub-acp-server==0.1.5"
+    }
+  }
+}
