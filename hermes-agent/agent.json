@@ -1,0 +1,49 @@
+{
+  "id": "hermes-agent",
+  "name": "Hermes Agent",
+  "version": "0.23.1",
+  "description": "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere",
+  "repository": "https://github.com/solutionsunity/hermes-cli",
+  "website": "https://hermes-agent.nousresearch.com",
+  "authors": [
+    "Nous Research",
+    "Solutions Unity (builds)"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/NousResearch/hermes-agent/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/solutionsunity/hermes-cli/releases/download/v0.23.1/hermes-cli-0.23.1-darwin-aarch64.tar.gz",
+        "cmd": "./bin/hermes-acp",
+        "sha256": "ae5ce986a71c33de2266463077dc5526dbda25b83eef5da85b3554301cfd6b6b"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/solutionsunity/hermes-cli/releases/download/v0.23.1/hermes-cli-0.23.1-darwin-x86_64.tar.gz",
+        "cmd": "./bin/hermes-acp",
+        "sha256": "b095d5eb82e6253dcd56e787475459b1e46f7f1e7fd2cee341cbd8b735c194e6"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/solutionsunity/hermes-cli/releases/download/v0.23.1/hermes-cli-0.23.1-linux-aarch64.tar.gz",
+        "cmd": "./bin/hermes-acp",
+        "sha256": "4907940389e23074a78b03266211a6e3bbfd7d745a57168658d4c2164b049bd3"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/solutionsunity/hermes-cli/releases/download/v0.23.1/hermes-cli-0.23.1-linux-x86_64.tar.gz",
+        "cmd": "./bin/hermes-acp",
+        "sha256": "e4621b0de529e27fb48af3c28f7313a4460349a6dc577fb4f0fd4dc9ed16dabf"
+      },
+      "windows-aarch64": {
+        "archive": "https://github.com/solutionsunity/hermes-cli/releases/download/v0.23.1/hermes-cli-0.23.1-windows-aarch64.zip",
+        "cmd": "./bin/hermes-acp.exe",
+        "sha256": "405587516ec6c1357b2f8f5770abe51a3c74f482c080282ad3a9043d9be8fd17"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/solutionsunity/hermes-cli/releases/download/v0.23.1/hermes-cli-0.23.1-windows-x86_64.zip",
+        "cmd": "./bin/hermes-acp.exe",
+        "sha256": "6699e96434d2a89d71b26e66122bfb0b47dd74c8393b3101bed7f4a62b06a3ab"
+      }
+    }
+  }
+}
