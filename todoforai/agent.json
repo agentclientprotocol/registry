@@ -1,0 +1,21 @@
+{
+  "id": "todoforai",
+  "name": "TODOforAI",
+  "version": "0.1.44",
+  "description": "Cloud agents with your own devices attached: shell, files and tools run on your machines through the bridge, permissions and diffs review in the editor",
+  "repository": "https://github.com/todoforai/cli",
+  "website": "https://todofor.ai",
+  "authors": [
+    "TODOforAI"
+  ],
+  "license": "proprietary",
+  "license_url": "https://todofor.ai/legal/terms-of-service",
+  "distribution": {
+    "npx": {
+      "package": "@todoforai/cli@0.1.44",
+      "args": [
+        "acp"
+      ]
+    }
+  }
+}
