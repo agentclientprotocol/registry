@@ -1,0 +1,16 @@
+{
+  "id": "orchestrai",
+  "name": "OrchestrAI",
+  "version": "0.1.0",
+  "description": "Your team's OrchestrAI agent in the editor: shared team conversations, infrastructure runs and approvals, streamed live.",
+  "repository": "https://github.com/OrchestrAIio/orchestrai",
+  "website": "https://orchestrai.io",
+  "authors": ["OrchestrAI <support@orchestrai.io>"],
+  "license": "MIT",
+  "license_url": "https://unpkg.com/@orchestrai/acp@0.1.0/LICENSE",
+  "distribution": {
+    "npx": {
+      "package": "@orchestrai/acp@0.1.0"
+    }
+  }
+}
