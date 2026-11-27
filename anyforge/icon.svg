@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <path fill="currentColor" d="M2.5 12V9l2-2.5 2 2.5L8 4l1.5 5 2-2.5 2 2.5v3z"/>
+  <circle fill="currentColor" cx="4.5" cy="6.5" r="0.75"/>
+  <circle fill="currentColor" cx="8" cy="4" r="0.9"/>
+  <circle fill="currentColor" cx="11.5" cy="6.5" r="0.75"/>
+  <rect fill="currentColor" x="2.5" y="12.75" width="11" height="1.75" rx="0.75"/>
+</svg>
