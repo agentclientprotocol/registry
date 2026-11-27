@@ -1,0 +1,21 @@
+{
+  "id": "agentic-flows",
+  "name": "Agentic Flows",
+  "version": "0.7.1",
+  "description": "Run n8n-style agentic flows from the editor: one tool card per node, loop iterations, approvals and cancellation, with your own model provider.",
+  "repository": "https://github.com/Chuucommie/agenticFlow",
+  "website": "https://github.com/Chuucommie/agenticFlow-releases",
+  "authors": ["chuucommie"],
+  "license": "MIT",
+  "license_url": "https://github.com/Chuucommie/agenticFlow/blob/master/LICENSE",
+  "distribution": {
+    "binary": {
+      "linux-x86_64": {
+        "archive": "https://github.com/Chuucommie/agenticFlow-releases/releases/download/v0.7.1/agentic-flows-acp-0.7.1-linux-x86_64.tar.gz",
+        "cmd": "./agentic-flows-acp-0.7.1-linux-x86_64/agentic-flows-acp",
+        "args": [],
+        "sha256": "beb3f4f24cd2e7b8f96db1ce7be1d41f57bd168eff232a5d9069d7311ef89607"
+      }
+    }
+  }
+}
