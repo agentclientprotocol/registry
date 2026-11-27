@@ -1,0 +1,26 @@
+{
+  "id": "frontierstack",
+  "name": "FrontierStack",
+  "version": "1.0.0",
+  "description": "Server and network administrator for your Mac: servers, services, websites, TLS certificates, DNS, routers and devices, through the FrontierStack app (macOS; the app holds every credential and approves every change).",
+  "website": "https://www.frontierstack.app",
+  "authors": [
+    "Enfour, Inc."
+  ],
+  "license": "proprietary",
+  "license_url": "https://www.frontierstack.app/license.html",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://frontierstack.app/acp/frontierstack-acp-1.0.0.tar.gz",
+        "sha256": "46e9194998d5fb5b4eadcc25032cb9e24b9a1ada4f3bc4d041e6d17c936aefdf",
+        "cmd": "./frontierstack-acp"
+      },
+      "darwin-x86_64": {
+        "archive": "https://frontierstack.app/acp/frontierstack-acp-1.0.0.tar.gz",
+        "sha256": "46e9194998d5fb5b4eadcc25032cb9e24b9a1ada4f3bc4d041e6d17c936aefdf",
+        "cmd": "./frontierstack-acp"
+      }
+    }
+  }
+}
