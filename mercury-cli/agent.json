@@ -1,7 +1,7 @@
 {
   "id": "mercury-cli",
   "name": "Mercury CLI",
-  "version": "1.0.2",
+  "version": "1.1.1",
   "description": "Mercury CLI: run multiple AI coding sessions in one terminal. Mix and match model providers, spawn cross-company agents, and use built-in debugging, screen control, and voice dictation.",
   "repository": "https://github.com/Whq02/MercuryCLI",
   "website": "https://mercury-cli.ai",
@@ -12,7 +12,7 @@
   "license_url": "https://github.com/Whq02/MercuryCLI/blob/main/LICENSE.md",
   "distribution": {
     "npx": {
-      "package": "mercury-tech-cli@1.0.2",
+      "package": "mercury-tech-cli@1.1.1",
       "args": [
         "acp"
       ]
