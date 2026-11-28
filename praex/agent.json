@@ -1,0 +1,42 @@
+{
+  "id": "praex",
+  "name": "Praex",
+  "version": "0.1.52",
+  "description": "Open source coding agent that runs on its own post-trained open models or your own keys",
+  "repository": "https://github.com/ailucius/praex-cli",
+  "website": "https://praex.ai",
+  "authors": [
+    "Praex"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/ailucius/praex-cli/blob/main/LICENSE",
+  "icon": "./icon.svg",
+  "distribution": {
+    "binary": {
+      "darwin-aarch64": {
+        "archive": "https://github.com/ailucius/praex-cli/releases/download/v0.1.52/praex-darwin-arm64.tar.gz",
+        "cmd": "./praex",
+        "args": [
+          "acp"
+        ],
+        "sha256": "300ccab0b326812c6044a018e9e8bc368f0b931b62f673194a06cc7f4b7eb0ef"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/ailucius/praex-cli/releases/download/v0.1.52/praex-darwin-x64.tar.gz",
+        "cmd": "./praex",
+        "args": [
+          "acp"
+        ],
+        "sha256": "53f60ce712eb0e6fba3a322de5da64cd5eb9467d1ecc0c1d0ca955e54f8d747a"
+      },
+      "linux-x86_64": {
+        "archive": "https://github.com/ailucius/praex-cli/releases/download/v0.1.52/praex-linux-x64.tar.gz",
+        "cmd": "./praex",
+        "args": [
+          "acp"
+        ],
+        "sha256": "6b00994672e57b615c4444464ddfb0852f7d44851c0c919359fbca5ddd2b4db8"
+      }
+    }
+  }
+}
