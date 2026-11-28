@@ -1,0 +1,16 @@
+{
+  "id": "suzent",
+  "name": "Suzent",
+  "version": "0.1.0",
+  "description": "Personal AI agent with long-term memory, skills and your own models. Requires the Suzent app running on the same computer.",
+  "repository": "https://github.com/cyzus/suzent",
+  "website": "https://suzent.com/docs/features/nodes#use-suzent-from-your-editor-acp",
+  "authors": ["Suzent"],
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/cyzus/suzent/blob/main/LICENSE",
+  "distribution": {
+    "uvx": {
+      "package": "suzent-acp==0.1.0"
+    }
+  }
+}
