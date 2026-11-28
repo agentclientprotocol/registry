@@ -1,0 +1,42 @@
+{
+  "id": "zycode",
+  "name": "zycode",
+  "version": "1.2.0",
+  "description": "Python implementation of pi on LangChain: coding agent with workflows, sub-agents, extensions",
+  "repository": "https://github.com/zy1233/zycode",
+  "website": "https://zycode.dev",
+  "authors": [
+    "zy1233"
+  ],
+  "license": "MIT",
+  "license_url": "https://github.com/zy1233/zycode/blob/main/LICENSE",
+  "distribution": {
+    "binary": {
+      "linux-x86_64": {
+        "archive": "https://github.com/zy1233/zycode/releases/download/v1.2.0/zycode-agent-linux-x86_64-1.2.0.tar.gz",
+        "sha256": "a4dd0730b0a45c9f91a1ded3cedef175be61b001e884b0d25cd5f9b28669f622",
+        "cmd": "./zycode-agent"
+      },
+      "linux-aarch64": {
+        "archive": "https://github.com/zy1233/zycode/releases/download/v1.2.0/zycode-agent-linux-aarch64-1.2.0.tar.gz",
+        "sha256": "08b9dc754a8e82f63891dfbfb0ce39237e11b985ad45e029a38792a96607b710",
+        "cmd": "./zycode-agent"
+      },
+      "darwin-aarch64": {
+        "archive": "https://github.com/zy1233/zycode/releases/download/v1.2.0/zycode-agent-darwin-aarch64-1.2.0.tar.gz",
+        "sha256": "dff334eb737ec4fd67bb5980121baab86fa3002bd107c5a6ba7f919e034c58e4",
+        "cmd": "./zycode-agent"
+      },
+      "darwin-x86_64": {
+        "archive": "https://github.com/zy1233/zycode/releases/download/v1.2.0/zycode-agent-darwin-x86_64-1.2.0.tar.gz",
+        "sha256": "8fe495037755c7073058d34bea5ab748536a9ddd2ac0457a6a687d27288afe1e",
+        "cmd": "./zycode-agent"
+      },
+      "windows-x86_64": {
+        "archive": "https://github.com/zy1233/zycode/releases/download/v1.2.0/zycode-agent-windows-x86_64-1.2.0.zip",
+        "sha256": "9b065bff59653af6471e8dc807be3f4560721fdf0e7b2c7de7d2b162817dbd52",
+        "cmd": "./zycode-agent.exe"
+      }
+    }
+  }
+}
