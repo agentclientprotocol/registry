@@ -1,7 +1,7 @@
 {
   "id": "crow-cli",
   "name": "crow-cli",
-  "version": "0.1.49",
+  "version": "0.1.51",
   "description": "Minimal ACP Native Coding Agent",
   "repository": "https://github.com/crow-cli/crow-cli",
   "website": "https://crow-ai.dev",
@@ -13,40 +13,40 @@
   "distribution": {
     "binary": {
       "darwin-aarch64": {
-        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.49/crow-cli-darwin-aarch64.tar.gz",
-        "sha256": "e57bec141681d0843990ab2d536467a42cf33b4fe10a3374c152b83eb200cccd",
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.51/crow-cli-darwin-aarch64.tar.gz",
+        "sha256": "2f8a82dae82268b183fe124b1da356bd80c70cf96b363f8623d47bbe7c707272",
         "cmd": "./crow-cli",
         "args": [
           "acp"
         ]
       },
       "darwin-x86_64": {
-        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.49/crow-cli-darwin-x86_64.tar.gz",
-        "sha256": "62941f0f3d35c9e722d92bee3a4a9a5f8c4c92c2bcf408f7a7268eb0f8d52a1f",
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.51/crow-cli-darwin-x86_64.tar.gz",
+        "sha256": "e9c97fca4d206c1f4bace697c54255e7869d5bfb1a21985d16f9bdb55d44bb12",
         "cmd": "./crow-cli",
         "args": [
           "acp"
         ]
       },
       "linux-aarch64": {
-        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.49/crow-cli-linux-aarch64.tar.gz",
-        "sha256": "7e4160ae3ffc0078a73fe78cab49cfe00bf854538991c47dbb25282d6a092685",
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.51/crow-cli-linux-aarch64.tar.gz",
+        "sha256": "7c337a2a29f87ed02a2845ca1975659dcb8a8eb67c60d39a91921392ca6af763",
         "cmd": "./crow-cli",
         "args": [
           "acp"
         ]
       },
       "linux-x86_64": {
-        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.49/crow-cli-linux-x86_64.tar.gz",
-        "sha256": "0001d5019ec35e8a080844daa96d3ba91afd38ec44a89e5102291ebd36a1083c",
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.51/crow-cli-linux-x86_64.tar.gz",
+        "sha256": "f726ec8306f8dd765546efd3b28509f47dee5805abfe06d6f6e23af8e4e74ef8",
         "cmd": "./crow-cli",
         "args": [
           "acp"
         ]
       },
       "windows-x86_64": {
-        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.49/crow-cli-windows-x86_64.zip",
-        "sha256": "bcee58f1af378436d93b3386b62ce9a90dc3ed9614861ad28581c86577c4323a",
+        "archive": "https://github.com/crow-cli/crow-cli/releases/download/v0.1.51/crow-cli-windows-x86_64.zip",
+        "sha256": "36dce298af476c835ff928174d4daee14445e0aeebca53ac91f4a358b73be4b4",
         "cmd": "./crow-cli.exe",
         "args": [
           "acp"
