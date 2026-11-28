@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
+import strict_http
 from custom_agent_sources import antigravity
 from update_versions import check_agent_version
 
@@ -289,7 +290,7 @@ class TestGetStableRelease:
 
 class TestHttpStatusMapping:
     def _open_raising(self, exc):
-        return patch.object(antigravity._OPENER, "open", side_effect=exc)
+        return patch.object(strict_http._OPENER, "open", side_effect=exc)
 
     def _http_error(self, code: int) -> urllib.error.HTTPError:
         return urllib.error.HTTPError("https://dl.google.com/x", code, "msg", {}, None)

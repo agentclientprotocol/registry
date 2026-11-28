@@ -33,7 +33,7 @@ from common import (
     UpdateError,
     VersionUpdate,
 )
-from custom_agent_sources import CustomSourceFn, antigravity, junie
+from custom_agent_sources import CustomSourceFn, antigravity, junie, muse_code
 from github_api import (
     get_github_release_digests,
     get_github_release_versions,
@@ -64,6 +64,7 @@ AGENT_DIRS = [
 CUSTOM_AGENT_SOURCES: dict[tuple[str, str], CustomSourceFn] = {
     ("junie", "preview"): junie.get_preview_release,
     ("antigravity-acp", "stable"): antigravity.get_stable_release,
+    ("muse-code", "stable"): muse_code.get_stable_release,
 }
 
 
