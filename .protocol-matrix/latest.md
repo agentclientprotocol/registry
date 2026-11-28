@@ -1,6 +1,6 @@
-# ACP Protocol Adaptation Matrix — 2026-11-27
+# ACP Protocol Adaptation Matrix — 2026-11-28
 
-_Generated at 2026-11-27T15:08:56+00:00_
+_Generated at 2026-11-28T14:15:25+00:00_
 
 - Agents in report: **42**
 - Probed this run: **42**
@@ -24,22 +24,22 @@ codebuddy-code      2.187.0     npx     ok        agent                     load
 codex-acp           2.12.1      npx     ok        agent                     loadSession, session/list, session/fork, session/resume
 cortex-code         1.0.73      binary  proc_err  -                         -                                                      
 corust-agent        0.6.0       binary  ok        agent                     -                                                      
-crow-cli            0.1.49      binary  ok        terminal                  loadSession, session/list, session/fork                
+crow-cli            0.1.51      binary  ok        terminal                  loadSession, session/list, session/fork                
 cursor              2026.11.22  binary  ok        agent                     loadSession, session/list                              
 devin               3000.15.14  binary  ok        agent, terminal           loadSession, session/list                              
 dimcode             0.5.35      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 dirac               0.6.3       npx     ok        agent, env_var, terminal  loadSession, session/list, session/fork, session/resume
-factory-droid       1.21.1      npx     ok        agent                     loadSession, session/list, session/fork, session/resume
+factory-droid       1.23.0      npx     ok        agent                     loadSession, session/list, session/fork, session/resume
 gemini              0.71.1      npx     ok        agent                     loadSession                                            
 github-copilot      1.575.0     npx     ok        agent                     loadSession, session/list                              
-github-copilot-cli  1.0.116     npx     ok        terminal                  loadSession, session/list                              
-glm-acp-agent       1.17.1      npx     ok        agent, env_var            loadSession, session/list, session/fork, session/resume
+github-copilot-cli  1.0.117     npx     ok        terminal                  loadSession, session/list                              
+glm-acp-agent       1.18.0      npx     ok        agent, env_var            loadSession, session/list, session/fork, session/resume
 goose               1.61.1      binary  ok        agent                     loadSession, session/list                              
 grok-build          1.0.94      npx     ok        agent                     loadSession, session/list, session/resume              
-harn                0.10.202    binary  ok        agent                     loadSession, session/list, session/resume              
-junie               4171.4.0    binary  ok        agent, terminal           loadSession, session/list, session/fork, session/resume
+harn                0.10.203    binary  ok        agent                     loadSession, session/list, session/resume              
+junie               4171.7.0    binary  ok        agent, terminal           loadSession, session/list, session/fork, session/resume
 kilo                7.8.32      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
-kimchi              1.42.2      binary  ok        agent                     loadSession, session/list, session/resume              
+kimchi              1.42.4      binary  ok        agent                     loadSession, session/list, session/fork, session/resume
 kimi                1.52.0      binary  ok        terminal                  loadSession, session/list, session/resume              
 kimi-code           2.8.1       npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 kiro                3.6.2       binary  ok        terminal                  -                                                      
@@ -51,9 +51,9 @@ opencode            2.4.2       binary  ok        terminal                  load
 opencode-v2         2.4.2       binary  ok        terminal                  loadSession, session/list, session/fork, session/resume
 pi-acp              0.0.35      npx     ok        terminal                  loadSession, session/list                              
 poolside            1.0.16      binary  ok        terminal                  loadSession, session/list                              
-qoder               1.1.99      npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
+qoder               1.1.100     npx     ok        terminal                  loadSession, session/list, session/fork, session/resume
 qwen-code           0.28.7      npx     ok        agent                     loadSession, session/list, session/resume              
-sigit               1.7.10      npx     ok        agent                     loadSession, session/list, session/fork, session/resume
+sigit               1.7.11      npx     ok        agent                     loadSession, session/list, session/fork, session/resume
 stakpak             0.3.88      binary  ok        agent                     loadSession                                            
 ```
 
@@ -62,7 +62,7 @@ stakpak             0.3.88      binary  ok        agent                     load
 | Method | Supported | Auth Required | Method Not Found | Other |
 | --- | ---: | ---: | ---: | ---: |
 | `session/list` | 31 | 5 | 5 | 1 |
-| `session/fork` | 13 | 7 | 17 | 5 |
+| `session/fork` | 14 | 7 | 16 | 5 |
 | `session/resume` | 17 | 11 | 11 | 3 |
 | `session/stop` | 0 | 1 | 38 | 3 |
 | `session/set_model` | 17 | 4 | 17 | 4 |
